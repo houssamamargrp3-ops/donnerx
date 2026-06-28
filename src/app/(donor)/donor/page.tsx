@@ -1,11 +1,19 @@
 import { Heart, Activity, Calendar, ShieldCheck, Droplet } from "lucide-react";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { EligibilityStatus } from "@prisma/client";
 
 export const metadata = { title: "بوابة المتبرع" };
 
 export default async function DonorPortalPage() {
   const session = await auth();
+  const donor = await prisma.donor.findFirst({
+    where: { userId: session?.user?.id },
+    include: {
+      donations: true,
+    }
+  });
   
   return (
     <div className="min-h-screen auth-bg p-4 md:p-8">
@@ -33,11 +41,11 @@ export default async function DonorPortalPage() {
               </div>
               <div>
                 <p className="text-slate-400 text-sm">عدد التبرعات</p>
-                <p className="text-2xl font-bold text-white">0</p>
+                <p className="text-2xl font-bold text-white">{donor?.donations?.length || 0}</p>
               </div>
             </div>
             <div className="text-sm text-slate-500 border-t border-white/5 pt-3">
-              لم تقم بأي تبرع حتى الآن
+              {donor?.donations?.length ? "شكراً لمساهمتك في إنقاذ الأرواح" : "لم تقم بأي تبرع حتى الآن"}
             </div>
           </div>
 
@@ -48,11 +56,16 @@ export default async function DonorPortalPage() {
               </div>
               <div>
                 <p className="text-slate-400 text-sm">حالة الأهلية</p>
-                <p className="text-xl font-bold text-white">قيد الفحص</p>
+                <p className={`text-xl font-bold ${donor?.eligibilityStatus === "ELIGIBLE" ? "text-emerald-400" : donor?.eligibilityStatus === "INELIGIBLE" ? "text-red-400" : "text-amber-400"}`}>
+                  {donor?.eligibilityStatus === "ELIGIBLE" ? "مؤهل للتبرع" : donor?.eligibilityStatus === "INELIGIBLE" ? "غير مؤهل" : "قيد الفحص"}
+                </p>
               </div>
             </div>
-            <div className="text-sm text-slate-500 border-t border-white/5 pt-3">
-              يرجى حجز موعد لفحص الأهلية
+            <div className="text-sm text-slate-500 border-t border-white/5 pt-3 flex items-center justify-between">
+              <span>{donor?.eligibilityStatus === "PENDING_CHECK" ? "يرجى إجراء فحص الأهلية" : "تم التقييم بنجاح"}</span>
+              <Link href="/donor/eligibility" className="text-emerald-400 hover:text-emerald-300 font-medium">
+                {donor?.eligibilityStatus === "PENDING_CHECK" ? "ابدأ الفحص →" : "إعادة الفحص →"}
+              </Link>
             </div>
           </div>
 
@@ -63,11 +76,11 @@ export default async function DonorPortalPage() {
               </div>
               <div>
                 <p className="text-slate-400 text-sm">النقاط</p>
-                <p className="text-2xl font-bold text-white">0</p>
+                <p className="text-2xl font-bold text-white">{donor?.points || 0}</p>
               </div>
             </div>
             <div className="text-sm text-slate-500 border-t border-white/5 pt-3">
-              المستوى 1
+              المستوى {donor?.level || 1}
             </div>
           </div>
         </div>

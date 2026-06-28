@@ -163,9 +163,9 @@ model EligibilityCheck {
   donorId                String
   age                    Int
   weight                 Float
-  bloodPressureSystolic  Int
-  bloodPressureDiastolic Int
-  hemoglobin             Float
+  bloodPressureSystolic  Int?
+  bloodPressureDiastolic Int?
+  hemoglobin             Float?
   isPregnant             Boolean
   recentSurgery          Boolean
   chronicConditions      String[]
