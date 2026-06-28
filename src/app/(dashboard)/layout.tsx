@@ -3,6 +3,8 @@ import DashboardSidebar from "@/components/dashboard/Sidebar";
 import DashboardHeader from "@/components/dashboard/Header";
 import { redirect } from "next/navigation";
 
+export const dynamic = 'force-dynamic';
+
 export default async function DashboardLayout({
   children,
 }: {

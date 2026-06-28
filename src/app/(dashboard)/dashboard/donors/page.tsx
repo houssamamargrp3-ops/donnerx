@@ -3,6 +3,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { bloodTypeLabel } from "@/lib/utils";
 
+export const dynamic = 'force-dynamic';
 export const metadata = { title: "إدارة المتبرعين" };
 
 export default async function DonorsPage() {
