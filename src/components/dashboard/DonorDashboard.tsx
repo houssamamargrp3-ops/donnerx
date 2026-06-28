@@ -8,7 +8,10 @@ import {
   Clock,
   CheckCircle,
   Download,
-  Info
+  Info,
+  Trophy,
+  Star,
+  Award
 } from "lucide-react";
 import Link from "next/link";
 
@@ -72,14 +75,18 @@ export default function DonorDashboard({ userId }: { userId: string }) {
       </div>
 
       {/* History Pills */}
-      <div className="flex items-center gap-3 overflow-x-auto pb-4 border-b border-gray-200">
-        <span className="text-sm font-bold text-slate-600 uppercase flex items-center gap-2">
-          <Clock className="w-4 h-4" /> سجل الزيارات:
-        </span>
-        <button className="px-4 py-1.5 rounded-full bg-blue-600 text-white text-sm font-bold whitespace-nowrap">الزيارة الحالية (#4)</button>
-        <button className="px-4 py-1.5 rounded-full border border-blue-600 text-blue-600 bg-white hover:bg-blue-50 text-sm font-bold whitespace-nowrap">2026-03-08 (#3)</button>
-        <button className="px-4 py-1.5 rounded-full border border-blue-600 text-blue-600 bg-white hover:bg-blue-50 text-sm font-bold whitespace-nowrap">2026-03-07 (#2)</button>
-      </div>
+      {donor.donations && donor.donations.length > 0 && (
+        <div className="flex items-center gap-3 overflow-x-auto pb-4 border-b border-gray-200">
+          <span className="text-sm font-bold text-slate-600 uppercase flex items-center gap-2">
+            <Clock className="w-4 h-4" /> سجل الزيارات:
+          </span>
+          {donor.donations.map((donation: any, index: number) => (
+            <button key={donation.id} className={`px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap ${index === 0 ? 'bg-blue-600 text-white' : 'border border-blue-600 text-blue-600 bg-white hover:bg-blue-50'}`}>
+              {index === 0 ? `أحدث زيارة (#${donor.donations.length})` : `${new Date(donation.donatedAt).toISOString().split('T')[0]} (#${donor.donations.length - index})`}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
@@ -141,6 +148,55 @@ export default function DonorDashboard({ userId }: { userId: string }) {
             </div>
           </div>
           
+          {/* Gamification Widget */}
+          <div className="labo-card p-6 overflow-hidden relative">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-400 opacity-10 rounded-full blur-3xl -translate-y-10 translate-x-10"></div>
+            
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                <Trophy className="w-5 h-5 text-yellow-500" />
+                نظام التحفيز والنقاط
+              </h3>
+              <div className="flex items-center gap-2 bg-yellow-50 px-3 py-1 rounded-full border border-yellow-200 text-yellow-700 font-bold text-sm">
+                <Star className="w-4 h-4 fill-yellow-500 text-yellow-500" />
+                {donor.points || 0} نقطة
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <div className="flex justify-between text-sm font-bold text-slate-600 mb-2">
+                <span>المستوى الحالي: {donor.level || 1}</span>
+                <span>المستوى القادم: {(donor.level || 1) + 1}</span>
+              </div>
+              <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-l from-yellow-400 to-orange-500 rounded-full" style={{ width: `${Math.min(((donor.totalDonations % 5) / 5) * 100, 100)}%` }}></div>
+              </div>
+              <p className="text-xs text-slate-500 mt-2 text-left">تبقى {5 - (donor.totalDonations % 5)} تبرعات للوصول للمستوى التالي</p>
+            </div>
+
+            {donor.badges && donor.badges.length > 0 && (
+              <div>
+                <h4 className="text-sm font-bold text-slate-700 mb-3">شاراتك المميزة:</h4>
+                <div className="flex flex-wrap gap-3">
+                  {donor.badges.map((b: any) => (
+                    <div key={b.id} className="flex flex-col items-center gap-1 p-2 rounded-lg bg-slate-50 border border-slate-100 w-20 text-center">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-500 flex items-center justify-center text-white shadow-sm mb-1">
+                        <Award className="w-5 h-5" />
+                      </div>
+                      <span className="text-[10px] font-bold text-slate-700">{b.badge?.name || "شارة"}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {(!donor.badges || donor.badges.length === 0) && (
+              <div className="text-center p-4 bg-slate-50 rounded-lg border border-slate-100 border-dashed">
+                <p className="text-sm text-slate-500">تبرع بالدم لتبدأ في كسب النقاط والشارات المميزة!</p>
+              </div>
+            )}
+          </div>
+          
         </div>
 
         {/* Right Column (Sidebar-like info) */}
@@ -166,21 +222,29 @@ export default function DonorDashboard({ userId }: { userId: string }) {
             </h3>
             
             <div className="space-y-3">
-              <div className="bg-blue-50 border border-blue-100 rounded-md p-3 flex gap-3">
-                <Info className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                <div>
-                  <p className="text-xs text-blue-800 font-bold mb-1">2026-06-28 12:50:07</p>
-                  <p className="text-sm text-blue-900">يمكنك الآن تحميل تقرير التحليل الكامل الخاص بك.</p>
-                </div>
-              </div>
-
-              <div className="bg-emerald-50 border border-emerald-100 rounded-md p-3 flex gap-3">
-                <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0" />
-                <div>
-                  <p className="text-xs text-emerald-800 font-bold mb-1">نصيحة عملية</p>
-                  <p className="text-sm text-emerald-900">يوصى بشرب كمية طبيعية من الماء قبل التبرع.</p>
-                </div>
-              </div>
+              {donor.user?.notifications?.length > 0 ? (
+                donor.user.notifications.map((notif: any) => (
+                  <div key={notif.id} className="bg-blue-50 border border-blue-100 rounded-md p-3 flex gap-3">
+                    <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-xs text-blue-800 font-bold mb-1">{new Date(notif.createdAt).toLocaleString('ar-SA')}</p>
+                      <p className="text-sm text-blue-900 font-bold">{notif.title}</p>
+                      <p className="text-sm text-blue-800">{notif.message}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <>
+                  <div className="bg-emerald-50 border border-emerald-100 rounded-md p-3 flex gap-3">
+                    <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-xs text-emerald-800 font-bold mb-1">نصيحة عملية</p>
+                      <p className="text-sm text-emerald-900">أنت بصحة جيدة! حافظ على شرب كمية كافية من الماء بانتظام.</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-slate-500 text-center py-4">لا توجد إشعارات جديدة.</p>
+                </>
+              )}
             </div>
           </div>
 

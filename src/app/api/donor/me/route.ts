@@ -12,11 +12,27 @@ export async function GET() {
     const donor = await prisma.donor.findUnique({
       where: { userId: session.user.id },
       include: {
+        user: {
+          include: {
+            notifications: {
+              orderBy: { createdAt: "desc" },
+              take: 5
+            }
+          }
+        },
         appointments: {
           where: { scheduledAt: { gte: new Date() } },
           orderBy: { scheduledAt: "asc" },
           take: 1,
           include: { center: true }
+        },
+        donations: {
+          orderBy: { donatedAt: "desc" },
+          take: 5,
+          include: { center: true }
+        },
+        badges: {
+          include: { badge: true }
         }
       }
     });
