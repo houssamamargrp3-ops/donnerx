@@ -15,10 +15,8 @@ export default function DashboardHeader({ user }: HeaderProps) {
 
   return (
     <header
-      className="flex items-center justify-between px-6 py-4 border-b"
+      className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-white"
       style={{
-        background: "#111122",
-        borderColor: "#1e1e3a",
         minHeight: "72px",
       }}
     >
@@ -28,19 +26,7 @@ export default function DashboardHeader({ user }: HeaderProps) {
         <input
           type="text"
           placeholder="البحث..."
-          className="w-full pr-9 pl-4 py-2 rounded-lg text-sm text-slate-300 placeholder-slate-600 focus:outline-none transition-all"
-          style={{
-            background: "rgba(255,255,255,0.03)",
-            border: "1px solid #1e1e3a",
-          }}
-          onFocus={(e) => {
-            e.target.style.borderColor = "#dc2626";
-            e.target.style.boxShadow = "0 0 0 2px rgba(220,38,38,0.1)";
-          }}
-          onBlur={(e) => {
-            e.target.style.borderColor = "#1e1e3a";
-            e.target.style.boxShadow = "none";
-          }}
+          className="w-full pr-9 pl-4 py-2 rounded-lg text-sm text-slate-800 placeholder-slate-400 bg-slate-50 border border-slate-200 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
         />
       </div>
 
@@ -54,11 +40,7 @@ export default function DashboardHeader({ user }: HeaderProps) {
           <button
             id="user-menu-btn"
             onClick={() => setMenuOpen(!menuOpen)}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all"
-            style={{
-              background: menuOpen ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.03)",
-              border: "1px solid #1e1e3a",
-            }}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all border border-slate-200 hover:bg-slate-50"
           >
             <div
               className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold"
@@ -67,33 +49,26 @@ export default function DashboardHeader({ user }: HeaderProps) {
               {user?.name?.[0]?.toUpperCase() || "U"}
             </div>
             <div className="text-right hidden sm:block">
-              <p className="text-sm text-white font-medium leading-none">{user?.name || "مستخدم"}</p>
+              <p className="text-sm text-slate-800 font-medium leading-none">{user?.name || "مستخدم"}</p>
               <p className="text-xs text-slate-500 mt-0.5">{user?.email}</p>
             </div>
-            <ChevronDown className={`w-3 h-3 text-slate-500 transition-transform ${menuOpen ? "rotate-180" : ""}`} />
+            <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${menuOpen ? "rotate-180" : ""}`} />
           </button>
 
           {/* Dropdown */}
           {menuOpen && (
-            <div
-              className="absolute top-full left-0 mt-2 w-48 rounded-xl overflow-hidden shadow-xl z-50 animate-scale-in"
-              style={{
-                background: "#16162a",
-                border: "1px solid #1e1e3a",
-                boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
-              }}
-            >
+            <div className="absolute top-full left-0 mt-2 w-48 rounded-xl overflow-hidden shadow-xl z-50 bg-white border border-slate-100 animate-scale-in">
               <div className="p-2 space-y-1">
                 <a
                   href="/dashboard/profile"
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-300 hover:bg-white/5 text-sm transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 text-sm transition-colors"
                 >
                   <User className="w-4 h-4" />
                   الملف الشخصي
                 </a>
                 <button
                   onClick={() => signOut({ callbackUrl: "/login" })}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-red-400 hover:bg-red-950/30 text-sm transition-colors w-full"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 text-sm transition-colors w-full"
                 >
                   تسجيل الخروج
                 </button>

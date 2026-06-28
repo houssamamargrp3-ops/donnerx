@@ -74,32 +74,23 @@ export default function DashboardSidebar({ role }: SidebarProps) {
 
   return (
     <aside
-      className="w-64 flex flex-col flex-shrink-0 border-l"
+      className="w-64 flex flex-col flex-shrink-0 border-l border-slate-800 bg-slate-900"
       style={{
-        background: "#111122",
-        borderColor: "#1e1e3a",
         height: "100vh",
       }}
     >
       {/* Logo */}
-      <div className="p-6 border-b" style={{ borderColor: "#1e1e3a" }}>
+      <div className="p-6 bg-red-700 text-white">
         <div className="flex items-center gap-3">
-          <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center"
-            style={{
-              background: "linear-gradient(135deg, #dc2626, #991b1b)",
-              boxShadow: "0 0 20px rgba(220,38,38,0.3)",
-            }}
-          >
-            <Droplets className="w-5 h-5 text-white" />
+          <div className="w-10 h-10 rounded-full flex items-center justify-center bg-red-800 shadow-inner">
+            <Droplet className="w-6 h-6 text-white fill-white" />
           </div>
           <div>
-            <h1 className="text-lg font-black gradient-text tracking-wider">DONNER.X</h1>
-            <p className="text-xs text-slate-500">منصة التبرع بالدم</p>
+            <h1 className="text-lg font-bold tracking-wider">مركز الدم الرئيسي</h1>
+            <p className="text-xs text-red-200">منصة المتبرعين</p>
           </div>
         </div>
-
-        {/* Role Badge */}
+      </div>   {/* Role Badge */}
         <div
           className="flex items-center gap-2 mt-4 px-3 py-2 rounded-lg"
           style={{ background: `${roleInfo.color}12`, border: `1px solid ${roleInfo.color}25` }}
@@ -109,7 +100,6 @@ export default function DashboardSidebar({ role }: SidebarProps) {
             {roleInfo.label}
           </span>
         </div>
-      </div>
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto p-3 space-y-1">
@@ -119,10 +109,20 @@ export default function DashboardSidebar({ role }: SidebarProps) {
             <Link
               key={item.href}
               href={item.href}
-              className={`nav-item ${isActive ? "active" : ""}`}
+              className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all ${
+                isActive
+                  ? "bg-red-700 text-white shadow-md font-bold"
+                  : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+              }`}
             >
-              <item.icon className="w-4 h-4 flex-shrink-0" />
-              <span className="flex-1 text-sm">{item.label}</span>
+              <div className="flex items-center gap-3">
+                <item.icon
+                  className={`w-5 h-5 ${
+                    isActive ? "text-white" : "text-slate-500"
+                  }`}
+                />
+                <span className="text-sm">{item.label}</span>
+              </div>
               {item.badge && (
                 <span
                   className="text-xs px-1.5 py-0.5 rounded-full font-semibold"

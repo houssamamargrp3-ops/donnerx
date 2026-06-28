@@ -10,20 +10,20 @@
   --blood-red-dark: #991b1b;
   --blood-red-light: #ef4444;
   --crimson: #be123c;
-  --dark-bg: #0a0a12;
-  --dark-surface: #111122;
-  --dark-card: #16162a;
-  --dark-border: #1e1e3a;
-  --dark-hover: #1e1e38;
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #475569;
-  --accent-blue: #3b82f6;
+  --dark-bg: #f8fafc;
+  --dark-surface: #ffffff;
+  --dark-card: #ffffff;
+  --dark-border: #e2e8f0;
+  --dark-hover: #f1f5f9;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --accent-blue: #0ea5e9;
   --accent-green: #10b981;
   --accent-amber: #f59e0b;
   --accent-purple: #8b5cf6;
-  --glow-red: 0 0 30px rgba(220, 38, 38, 0.3);
-  --glow-blue: 0 0 30px rgba(59, 130, 246, 0.3);
+  --glow-red: 0 4px 14px 0 rgba(220, 38, 38, 0.39);
+  --glow-blue: 0 4px 14px 0 rgba(14, 165, 233, 0.39);
 }
 
 /* ─── Base Styles ────────────────────────────────────────────────────── */
@@ -78,23 +78,19 @@ body {
   min-height: 100vh;
 }
 
-/* ─── Premium Glass Card ─────────────────────────────────────────────────── */
+/* ─── Premium Glass Card (Now Flat White Card) ─────────────────────────────────────────────────── */
 .glass-card {
-  background: linear-gradient(135deg, rgba(30, 30, 58, 0.4) 0%, rgba(18, 18, 35, 0.6) 100%);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
-  box-shadow: 
-    0 4px 24px -1px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  background: #ffffff;
+  border: 1px solid var(--dark-border);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
 }
 
 .glass-panel {
-  background: rgba(15, 15, 30, 0.7);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 20px;
+  background: #ffffff;
+  border: 1px solid var(--dark-border);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
 }
 
 /* ─── Blood Drop Animation ───────────────────────────────────────────── */
@@ -237,27 +233,19 @@ body {
 
 /* ─── Stats Card ─────────────────────────────────────────────────────── */
 .stats-card {
-  background: var(--dark-card);
+  background: #ffffff;
   border: 1px solid var(--dark-border);
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 24px;
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
-}
-
-.stats-card::before {
-  content: '';
-  position: absolute;
-  top: 0; right: 0;
-  width: 100%; height: 2px;
-  background: linear-gradient(90deg, transparent, var(--blood-red), transparent);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
 }
 
 .stats-card:hover {
-  transform: translateY(-6px);
-  border-color: rgba(220, 38, 38, 0.3);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 20px rgba(220, 38, 38, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 /* ─── Sidebar Nav ────────────────────────────────────────────────────── */
