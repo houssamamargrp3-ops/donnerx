@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, ChevronDown, User } from "lucide-react";
+import { Search, ChevronDown, User, Globe, LogOut, Droplet } from "lucide-react";
 import { useState } from "react";
 import { signOut } from "next-auth/react";
 import type { User as NextAuthUser } from "next-auth";
@@ -20,62 +20,31 @@ export default function DashboardHeader({ user }: HeaderProps) {
         minHeight: "72px",
       }}
     >
-      {/* Search */}
-      <div className="relative max-w-xs w-full">
-        <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-        <input
-          type="text"
-          placeholder="البحث..."
-          className="w-full pr-9 pl-4 py-2 rounded-lg text-sm text-slate-800 placeholder-slate-400 bg-slate-50 border border-slate-200 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
-        />
+      {/* Left side: Logo & Title (Since RTL, it's on the right visually) */}
+      <div className="flex items-center gap-3">
+        <Droplet className="w-6 h-6 text-blue-600 fill-blue-600" />
+        <h1 className="text-xl font-black text-slate-800 tracking-tight">DONNER.X <span className="font-medium text-slate-500 text-sm">Dashboard</span></h1>
       </div>
 
-      {/* Right side */}
-      <div className="flex items-center gap-3">
+      {/* Right side: Actions */}
+      <div className="flex items-center gap-4">
+        {/* Language Toggle Mockup */}
+        <div className="flex items-center bg-slate-100 rounded-full p-1 border border-slate-200">
+          <span className="px-3 py-1 text-xs font-bold text-slate-500">العربية</span>
+          <span className="px-3 py-1 text-xs font-bold bg-blue-600 text-white rounded-full shadow-sm">FR</span>
+        </div>
+
         {/* Notifications */}
         <NotificationsDropdown />
 
-        {/* User Menu */}
-        <div className="relative">
-          <button
-            id="user-menu-btn"
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all border border-slate-200 hover:bg-slate-50"
-          >
-            <div
-              className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold"
-              style={{ background: "linear-gradient(135deg, #dc2626, #991b1b)" }}
-            >
-              {user?.name?.[0]?.toUpperCase() || "U"}
-            </div>
-            <div className="text-right hidden sm:block">
-              <p className="text-sm text-slate-800 font-medium leading-none">{user?.name || "مستخدم"}</p>
-              <p className="text-xs text-slate-500 mt-0.5">{user?.email}</p>
-            </div>
-            <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${menuOpen ? "rotate-180" : ""}`} />
-          </button>
-
-          {/* Dropdown */}
-          {menuOpen && (
-            <div className="absolute top-full left-0 mt-2 w-48 rounded-xl overflow-hidden shadow-xl z-50 bg-white border border-slate-100 animate-scale-in">
-              <div className="p-2 space-y-1">
-                <a
-                  href="/dashboard/profile"
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 text-sm transition-colors"
-                >
-                  <User className="w-4 h-4" />
-                  الملف الشخصي
-                </a>
-                <button
-                  onClick={() => signOut({ callbackUrl: "/login" })}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 text-sm transition-colors w-full"
-                >
-                  تسجيل الخروج
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
+        {/* Logout Button */}
+        <button
+          onClick={() => signOut({ callbackUrl: "/login" })}
+          className="btn-danger flex items-center gap-2"
+        >
+          <LogOut className="w-4 h-4" />
+          تسجيل الخروج
+        </button>
       </div>
     </header>
   );

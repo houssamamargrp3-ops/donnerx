@@ -76,21 +76,10 @@ export default function DashboardSidebar({ role }: SidebarProps) {
     <aside
       className="w-64 flex flex-col flex-shrink-0 border-l border-slate-800 bg-slate-900"
       style={{
-        height: "100vh",
+        height: "calc(100vh - 72px)",
       }}
     >
-      {/* Logo */}
-      <div className="p-6 bg-red-700 text-white">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full flex items-center justify-center bg-red-800 shadow-inner">
-            <Droplet className="w-6 h-6 text-white fill-white" />
-          </div>
-          <div>
-            <h1 className="text-lg font-bold tracking-wider">مركز الدم الرئيسي</h1>
-            <p className="text-xs text-red-200">منصة المتبرعين</p>
-          </div>
-        </div>
-      </div>   {/* Role Badge */}
+      <div className="p-4">
         <div
           className="flex items-center gap-2 mt-4 px-3 py-2 rounded-lg"
           style={{ background: `${roleInfo.color}12`, border: `1px solid ${roleInfo.color}25` }}
@@ -100,6 +89,7 @@ export default function DashboardSidebar({ role }: SidebarProps) {
             {roleInfo.label}
           </span>
         </div>
+      </div>
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto p-3 space-y-1">
@@ -109,9 +99,9 @@ export default function DashboardSidebar({ role }: SidebarProps) {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all ${
+              className={`flex items-center justify-between px-4 py-3 rounded-lg transition-all ${
                 isActive
-                  ? "bg-red-700 text-white shadow-md font-bold"
+                  ? "bg-blue-600 text-white shadow-md font-bold"
                   : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
               }`}
             >
