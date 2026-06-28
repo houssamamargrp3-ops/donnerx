@@ -14,7 +14,7 @@ export const donorSchema = z.object({
   address: z.string().optional(),
   city: z.string().optional(),
   chronicDiseases: z.string().optional(), // Comma separated list in form, transformed to array in action
-  eligibilityStatus: z.nativeEnum(EligibilityStatus).default(EligibilityStatus.PENDING_CHECK),
+  eligibilityStatus: z.nativeEnum(EligibilityStatus),
   eligibilityReason: z.string().optional(),
 });
 
