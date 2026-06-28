@@ -84,7 +84,7 @@ export default function HomePage() {
           
           {/* Donor Portal */}
           <Link
-            href="/login?type=donor"
+            href="/register?role=donor"
             className="group relative overflow-hidden rounded-3xl p-8 md:p-12 transition-all hover:-translate-y-2 hover:shadow-2xl cursor-pointer"
             style={{
               background: "linear-gradient(145deg, rgba(220,38,38,0.1), rgba(153,27,27,0.05))",
@@ -104,7 +104,7 @@ export default function HomePage() {
                 سجل كمتبرع جديد أو قم بتسجيل الدخول لحجز مواعيد التبرع ومتابعة نقاطك وسجلك الطبي.
               </p>
               <div className="mt-auto flex items-center gap-3 text-red-400 font-bold text-lg group-hover:gap-5 transition-all">
-                <span>الدخول للمتبرعين</span>
+                <span>إنشاء حساب متبرع</span>
                 <ArrowLeft className="w-5 h-5" />
               </div>
             </div>
@@ -112,7 +112,7 @@ export default function HomePage() {
 
           {/* Medical Portal */}
           <Link
-            href="/login?type=medical"
+            href="/register?role=center"
             className="group relative overflow-hidden rounded-3xl p-8 md:p-12 transition-all hover:-translate-y-2 hover:shadow-2xl cursor-pointer"
             style={{
               background: "linear-gradient(145deg, rgba(59,130,246,0.1), rgba(29,78,216,0.05))",
@@ -132,7 +132,7 @@ export default function HomePage() {
                 الوصول الخاص بالمراكز الطبية والمستشفيات لإدارة المخزون وطلب الدم واستقبال المتبرعين.
               </p>
               <div className="mt-auto flex items-center gap-3 text-blue-400 font-bold text-lg group-hover:gap-5 transition-all">
-                <span>دخول الطاقم الطبي</span>
+                <span>إنشاء حساب مركز طبي</span>
                 <ArrowLeft className="w-5 h-5" />
               </div>
             </div>
