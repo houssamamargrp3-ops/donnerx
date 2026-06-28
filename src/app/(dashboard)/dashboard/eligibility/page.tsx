@@ -12,7 +12,7 @@ export default async function EligibilityPage() {
   }
 
   return (
-    <div className="min-h-screen auth-bg p-4 md:p-8">
+    <div className="p-4 md:p-8">
       <EligibilityForm />
     </div>
   );

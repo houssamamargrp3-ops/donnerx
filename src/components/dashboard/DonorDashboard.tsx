@@ -48,8 +48,8 @@ export default function DonorDashboard({ userId }: { userId: string }) {
         <p className="text-slate-500 mb-8 max-w-sm mx-auto leading-relaxed">
           لكي تتمكن من حجز مواعيد والتبرع بالدم، يرجى إكمال إعداد ملفك الطبي وتحديد فصيلة دمك.
         </p>
-        <Link href="/donor/setup">
-          <button className="btn-primary">
+        <Link href="/dashboard/setup">
+          <button className="labo-btn-primary mx-auto">
             إكمال الملف الآن
           </button>
         </Link>

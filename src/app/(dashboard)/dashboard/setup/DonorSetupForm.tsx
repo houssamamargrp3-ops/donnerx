@@ -88,7 +88,7 @@ export default function DonorSetupForm({ userId }: { userId: string }) {
       </AnimatePresence>
 
       <motion.div variants={itemVariants}>
-        <label className="text-slate-300 font-bold mb-4 flex items-center gap-2 text-lg">
+        <label className="text-slate-700 font-bold mb-4 flex items-center gap-2 text-lg">
           <div className="p-2 rounded-lg bg-red-500/10 text-red-500"><Droplet className="w-5 h-5" /></div>
           ما هي فصيلة دمك؟ *
         </label>
@@ -100,17 +100,17 @@ export default function DonorSetupForm({ userId }: { userId: string }) {
               key={bt}
               type="button"
               onClick={() => setBloodType(bt)}
-              className={`relative h-16 rounded-2xl font-black text-xl flex items-center justify-center transition-all overflow-hidden ${
+              className={`relative h-16 rounded-lg font-black text-xl flex items-center justify-center transition-all overflow-hidden border ${
                 bloodType === bt
-                  ? "bg-gradient-to-br from-red-500 to-red-700 text-white shadow-[0_0_20px_rgba(220,38,38,0.4)] border-none"
-                  : "bg-slate-800/50 border-2 border-slate-700 text-slate-400 hover:border-slate-500 hover:text-slate-200"
+                  ? "bg-red-50 text-red-600 border-red-500 shadow-sm"
+                  : "bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50"
               }`}
             >
               {bloodType === bt && (
                 <motion.div 
                   layoutId="activeBloodType" 
-                  className="absolute inset-0 bg-gradient-to-br from-red-400 to-red-600 z-0" 
-                  style={{ borderRadius: 16 }}
+                  className="absolute inset-0 bg-red-100 z-0 opacity-50" 
+                  style={{ borderRadius: 8 }}
                 />
               )}
               <span className="relative z-10">{formatBloodType(bt)}</span>
@@ -119,16 +119,16 @@ export default function DonorSetupForm({ userId }: { userId: string }) {
         </div>
       </motion.div>
 
-      <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-800/50">
+      <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-200">
         <div className="group relative">
-          <label className="text-slate-300 font-bold mb-3 flex items-center gap-2">
+          <label className="text-slate-700 font-bold mb-3 flex items-center gap-2">
             رقم الهاتف للتواصل *
           </label>
           <input
             type="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-4 text-white focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all outline-none"
+            className="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-3 text-slate-800 focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all outline-none"
             placeholder="مثال: 05xxxxxxxxx"
             required
             dir="ltr"
@@ -136,15 +136,15 @@ export default function DonorSetupForm({ userId }: { userId: string }) {
         </div>
 
         <div className="group relative">
-          <label className="text-slate-300 font-bold mb-3 flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-500"><Activity className="w-4 h-4" /></div>
+          <label className="text-slate-700 font-bold mb-3 flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-blue-50 text-blue-600"><Activity className="w-4 h-4" /></div>
             الوزن (كجم) *
           </label>
           <input
             type="number"
             value={weight}
             onChange={(e) => setWeight(e.target.value ? Number(e.target.value) : "")}
-            className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-4 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all outline-none"
+            className="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-3 text-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all outline-none"
             placeholder="مثال: 75"
             min={30}
             max={250}
@@ -158,41 +158,41 @@ export default function DonorSetupForm({ userId }: { userId: string }) {
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.99 }}
           onClick={() => setChronicDiseases(!chronicDiseases)}
-          className={`p-6 rounded-2xl border-2 flex items-center gap-4 cursor-pointer transition-all ${
-            chronicDiseases ? "bg-red-500/10 border-red-500/50" : "bg-slate-800/30 border-slate-700/50 hover:border-slate-600"
+          className={`p-6 rounded-md border flex items-center gap-4 cursor-pointer transition-all ${
+            chronicDiseases ? "bg-red-50 border-red-500" : "bg-slate-50 border-slate-200 hover:border-slate-300"
           }`}
         >
           <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all ${
-            chronicDiseases ? "bg-red-500 border-red-500" : "border-slate-500"
+            chronicDiseases ? "bg-red-500 border-red-500" : "border-slate-300 bg-white"
           }`}>
             {chronicDiseases && <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}><ChevronLeft className="w-4 h-4 text-white" /></motion.div>}
           </div>
           <div>
-            <label className="text-white font-bold cursor-pointer text-lg">أعاني من أمراض مزمنة تمنع التبرع</label>
-            <p className="text-slate-400 text-sm mt-1">يرجى التأشير هنا إذا كنت تعاني من أمراض القلب، أو أمراض معدية.</p>
+            <label className="text-slate-800 font-bold cursor-pointer text-lg">أعاني من أمراض مزمنة تمنع التبرع</label>
+            <p className="text-slate-500 text-sm mt-1">يرجى التأشير هنا إذا كنت تعاني من أمراض القلب، أو أمراض معدية.</p>
           </div>
         </motion.div>
       </motion.div>
 
-      <motion.div variants={itemVariants} className="bg-gradient-to-r from-emerald-500/10 to-transparent border-r-4 border-emerald-500 rounded-lg p-5 flex items-start gap-4">
-        <div className="p-2 bg-emerald-500/20 rounded-full animate-pulse">
-          <Heart className="w-6 h-6 text-emerald-400" />
+      <motion.div variants={itemVariants} className="bg-emerald-50 border-r-4 border-emerald-500 rounded-md p-5 flex items-start gap-4">
+        <div className="p-2 bg-emerald-100 rounded-full animate-pulse">
+          <Heart className="w-6 h-6 text-emerald-600" />
         </div>
         <div>
-          <h4 className="text-emerald-400 font-bold mb-1">نقاط ترحيبية بانتظارك!</h4>
-          <p className="text-slate-300 text-sm leading-relaxed">
-            بمجرد إكمال ملفك وحفظه، ستحصل مباشرة على <span className="font-bold text-white px-1">50 نقطة</span> كنقطة بداية في رحلتك لإنقاذ الأرواح.
+          <h4 className="text-emerald-700 font-bold mb-1">نقاط ترحيبية بانتظارك!</h4>
+          <p className="text-emerald-600 text-sm leading-relaxed">
+            بمجرد إكمال ملفك وحفظه، ستحصل مباشرة على <span className="font-bold text-emerald-800 px-1">50 نقطة</span> كنقطة بداية في رحلتك لإنقاذ الأرواح.
           </p>
         </div>
       </motion.div>
 
       <motion.button 
         variants={itemVariants}
-        whileHover={{ scale: 1.02, boxShadow: "0 10px 30px -10px rgba(220,38,38,0.5)" }}
+        whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         type="submit" 
         disabled={isSubmitting} 
-        className="btn-primary w-full py-5 text-xl rounded-2xl flex items-center justify-center gap-3"
+        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-md font-bold text-lg flex items-center justify-center gap-3 transition-colors shadow-sm"
       >
         {isSubmitting ? (
           <span className="spinner border-t-white" />
