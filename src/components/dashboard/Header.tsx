@@ -1,9 +1,10 @@
 "use client";
 
-import { Bell, Search, ChevronDown, User } from "lucide-react";
+import { Search, ChevronDown, User } from "lucide-react";
 import { useState } from "react";
 import { signOut } from "next-auth/react";
 import type { User as NextAuthUser } from "next-auth";
+import NotificationsDropdown from "./NotificationsDropdown";
 
 interface HeaderProps {
   user: NextAuthUser | undefined;
@@ -46,19 +47,7 @@ export default function DashboardHeader({ user }: HeaderProps) {
       {/* Right side */}
       <div className="flex items-center gap-3">
         {/* Notifications */}
-        <button
-          id="notifications-btn"
-          className="relative w-9 h-9 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-200 transition-colors"
-          style={{ background: "rgba(255,255,255,0.03)", border: "1px solid #1e1e3a" }}
-        >
-          <Bell className="w-4 h-4" />
-          <span
-            className="absolute -top-1 -left-1 w-4 h-4 rounded-full text-xs flex items-center justify-center text-white font-bold"
-            style={{ background: "#dc2626", fontSize: "10px" }}
-          >
-            3
-          </span>
-        </button>
+        <NotificationsDropdown />
 
         {/* User Menu */}
         <div className="relative">
