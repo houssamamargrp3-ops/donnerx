@@ -14,6 +14,7 @@ import {
   Lock,
   User,
   ArrowLeft,
+  ArrowRight,
   AlertCircle,
   CheckCircle,
 } from "lucide-react";
@@ -21,7 +22,16 @@ import {
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const defaultRole = searchParams?.get("role") === "center" ? "CENTER_STAFF" : "DONOR";
+  const rawRoleParam = searchParams?.get("role");
+  
+  // Mapping query parameter to actual roles
+  let initialRole: "DONOR" | "CENTER_STAFF" | "ADMIN" = "DONOR";
+  if (rawRoleParam === "center") initialRole = "CENTER_STAFF";
+  else if (rawRoleParam === "hospital") initialRole = "CENTER_STAFF"; // treating hospital as center staff for now
+  else if (rawRoleParam === "admin") initialRole = "ADMIN";
+  
+  const isRoleLocked = !!rawRoleParam; // If they came with a specific role link, hide the selector
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -36,7 +46,7 @@ function RegisterForm() {
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      role: defaultRole,
+      role: initialRole,
     },
   });
 
@@ -123,10 +133,6 @@ function RegisterForm() {
       <div className="w-full max-w-lg animate-fade-in-up">
         {/* Logo */}
         <div className="text-center mb-6">
-          <Link href="/login" className="inline-flex items-center gap-2 text-slate-400 hover:text-slate-200 transition-colors mb-4">
-            <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm">العودة لتسجيل الدخول</span>
-          </Link>
           <div
             className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-3"
             style={{
@@ -140,8 +146,13 @@ function RegisterForm() {
           <p className="text-slate-400 text-sm mt-1">إنشاء حساب جديد</p>
         </div>
 
-        <div className="glass-card p-8">
-          <h2 className="text-2xl font-bold text-white mb-1">مرحباً بك 👋</h2>
+        <div className="glass-card p-8 relative">
+          <Link href="/" className="absolute top-6 left-6 text-slate-400 hover:text-white transition-colors">
+            <ArrowRight className="w-5 h-5" />
+          </Link>
+          <h2 className="text-2xl font-bold text-white mb-2">
+            {initialRole === "DONOR" ? "سجل كمتبرع جديد" : initialRole === "CENTER_STAFF" ? "تسجيل مركز طبي / مستشفى" : "تسجيل إداري"}
+          </h2>
           <p className="text-slate-400 text-sm mb-6">
             لديك حساب بالفعل؟{" "}
             <Link href="/login" className="text-red-400 hover:text-red-300 font-semibold transition-colors">
@@ -190,20 +201,7 @@ function RegisterForm() {
               {errors.email && <p className="error-msg"><AlertCircle className="w-3 h-3" /> {errors.email.message}</p>}
             </div>
 
-            {/* Role */}
-            <div>
-              <label className="block text-slate-300 text-sm font-medium mb-2">نوع الحساب</label>
-              <select
-                id="role"
-                className="form-input"
-                {...register("role")}
-                style={{ background: "rgba(255,255,255,0.03)", cursor: "pointer" }}
-              >
-                <option value="DONOR" style={{ background: "#16162a" }}>🩸 متبرع بالدم</option>
-                <option value="CENTER_STAFF" style={{ background: "#16162a" }}>🏥 موظف مركز الدم</option>
-                <option value="HOSPITAL_STAFF" style={{ background: "#16162a" }}>🏨 موظف مستشفى</option>
-              </select>
-            </div>
+
 
             {/* Password */}
             <div>

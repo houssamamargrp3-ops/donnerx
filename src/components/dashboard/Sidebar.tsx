@@ -35,17 +35,17 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { icon: LayoutDashboard, label: "لوحة التحكم", href: "/dashboard" },
-  { icon: Users, label: "المتبرعون", href: "/dashboard/donors", roles: ["ADMIN", "SUPER_ADMIN", "CENTER_STAFF"] },
-  { icon: CalendarDays, label: "المواعيد", href: "/dashboard/appointments" },
-  { icon: Droplet, label: "التبرعات", href: "/dashboard/donations" },
-  { icon: Megaphone, label: "الحملات", href: "/dashboard/campaigns" },
-  { icon: AlertTriangle, label: "الطلبات العاجلة", href: "/dashboard/emergency", badge: "عاجل" },
-  { icon: Package, label: "المخزون", href: "/dashboard/inventory", roles: ["ADMIN", "SUPER_ADMIN", "CENTER_STAFF"] },
+  { icon: Users, label: "المتبرعون", href: "/dashboard/donors", roles: ["ADMIN", "CENTER_STAFF"] },
+  { icon: CalendarDays, label: "المواعيد", href: "/dashboard/appointments", roles: ["CENTER_STAFF"] },
+  { icon: Droplet, label: "التبرعات", href: "/dashboard/donations", roles: ["CENTER_STAFF"] },
+  { icon: Megaphone, label: "الحملات", href: "/dashboard/campaigns", roles: ["ADMIN", "CENTER_STAFF"] },
+  { icon: AlertTriangle, label: "الطلبات العاجلة", href: "/dashboard/emergency", badge: "عاجل", roles: ["HOSPITAL_STAFF", "CENTER_STAFF", "ADMIN"] },
+  { icon: Package, label: "المخزون", href: "/dashboard/inventory", roles: ["ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"] },
   { icon: Bell, label: "الإشعارات", href: "/dashboard/notifications" },
-  { icon: QrCode, label: "نظام QR", href: "/dashboard/qr" },
-  { icon: BarChart3, label: "التقارير", href: "/dashboard/reports", roles: ["ADMIN", "SUPER_ADMIN"] },
-  { icon: Trophy, label: "التحفيز", href: "/dashboard/gamification" },
-  { icon: Brain, label: "الذكاء الاصطناعي", href: "/dashboard/ai", roles: ["ADMIN", "SUPER_ADMIN"] },
+  { icon: QrCode, label: "نظام QR", href: "/dashboard/qr", roles: ["CENTER_STAFF"] },
+  { icon: BarChart3, label: "التقارير", href: "/dashboard/reports", roles: ["ADMIN"] },
+  { icon: Trophy, label: "التحفيز", href: "/dashboard/gamification", roles: ["ADMIN"] },
+  { icon: Brain, label: "الذكاء الاصطناعي", href: "/dashboard/ai", roles: ["ADMIN"] },
   { icon: Settings, label: "الإعدادات", href: "/dashboard/settings" },
 ];
 
