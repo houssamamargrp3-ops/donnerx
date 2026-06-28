@@ -6,7 +6,7 @@ import { BloodType, NotificationType, UrgencyLevel, EmergencyStatus } from "@pri
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    if (!session || !session.user || (session.user.role !== "HOSPITAL_STAFF" && session.user.role !== "ADMIN")) {
+    if (!session || !session.user || ((session.user as any).role !== "HOSPITAL_STAFF" && (session.user as any).role !== "ADMIN")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
