@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { registerSchema, type RegisterFormData } from "@/lib/validations/auth";
 import {
@@ -18,8 +18,10 @@ import {
   CheckCircle,
 } from "lucide-react";
 
-export default function RegisterPage() {
+function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const defaultRole = searchParams?.get("role") === "center" ? "CENTER_STAFF" : "DONOR";
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -34,7 +36,7 @@ export default function RegisterPage() {
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      role: "DONOR",
+      role: defaultRole,
     },
   });
 
@@ -290,5 +292,13 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen auth-bg flex items-center justify-center"><div className="spinner"></div></div>}>
+      <RegisterForm />
+    </Suspense>
   );
 }
