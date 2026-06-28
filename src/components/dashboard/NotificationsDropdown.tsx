@@ -1,24 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Bell, Check, Info } from "lucide-react";
-
-type Notification = {
-  id: string;
-  title: string;
-  message: string;
-  isRead: boolean;
-  createdAt: string;
-};
+import { Bell, Check, Clock, AlertTriangle, CalendarDays } from "lucide-react";
+import Link from "next/link";
 
 export default function NotificationsDropdown() {
   const [isOpen, setIsOpen] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notifications, setNotifications] = useState<any[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
-
-  useEffect(() => {
-    fetchNotifications();
-  }, []);
 
   const fetchNotifications = async () => {
     try {
@@ -26,20 +15,42 @@ export default function NotificationsDropdown() {
       if (res.ok) {
         const data = await res.json();
         setNotifications(data.notifications || []);
-        setUnreadCount(data.notifications?.filter((n: Notification) => !n.isRead).length || 0);
+        setUnreadCount(data.unreadCount || 0);
+      }
+    } catch (e) {
+      console.error("Failed to fetch notifications");
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+    // Refresh every minute
+    const interval = setInterval(fetchNotifications, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const markAllAsRead = async () => {
+    try {
+      const res = await fetch("/api/notifications", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "markAllRead" })
+      });
+      if (res.ok) {
+        setUnreadCount(0);
+        setNotifications(notifications.map(n => ({ ...n, isRead: true })));
       }
     } catch (e) {
       console.error(e);
     }
   };
 
-  const markAllAsRead = async () => {
-    try {
-      await fetch("/api/notifications", { method: "POST" });
-      setNotifications(notifications.map(n => ({ ...n, isRead: true })));
-      setUnreadCount(0);
-    } catch (e) {
-      console.error(e);
+  const getIcon = (type: string) => {
+    switch (type) {
+      case "EMERGENCY_REQUEST": return <AlertTriangle className="w-5 h-5 text-red-500" />;
+      case "APPOINTMENT_REMINDER": return <Clock className="w-5 h-5 text-yellow-500" />;
+      case "CAMPAIGN_INVITE": return <CalendarDays className="w-5 h-5 text-blue-500" />;
+      default: return <Bell className="w-5 h-5 text-slate-500" />;
     }
   };
 
@@ -47,55 +58,64 @@ export default function NotificationsDropdown() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative w-9 h-9 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-200 transition-colors"
-        style={{ background: isOpen ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.03)", border: "1px solid #1e1e3a" }}
+        className="relative p-2 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"
       >
-        <Bell className="w-4 h-4" />
+        <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
-          <span
-            className="absolute -top-1 -left-1 w-4 h-4 rounded-full text-xs flex items-center justify-center text-white font-bold"
-            style={{ background: "#dc2626", fontSize: "10px" }}
-          >
-            {unreadCount}
-          </span>
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"></span>
         )}
       </button>
 
       {isOpen && (
-        <div 
-          className="absolute left-0 top-full mt-2 w-80 rounded-xl overflow-hidden shadow-xl z-50 animate-scale-in"
-          style={{ background: "#16162a", border: "1px solid #1e1e3a", boxShadow: "0 20px 50px rgba(0,0,0,0.5)" }}
-        >
-          <div className="flex items-center justify-between p-3 border-b border-slate-800">
-            <h3 className="text-white font-bold text-sm">الإشعارات</h3>
+        <div className="absolute top-full left-0 mt-2 w-80 rounded-xl overflow-hidden shadow-xl z-50 bg-white border border-slate-100 animate-scale-in">
+          <div className="p-3 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+            <h3 className="font-bold text-slate-800">الإشعارات</h3>
             {unreadCount > 0 && (
-              <button onClick={markAllAsRead} className="text-xs text-red-400 hover:text-red-300 font-medium flex items-center gap-1">
-                <Check className="w-3 h-3" /> تحديد كقراءة
+              <button 
+                onClick={markAllAsRead}
+                className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+              >
+                <Check className="w-3 h-3" />
+                تحديد الكل كمقروء
               </button>
             )}
           </div>
           
-          <div className="max-h-80 overflow-y-auto">
-            {notifications.length === 0 ? (
-              <div className="p-8 text-center">
-                <Info className="w-8 h-8 text-slate-600 mx-auto mb-2" />
-                <p className="text-slate-400 text-sm">لا توجد إشعارات جديدة</p>
-              </div>
-            ) : (
-              <div className="divide-y divide-slate-800">
-                {notifications.map((n) => (
-                  <div key={n.id} className={`p-4 transition-colors hover:bg-white/5 ${!n.isRead ? 'bg-red-500/5' : ''}`}>
-                    <div className="flex justify-between items-start mb-1">
-                      <h4 className={`text-sm font-bold ${!n.isRead ? 'text-white' : 'text-slate-300'}`}>{n.title}</h4>
-                      <span className="text-[10px] text-slate-500 whitespace-nowrap">
-                        {new Intl.DateTimeFormat("ar-SA", { hour: "2-digit", minute: "2-digit" }).format(new Date(n.createdAt))}
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-400 leading-relaxed">{n.message}</p>
+          <div className="max-h-[300px] overflow-y-auto">
+            {notifications.length > 0 ? (
+              notifications.map((notif) => (
+                <div 
+                  key={notif.id} 
+                  className={`p-4 border-b border-slate-50 flex gap-3 ${!notif.isRead ? 'bg-blue-50/50' : 'hover:bg-slate-50'}`}
+                >
+                  <div className="mt-1 flex-shrink-0">
+                    {getIcon(notif.type)}
                   </div>
-                ))}
+                  <div>
+                    <p className={`text-sm ${!notif.isRead ? 'font-bold text-slate-800' : 'text-slate-700'}`}>
+                      {notif.title}
+                    </p>
+                    <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                      {notif.message}
+                    </p>
+                    <p className="text-[10px] text-slate-400 mt-2">
+                      {new Date(notif.createdAt).toLocaleString('ar-SA')}
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="p-8 text-center text-slate-500">
+                <Bell className="w-8 h-8 mx-auto text-slate-300 mb-2" />
+                <p className="text-sm">لا توجد إشعارات جديدة</p>
               </div>
             )}
+          </div>
+          
+          <div className="p-2 border-t border-slate-100 text-center bg-slate-50">
+            <Link href="/dashboard/notifications" className="text-sm font-medium text-blue-600 hover:text-blue-700">
+              عرض كل الإشعارات
+            </Link>
           </div>
         </div>
       )}
