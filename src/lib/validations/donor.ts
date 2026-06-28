@@ -5,8 +5,8 @@ export const donorSchema = z.object({
   name: z.string().min(2, "الاسم يجب أن يكون أكثر من حرفين"),
   email: z.string().email("البريد الإلكتروني غير صالح"),
   phone: z.string().min(10, "رقم الهاتف غير صالح"),
-  bloodType: z.nativeEnum(BloodType, { required_error: "يرجى تحديد فصيلة الدم" }),
-  gender: z.nativeEnum(Gender, { required_error: "يرجى تحديد الجنس" }),
+  bloodType: z.nativeEnum(BloodType, { message: "يرجى تحديد فصيلة الدم" }),
+  gender: z.nativeEnum(Gender, { message: "يرجى تحديد الجنس" }),
   dateOfBirth: z.string().refine((date) => !isNaN(Date.parse(date)), {
     message: "تاريخ الميلاد غير صالح",
   }),
