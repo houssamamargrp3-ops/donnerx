@@ -15,7 +15,7 @@ export const registerSchema = z
       .regex(/[A-Z]/, "يجب أن تحتوي على حرف كبير")
       .regex(/[0-9]/, "يجب أن تحتوي على رقم"),
     confirmPassword: z.string(),
-    role: z.enum(["DONOR", "CENTER_STAFF", "HOSPITAL_STAFF"]),
+    role: z.enum(["DONOR", "CENTER_STAFF", "HOSPITAL_STAFF", "ADMIN", "SUPER_ADMIN"]),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "كلمتا المرور غير متطابقتين",

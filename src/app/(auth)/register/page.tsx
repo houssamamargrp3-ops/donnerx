@@ -25,9 +25,9 @@ function RegisterForm() {
   const rawRoleParam = searchParams?.get("role");
   
   // Mapping query parameter to actual roles
-  let initialRole: "DONOR" | "CENTER_STAFF" | "ADMIN" = "DONOR";
+  let initialRole: "DONOR" | "CENTER_STAFF" | "HOSPITAL_STAFF" | "ADMIN" | "SUPER_ADMIN" = "DONOR";
   if (rawRoleParam === "center") initialRole = "CENTER_STAFF";
-  else if (rawRoleParam === "hospital") initialRole = "CENTER_STAFF"; // treating hospital as center staff for now
+  else if (rawRoleParam === "hospital") initialRole = "HOSPITAL_STAFF";
   else if (rawRoleParam === "admin") initialRole = "ADMIN";
   
   const isRoleLocked = !!rawRoleParam; // If they came with a specific role link, hide the selector
@@ -151,7 +151,9 @@ function RegisterForm() {
             <ArrowRight className="w-5 h-5" />
           </Link>
           <h2 className="text-2xl font-bold text-white mb-2">
-            {initialRole === "DONOR" ? "سجل كمتبرع جديد" : initialRole === "CENTER_STAFF" ? "تسجيل مركز طبي / مستشفى" : "تسجيل إداري"}
+            {initialRole === "DONOR" ? "سجل كمتبرع جديد" : 
+             initialRole === "CENTER_STAFF" ? "تسجيل مركز طبي / بنك دم" : 
+             initialRole === "HOSPITAL_STAFF" ? "تسجيل مستشفى" : "تسجيل إداري"}
           </h2>
           <p className="text-slate-400 text-sm mb-6">
             لديك حساب بالفعل؟{" "}
