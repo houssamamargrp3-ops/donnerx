@@ -27,6 +27,11 @@ export async function submitEligibilityCheck(data: EligibilityFormData) {
     let isEligible = true;
     let reason = "";
 
+    // Convert string booleans
+    const isPregnant = validatedData.isPregnant === "true";
+    const recentSurgery = validatedData.recentSurgery === "true";
+    const hasRecentTattoo = validatedData.hasRecentTattoo === "true";
+
     // Medical Logic
     if (validatedData.age < 18 || validatedData.age > 65) {
       isEligible = false;
@@ -34,13 +39,13 @@ export async function submitEligibilityCheck(data: EligibilityFormData) {
     } else if (validatedData.weight < 50) {
       isEligible = false;
       reason = "الوزن يجب أن يكون 50 كجم على الأقل للتبرع بالدم.";
-    } else if (validatedData.isPregnant) {
+    } else if (isPregnant) {
       isEligible = false;
       reason = "يمنع التبرع أثناء فترة الحمل والرضاعة.";
-    } else if (validatedData.recentSurgery) {
+    } else if (recentSurgery) {
       isEligible = false;
       reason = "يمنع التبرع لمدة 6 أشهر بعد العمليات الجراحية الكبرى.";
-    } else if (validatedData.hasRecentTattoo) {
+    } else if (hasRecentTattoo) {
       isEligible = false;
       reason = "يمنع التبرع لمدة 6 أشهر بعد عمل وشم أو ثقب تجميلي (Piercing).";
     }
@@ -66,9 +71,9 @@ export async function submitEligibilityCheck(data: EligibilityFormData) {
           donorId: donor.id,
           age: validatedData.age,
           weight: validatedData.weight,
-          isPregnant: validatedData.isPregnant,
-          recentSurgery: validatedData.recentSurgery,
-          hasRecentTattoo: validatedData.hasRecentTattoo,
+          isPregnant: isPregnant,
+          recentSurgery: recentSurgery,
+          hasRecentTattoo: hasRecentTattoo,
           recentTravel: validatedData.recentTravel || null,
           chronicConditions: chronicConditionsList,
           currentMedications: currentMedicationsList,

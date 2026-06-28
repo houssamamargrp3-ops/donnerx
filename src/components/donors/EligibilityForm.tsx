@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { eligibilitySchema, EligibilityInput, EligibilityFormData } from "@/lib/validations/eligibility";
+import { eligibilitySchema, EligibilityFormData } from "@/lib/validations/eligibility";
 import { submitEligibilityCheck } from "@/app/actions/eligibility.actions";
 import { HeartPulse, CheckCircle2, XCircle, AlertCircle, ArrowLeft, ArrowRight, Activity, Calendar, ShieldAlert } from "lucide-react";
 import Link from "next/link";
@@ -20,7 +20,7 @@ export default function EligibilityForm() {
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm<EligibilityInput>({
+  } = useForm<EligibilityFormData>({
     resolver: zodResolver(eligibilitySchema),
     defaultValues: {
       isPregnant: "false",
@@ -29,7 +29,7 @@ export default function EligibilityForm() {
     }
   });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: EligibilityFormData) => {
     setError(null);
     startTransition(async () => {
       const res = await submitEligibilityCheck(data);
