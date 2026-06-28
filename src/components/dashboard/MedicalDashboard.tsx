@@ -1,77 +1,84 @@
 "use client";
 
-import { Activity, Users, AlertTriangle, Syringe, ChevronLeft } from "lucide-react";
+import { Activity, Users, AlertTriangle, FileText, CheckCircle, ShieldAlert } from "lucide-react";
 import Link from "next/link";
-import { motion, Variants } from "framer-motion";
 
 export default function MedicalDashboard() {
   return (
     <div className="space-y-6">
+      
+      {/* Page Title (Labo.dz style) */}
+      <div className="labo-page-title">
+        <div className="flex items-center gap-3">
+          <Activity className="w-6 h-6 text-blue-600" />
+          <h1 className="text-xl font-bold text-slate-800">لوحة تحكم المركز الطبي</h1>
+        </div>
+        <Link href="/dashboard/emergency">
+          <button className="labo-btn-danger">
+            <ShieldAlert className="w-4 h-4" />
+            نداء طوارئ جديد
+          </button>
+        </Link>
+      </div>
+
       {/* Overview Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="stats-card">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full flex items-center justify-center bg-blue-100">
-              <Users className="w-6 h-6 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-slate-500 text-sm font-bold mb-1">إجمالي المتبرعين</p>
-              <h2 className="text-3xl font-black text-slate-800">12,458</h2>
-            </div>
+        <div className="labo-stat-card">
+          <div className="labo-stat-icon bg-blue-100 text-blue-600">
+            <Users className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-slate-500 text-xs font-bold uppercase mb-1">إجمالي المتبرعين</p>
+            <h2 className="text-2xl font-black text-slate-800">12,458</h2>
           </div>
         </div>
 
-        <div className="stats-card">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full flex items-center justify-center bg-emerald-100">
-              <Users className="w-6 h-6 text-emerald-600" />
-            </div>
-            <div>
-              <p className="text-slate-500 text-sm font-bold mb-1">المتبرعون الجدد</p>
-              <h2 className="text-3xl font-black text-slate-800">256</h2>
-            </div>
+        <div className="labo-stat-card">
+          <div className="labo-stat-icon bg-green-100 text-green-600">
+            <CheckCircle className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-slate-500 text-xs font-bold uppercase mb-1">تبرعات اليوم</p>
+            <h2 className="text-2xl font-black text-slate-800">78</h2>
           </div>
         </div>
 
-        <div className="stats-card">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full flex items-center justify-center bg-red-100">
-              <Activity className="w-6 h-6 text-red-600" />
-            </div>
-            <div>
-              <p className="text-slate-500 text-sm font-bold mb-1">التبرعات اليوم</p>
-              <h2 className="text-3xl font-black text-slate-800">78</h2>
-            </div>
+        <div className="labo-stat-card">
+          <div className="labo-stat-icon bg-orange-100 text-orange-600">
+            <FileText className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-slate-500 text-xs font-bold uppercase mb-1">مواعيد بانتظار التأكيد</p>
+            <h2 className="text-2xl font-black text-slate-800">14</h2>
           </div>
         </div>
 
-        <div className="stats-card border-t-4 border-t-red-500">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full flex items-center justify-center bg-red-100">
-              <AlertTriangle className="w-6 h-6 text-red-600" />
-            </div>
-            <div>
-              <p className="text-slate-500 text-sm font-bold mb-1">الطلبات العاجلة</p>
-              <h2 className="text-3xl font-black text-slate-800">5</h2>
-            </div>
+        <div className="labo-stat-card border-t-4 border-t-red-500">
+          <div className="labo-stat-icon bg-red-100 text-red-600">
+            <AlertTriangle className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-slate-500 text-xs font-bold uppercase mb-1">طلبات طوارئ نشطة</p>
+            <h2 className="text-2xl font-black text-slate-800">5</h2>
           </div>
         </div>
       </div>
 
       {/* Tables Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        {/* Inventory Critical Alerts */}
-        <div className="glass-panel">
-          <div className="flex items-center justify-between p-4 border-b border-slate-200">
-            <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-red-500" />
+        
+        {/* Emergency Requests Table */}
+        <div className="labo-card overflow-hidden">
+          <div className="p-4 border-b border-gray-200 bg-white flex items-center justify-between">
+            <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-red-500" />
               أحدث الطلبات العاجلة
             </h3>
-            <Link href="/dashboard/emergency" className="text-sm text-blue-600 hover:underline">عرض جميع الطلبات</Link>
+            <Link href="/dashboard/emergency" className="text-xs text-blue-600 hover:underline font-bold">الكل</Link>
           </div>
           
-          <div className="overflow-x-auto">
-            <table className="enterprise-table">
+          <div className="labo-table-wrapper">
+            <table className="labo-table">
               <thead>
                 <tr>
                   <th>المستشفى</th>
@@ -83,33 +90,41 @@ export default function MedicalDashboard() {
               </thead>
               <tbody>
                 <tr>
-                  <td className="font-bold text-slate-700">مستشفى الملك فهد</td>
+                  <td className="font-bold">مستشفى الملك فهد</td>
                   <td><span className="font-bold text-red-600">O-</span></td>
                   <td>4 أكياس</td>
-                  <td><span className="badge-danger">طارئ جداً</span></td>
-                  <td><button className="btn-primary">تلبية</button></td>
+                  <td><span className="labo-badge-danger">طارئ جداً</span></td>
+                  <td>
+                    <div className="flex gap-1">
+                      <button className="labo-action-btn labo-action-view" title="عرض التفاصيل"><FileText className="w-4 h-4"/></button>
+                    </div>
+                  </td>
                 </tr>
                 <tr>
-                  <td className="font-bold text-slate-700">مستشفى التخصصي</td>
+                  <td className="font-bold">مستشفى التخصصي</td>
                   <td><span className="font-bold text-red-600">A+</span></td>
                   <td>2 أكياس</td>
-                  <td><span className="badge-danger">طارئ</span></td>
-                  <td><button className="btn-primary">تلبية</button></td>
+                  <td><span className="labo-badge-warning">طارئ</span></td>
+                  <td>
+                    <div className="flex gap-1">
+                      <button className="labo-action-btn labo-action-view"><FileText className="w-4 h-4"/></button>
+                    </div>
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
 
-        {/* Upcoming Appointments */}
-        <div className="glass-panel">
-          <div className="flex items-center justify-between p-4 border-b border-slate-200">
-            <h3 className="text-lg font-bold text-slate-800">المواعيد القادمة</h3>
-            <Link href="/dashboard/appointments" className="text-sm text-blue-600 hover:underline">عرض جميع المواعيد</Link>
+        {/* Upcoming Appointments Table */}
+        <div className="labo-card overflow-hidden">
+          <div className="p-4 border-b border-gray-200 bg-white flex items-center justify-between">
+            <h3 className="text-base font-bold text-slate-800">المواعيد القادمة</h3>
+            <Link href="/dashboard/appointments" className="text-xs text-blue-600 hover:underline font-bold">الكل</Link>
           </div>
           
-          <div className="overflow-x-auto">
-            <table className="enterprise-table">
+          <div className="labo-table-wrapper">
+            <table className="labo-table">
               <thead>
                 <tr>
                   <th>الوقت</th>
@@ -122,25 +137,28 @@ export default function MedicalDashboard() {
                 <tr>
                   <td className="font-bold text-slate-800">10:00 ص</td>
                   <td className="font-bold text-slate-700">أحمد محمد</td>
-                  <td><span className="text-red-600 font-bold bg-red-50 px-2 py-1 rounded text-sm">O+</span></td>
-                  <td><button className="btn-primary bg-slate-800 hover:bg-slate-700 text-xs">إدارة</button></td>
+                  <td><span className="text-red-600 font-bold bg-red-50 px-2 py-0.5 rounded text-xs">O+</span></td>
+                  <td>
+                    <div className="flex gap-1">
+                      <button className="labo-action-btn labo-action-edit"><CheckCircle className="w-4 h-4"/></button>
+                    </div>
+                  </td>
                 </tr>
                 <tr>
                   <td className="font-bold text-slate-800">10:30 ص</td>
                   <td className="font-bold text-slate-700">سارة علي</td>
-                  <td><span className="text-red-600 font-bold bg-red-50 px-2 py-1 rounded text-sm">A+</span></td>
-                  <td><button className="btn-primary bg-slate-800 hover:bg-slate-700 text-xs">إدارة</button></td>
-                </tr>
-                <tr>
-                  <td className="font-bold text-slate-800">11:00 ص</td>
-                  <td className="font-bold text-slate-700">محمد عبدالله</td>
-                  <td><span className="text-red-600 font-bold bg-red-50 px-2 py-1 rounded text-sm">B+</span></td>
-                  <td><button className="btn-primary bg-slate-800 hover:bg-slate-700 text-xs">إدارة</button></td>
+                  <td><span className="text-red-600 font-bold bg-red-50 px-2 py-0.5 rounded text-xs">A+</span></td>
+                  <td>
+                    <div className="flex gap-1">
+                      <button className="labo-action-btn labo-action-edit"><CheckCircle className="w-4 h-4"/></button>
+                    </div>
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
+
       </div>
     </div>
   );

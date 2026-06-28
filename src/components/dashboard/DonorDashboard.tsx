@@ -64,9 +64,11 @@ export default function DonorDashboard({ userId }: { userId: string }) {
     <div className="space-y-6">
       
       {/* Welcome Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-800">مرحباً، {donor.user?.name || "متبرع"}</h1>
-        <p className="text-slate-500 mt-1">إليك الحالة الحالية لتبرعاتك ونتائجك المتاحة.</p>
+      <div className="labo-page-title mb-8">
+        <div>
+          <h1 className="text-xl font-bold text-slate-800">مرحباً، {donor.user?.name || "متبرع"}</h1>
+          <p className="text-slate-500 mt-1 text-sm">إليك الحالة الحالية لتبرعاتك ونتائجك المتاحة.</p>
+        </div>
       </div>
 
       {/* History Pills */}
@@ -85,7 +87,7 @@ export default function DonorDashboard({ userId }: { userId: string }) {
         <div className="lg:col-span-2 space-y-6">
           
           {/* Details */}
-          <div className="glass-panel p-6">
+          <div className="labo-card p-6">
             <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2 mb-6">
               <CalendarDays className="w-5 h-5 text-blue-600" />
               تفاصيل الموعد القادم
@@ -116,7 +118,7 @@ export default function DonorDashboard({ userId }: { userId: string }) {
           </div>
 
           {/* Medical Results */}
-          <div className="glass-panel p-6">
+          <div className="labo-card p-6">
             <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2 mb-6">
               <FileText className="w-5 h-5 text-blue-600" />
               النتائج الطبية (الأهلية)
@@ -145,7 +147,7 @@ export default function DonorDashboard({ userId }: { userId: string }) {
         <div className="space-y-6">
           
           {/* Official Reports */}
-          <div className="glass-panel p-6">
+          <div className="labo-card p-6">
             <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2 mb-4">
               <Download className="w-5 h-5 text-blue-600" />
               التقارير الرسمية
@@ -157,7 +159,7 @@ export default function DonorDashboard({ userId }: { userId: string }) {
           </div>
 
           {/* Notifications */}
-          <div className="glass-panel p-6">
+          <div className="labo-card p-6">
             <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2 mb-4">
               <Bell className="w-5 h-5 text-yellow-500" />
               الإشعارات والتنبيهات

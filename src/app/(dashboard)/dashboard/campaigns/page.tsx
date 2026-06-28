@@ -63,14 +63,14 @@ export default function CampaignsPage() {
     <div className="space-y-6">
       
       {/* Header */}
-      <div className="flex items-center justify-between bg-white p-6 rounded-md border border-gray-200">
+      <div className="labo-page-title">
         <div className="flex items-center gap-3">
           <Megaphone className="w-6 h-6 text-blue-600" />
-          <h1 className="text-xl font-bold text-slate-800">إدارة الحملات (Campaigns)</h1>
+          <h1 className="text-xl font-bold text-slate-800">إدارة الحملات</h1>
         </div>
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="btn-primary flex items-center gap-2"
+          className="labo-btn-primary"
         >
           <Plus className="w-4 h-4" />
           حملة جديدة
@@ -78,12 +78,12 @@ export default function CampaignsPage() {
       </div>
 
       {/* Campaigns Table */}
-      <div className="bg-white rounded-md border border-gray-200 overflow-hidden">
+      <div className="labo-card overflow-hidden">
         {loading ? (
           <div className="p-12 text-center text-slate-500">جاري التحميل...</div>
         ) : campaigns.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="enterprise-table">
+          <div className="labo-table-wrapper">
+            <table className="labo-table">
               <thead>
                 <tr>
                   <th>اسم الحملة</th>
@@ -119,9 +119,14 @@ export default function CampaignsPage() {
                     </td>
                     <td>{getStatusBadge(camp.status)}</td>
                     <td>
-                      <button className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1 rounded text-xs font-bold transition-colors">
-                        إدارة
-                      </button>
+                      <div className="flex gap-1">
+                        <button className="labo-action-btn labo-action-edit" title="إدارة">
+                          <Megaphone className="w-4 h-4"/>
+                        </button>
+                        <button className="labo-action-btn labo-action-delete" title="حذف">
+                          <Plus className="w-4 h-4 transform rotate-45"/>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -188,11 +193,11 @@ export default function CampaignsPage() {
                 <textarea rows={3} className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})}></textarea>
               </div>
 
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-gray-200">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded">
+              <div className="pt-4 flex items-center justify-end gap-3 border-t border-gray-200 mt-6">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="labo-btn-outline">
                   إلغاء
                 </button>
-                <button type="submit" className="btn-primary">
+                <button type="submit" className="labo-btn-primary">
                   إنشاء ونشر الحملة
                 </button>
               </div>

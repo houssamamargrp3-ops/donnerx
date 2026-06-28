@@ -1,391 +1,314 @@
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Tajawal:wght@300;400;500;700;800;900&display=swap');
+@import "tailwindcss";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* ─── CSS Custom Properties ─────────────────────────────────────────── */
-:root {
-  --blood-red: #dc2626;
-  --blood-red-dark: #991b1b;
-  --blood-red-light: #ef4444;
-  --crimson: #be123c;
-  --dark-bg: #f8fafc;
-  --dark-surface: #ffffff;
-  --dark-card: #ffffff;
-  --dark-border: #e2e8f0;
-  --dark-hover: #f1f5f9;
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
-  --text-muted: #94a3b8;
-  --accent-blue: #0ea5e9;
-  --accent-green: #10b981;
-  --accent-amber: #f59e0b;
-  --accent-purple: #8b5cf6;
-  --glow-red: 0 4px 14px 0 rgba(220, 38, 38, 0.39);
-  --glow-blue: 0 4px 14px 0 rgba(14, 165, 233, 0.39);
+@theme {
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
 }
 
-/* ─── Base Styles ────────────────────────────────────────────────────── */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+@layer base {
+  body {
+    background-color: #f1f5f9;
+    color: #1e293b;
+    font-family: sans-serif;
+    -webkit-font-smoothing: antialiased;
+    direction: rtl;
+  }
 }
 
-html {
-  direction: rtl;
-  scroll-behavior: smooth;
-}
+@layer components {
+  /* =========================================
+     LABO.DZ EXACT COMPONENTS 
+     ========================================= */
 
-body {
-  font-family: 'Cairo', 'Tajawal', sans-serif;
-  background-color: var(--dark-bg);
-  color: var(--text-primary);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
+  /* Header */
+  .labo-header {
+    background-color: white;
+    border-bottom: 1px solid #e2e8f0;
+    height: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
 
-/* ─── Scrollbar ──────────────────────────────────────────────────────── */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: var(--dark-surface);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--blood-red-dark);
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--blood-red);
-}
+  /* Sidebar */
+  .labo-sidebar {
+    background-color: #1c2434;
+    color: #cbd5e1;
+    width: 16rem;
+    position: fixed;
+    top: 4rem;
+    bottom: 0;
+    right: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 40;
+    transition-property: all;
+    transition-duration: 300ms;
+  }
 
-/* ─── Selection ──────────────────────────────────────────────────────── */
-::selection {
-  background: rgba(220, 38, 38, 0.3);
-  color: white;
-}
+  /* Sidebar Item */
+  .labo-sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+  }
+  .labo-sidebar-item:hover {
+    background-color: #333a48;
+  }
 
-/* ─── Auth Layout ────────────────────────────────────────────────────── */
-.auth-bg {
-  background:
-    radial-gradient(ellipse at 20% 50%, rgba(220, 38, 38, 0.08) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 20%, rgba(153, 27, 27, 0.05) 0%, transparent 60%),
-    radial-gradient(ellipse at 50% 80%, rgba(59, 130, 246, 0.04) 0%, transparent 60%),
-    linear-gradient(180deg, #0a0a12 0%, #0d0d1f 100%);
-  min-height: 100vh;
-}
+  /* Sidebar Item Active */
+  .labo-sidebar-item.active {
+    background-color: #333a48;
+    color: white;
+    border-right-width: 4px;
+    border-right-color: #3b82f6;
+  }
 
-/* ─── Enterprise Flat Card ─────────────────────────────────────────────────── */
-.glass-card, .glass-panel {
-  background: #ffffff;
-  border: 1px solid var(--dark-border);
-  border-radius: 6px;
-  box-shadow: none;
-}
+  /* Page Title Box (Gérer les analyses style) */
+  .labo-page-title {
+    background-color: white;
+    border-width: 1px;
+    border-color: #e2e8f0;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-right-width: 4px;
+    border-right-color: #2563eb;
+    border-radius: 0.125rem;
+  }
 
-/* ─── Blood Drop Animation ───────────────────────────────────────────── */
-@keyframes bloodDrop {
-  0% { transform: translateY(-100%); opacity: 0; }
-  30% { opacity: 1; }
-  100% { transform: translateY(100vh); opacity: 0; }
-}
+  /* Standard White Card */
+  .labo-card {
+    background-color: white;
+    border-width: 1px;
+    border-color: #e2e8f0;
+    border-radius: 0.125rem;
+  }
 
-@keyframes pulse-red {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
-  50% { box-shadow: 0 0 0 12px rgba(220, 38, 38, 0); }
-}
+  /* Buttons */
+  .labo-btn-primary {
+    background-color: #2563eb;
+    color: white;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-radius: 0.25rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+  }
+  .labo-btn-primary:hover {
+    background-color: #1d4ed8;
+  }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-}
+  .labo-btn-danger {
+    background-color: #dc2626;
+    color: white;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-radius: 0.25rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+  }
+  .labo-btn-danger:hover {
+    background-color: #b91c1c;
+  }
 
-@keyframes shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
+  .labo-btn-outline {
+    background-color: white;
+    border-width: 1px;
+    border-color: #d1d5db;
+    color: #334155;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-radius: 0.25rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+  }
+  .labo-btn-outline:hover {
+    background-color: #f9fafb;
+  }
 
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+  /* Tables */
+  .labo-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+  }
 
-@keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
-}
+  .labo-table {
+    width: 100%;
+    text-align: right;
+    border-collapse: collapse;
+  }
 
-/* ─── Utility Animations ─────────────────────────────────────────────── */
-.animate-fade-in-up {
-  animation: fadeInUp 0.5s ease forwards;
-}
+  .labo-table th {
+    background-color: #f9fafb;
+    color: #64748b;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    border-bottom-width: 1px;
+    border-bottom-color: #e2e8f0;
+    white-space: nowrap;
+  }
 
-.animate-scale-in {
-  animation: scaleIn 0.3s ease forwards;
-}
+  .labo-table td {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    border-bottom-width: 1px;
+    border-bottom-color: #f1f5f9;
+    font-size: 0.875rem;
+    color: #334155;
+  }
 
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
+  .labo-table tr:hover {
+    background-color: rgba(249, 250, 251, 0.5);
+  }
 
-.animate-pulse-red {
-  animation: pulse-red 2s infinite;
-}
+  /* Table Action Buttons */
+  .labo-action-btn {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    transition-property: opacity;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+  }
+  .labo-action-btn:hover {
+    opacity: 0.9;
+  }
+  .labo-action-edit {
+    background-color: #06b6d4;
+  }
+  .labo-action-view {
+    background-color: #fb923c;
+  }
+  .labo-action-delete {
+    background-color: #ef4444;
+  }
 
-/* ─── Primary Button ─────────────────────────────────────────────────── */
-.btn-primary {
-  background: linear-gradient(135deg, var(--blood-red) 0%, var(--blood-red-dark) 100%);
-  color: white;
-  border: none;
-  padding: 12px 28px;
-  border-radius: 10px;
-  font-family: 'Cairo', sans-serif;
-  font-weight: 600;
-  font-size: 15px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-}
+  /* Stats Cards */
+  .labo-stat-card {
+    background-color: white;
+    border-width: 1px;
+    border-color: #e2e8f0;
+    padding: 1.5rem;
+    border-radius: 0.125rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .labo-stat-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
 
-.btn-primary::before {
-  content: '';
-  position: absolute;
-  top: 0; left: -100%;
-  width: 100%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-  transition: left 0.5s;
-}
-
-.btn-primary:hover::before {
-  left: 100%;
-}
-
-.btn-primary:hover {
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 10px 30px rgba(220, 38, 38, 0.5);
-}
-
-.btn-primary:active {
-  transform: translateY(1px) scale(0.98);
-}
-
-.btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* ─── Form Input ─────────────────────────────────────────────────────── */
-.form-input {
-  width: 100%;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(30, 30, 58, 0.9);
-  border-radius: 10px;
-  padding: 12px 16px;
-  color: var(--text-primary);
-  font-family: 'Cairo', sans-serif;
-  font-size: 15px;
-  transition: all 0.3s ease;
-  outline: none;
-}
-
-.form-input::placeholder {
-  color: var(--text-muted);
-}
-
-.form-input:focus {
-  border-color: var(--blood-red);
-  background: rgba(220, 38, 38, 0.04);
-  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
-}
-
-.form-input.error {
-  border-color: var(--blood-red);
-  background: rgba(220, 38, 38, 0.06);
-}
-
-/* ─── Blood Type Badge ───────────────────────────────────────────────── */
-.blood-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--blood-red), var(--blood-red-dark));
-  color: white;
-  font-weight: 800;
-  font-size: 14px;
-  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
-}
-
-/* ─── Enterprise Stats Card ─────────────────────────────────────────────────────── */
-.stats-card {
-  background: #ffffff;
-  border: 1px solid var(--dark-border);
-  border-radius: 6px;
-  padding: 24px;
-  position: relative;
-  overflow: hidden;
-  box-shadow: none;
-}
-
-.stats-card:hover {
-  background: #f8fafc;
-}
-
-/* ─── Enterprise Tables ────────────────────────────────────────────────────── */
-.enterprise-table {
-  width: 100%;
-  text-align: right;
-  border-collapse: collapse;
-}
-
-.enterprise-table th {
-  padding: 12px 16px;
-  border-bottom: 2px solid var(--dark-border);
-  color: var(--text-secondary);
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  background-color: #f8fafc;
-}
-
-.enterprise-table td {
-  padding: 16px;
-  border-bottom: 1px solid var(--dark-border);
-  color: var(--text-primary);
-  font-size: 0.875rem;
-  vertical-align: middle;
-}
-
-.enterprise-table tr:hover td {
-  background-color: #f8fafc;
-}
-
-.btn-primary {
-  background-color: #2563eb;
-  color: white;
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  display: inline-flex;
-  items-center: center;
-  gap: 8px;
-}
-.btn-primary:hover { background-color: #1d4ed8; }
-
-.btn-danger {
-  background-color: #dc2626;
-  color: white;
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-}
-.btn-danger:hover { background-color: #b91c1c; }
-
-.badge-success {
-  background-color: #d1fae5;
-  color: #065f46;
-  padding: 4px 8px;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.badge-danger {
-  background-color: #fee2e2;
-  color: #991b1b;
-  padding: 4px 8px;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-/* ─── Sidebar Nav ────────────────────────────────────────────────────── */
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border-radius: 10px;
-  color: var(--text-secondary);
-  text-decoration: none;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-
-.nav-item:hover {
-  background: var(--dark-hover);
-  color: var(--text-primary);
-}
-
-.nav-item.active {
-  background: rgba(220, 38, 38, 0.12);
-  color: var(--blood-red-light);
-  border: 1px solid rgba(220, 38, 38, 0.15);
-}
-
-/* ─── Gradient Text ──────────────────────────────────────────────────── */
-.gradient-text {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* ─── Loading Spinner ────────────────────────────────────────────────── */
-.spinner {
-  width: 20px;
-  height: 20px;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  display: inline-block;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* ─── Error Message ──────────────────────────────────────────────────── */
-.error-msg {
-  color: #f87171;
-  font-size: 13px;
-  margin-top: 4px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-/* ─── Success Toast ──────────────────────────────────────────────────── */
-.success-toast {
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  border-radius: 10px;
-  padding: 12px 16px;
-  color: #34d399;
-  font-size: 14px;
-}
-
-.error-toast {
-  background: rgba(220, 38, 38, 0.1);
-  border: 1px solid rgba(220, 38, 38, 0.3);
-  border-radius: 10px;
-  padding: 12px 16px;
-  color: #f87171;
-  font-size: 14px;
+  /* Badges */
+  .labo-badge-success {
+    background-color: #dcfce7;
+    color: #166534;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+  .labo-badge-warning {
+    background-color: #ffedd5;
+    color: #9a3412;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+  .labo-badge-danger {
+    background-color: #fee2e2;
+    color: #991b1b;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+  
+  .badge-success {
+    background-color: #dcfce7;
+    color: #166534;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
 }

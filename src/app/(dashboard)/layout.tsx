@@ -12,12 +12,18 @@ export default async function DashboardLayout({
   if (!session) redirect("/login");
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-slate-50">
+    <div className="min-h-screen bg-[#f1f5f9]">
       <DashboardHeader user={session.user} />
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex pt-16">
+        {/* The sidebar is fixed right, so we need pr-64 on main content to offset it */}
         <DashboardSidebar role={(session.user as any)?.role || "DONOR"} />
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50">
-          {children}
+        
+        {/* Main Content Area */}
+        <main className="flex-1 pr-64 w-full">
+          {/* A container to keep content centered or padded nicely */}
+          <div className="p-8 max-w-7xl mx-auto">
+            {children}
+          </div>
         </main>
       </div>
     </div>
