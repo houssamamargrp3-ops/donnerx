@@ -1,0 +1,476 @@
+// DONNER.X — Prisma Schema (Compatible with Prisma 7)
+// Covers all 15 Tasks
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── TASK 1: Authentication ───────────────────────────────────────────────────
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  CENTER_STAFF
+  HOSPITAL_STAFF
+  DONOR
+}
+
+model User {
+  id                String    @id @default(cuid())
+  name              String
+  email             String    @unique
+  emailVerified     DateTime?
+  password          String?
+  image             String?
+  role              Role      @default(DONOR)
+  isActive          Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  sessions          Session[]
+  accounts          Account[]
+  donor             Donor?
+  verificationTokens VerificationToken[]
+  passwordResets    PasswordReset[]
+  notifications     Notification[]
+  sentNotifications SentNotification[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expires   DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("verification_tokens")
+}
+
+model PasswordReset {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expires   DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_resets")
+}
+
+// ─── TASK 2: Donor Management ─────────────────────────────────────────────────
+
+enum BloodType {
+  A_POSITIVE
+  A_NEGATIVE
+  B_POSITIVE
+  B_NEGATIVE
+  AB_POSITIVE
+  AB_NEGATIVE
+  O_POSITIVE
+  O_NEGATIVE
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum EligibilityStatus {
+  ELIGIBLE
+  INELIGIBLE
+  PENDING_CHECK
+}
+
+model Donor {
+  id                  String            @id @default(cuid())
+  userId              String            @unique
+  bloodType           BloodType
+  gender              Gender
+  dateOfBirth         DateTime
+  weight              Float
+  phone               String
+  address             String?
+  city                String?
+  latitude            Float?
+  longitude           Float?
+  chronicDiseases     String[]
+  lastDonationDate    DateTime?
+  totalDonations      Int               @default(0)
+  eligibilityStatus   EligibilityStatus @default(PENDING_CHECK)
+  eligibilityReason   String?
+  nextEligibleDate    DateTime?
+  points              Int               @default(0)
+  level               Int               @default(1)
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  user                User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  donations           Donation[]
+  appointments        Appointment[]
+  eligibilityChecks   EligibilityCheck[]
+  emergencyResponses  EmergencyResponse[]
+  badges              DonorBadge[]
+  qrCodes             QRCode[]
+  certificates        Certificate[]
+
+  @@map("donors")
+}
+
+// ─── TASK 3: Eligibility Checker ─────────────────────────────────────────────
+
+model EligibilityCheck {
+  id                     String   @id @default(cuid())
+  donorId                String
+  age                    Int
+  weight                 Float
+  bloodPressureSystolic  Int
+  bloodPressureDiastolic Int
+  hemoglobin             Float
+  isPregnant             Boolean
+  recentSurgery          Boolean
+  chronicConditions      String[]
+  currentMedications     String[]
+  hasRecentTattoo        Boolean
+  recentTravel           String?
+  isEligible             Boolean
+  reason                 String?
+  nextEligibleDate       DateTime?
+  checkedAt              DateTime @default(now())
+
+  donor Donor @relation(fields: [donorId], references: [id], onDelete: Cascade)
+
+  @@map("eligibility_checks")
+}
+
+// ─── TASK 4: Appointment System ──────────────────────────────────────────────
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+model BloodCenter {
+  id           String   @id @default(cuid())
+  name         String
+  address      String
+  city         String
+  latitude     Float?
+  longitude    Float?
+  phone        String?
+  email        String?
+  workingHours Json?
+  capacity     Int      @default(20)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  appointments Appointment[]
+  inventory    BloodInventory[]
+  campaigns    Campaign[]
+  donations    Donation[]
+
+  @@map("blood_centers")
+}
+
+model Appointment {
+  id           String            @id @default(cuid())
+  donorId      String
+  centerId     String
+  scheduledAt  DateTime
+  status       AppointmentStatus @default(PENDING)
+  notes        String?
+  qrCode       String?
+  confirmedAt  DateTime?
+  cancelledAt  DateTime?
+  cancelReason String?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  donor    Donor       @relation(fields: [donorId], references: [id], onDelete: Cascade)
+  center   BloodCenter @relation(fields: [centerId], references: [id])
+  donation Donation?
+  qrCodes  QRCode[]
+
+  @@map("appointments")
+}
+
+// ─── TASK 5: Blood Donation ───────────────────────────────────────────────────
+
+model Donation {
+  id               String    @id @default(cuid())
+  donorId          String
+  centerId         String
+  appointmentId    String?   @unique
+  staffId          String?
+  bloodType        BloodType
+  volumeMl         Int
+  donatedAt        DateTime  @default(now())
+  nextDonationDate DateTime?
+  notes            String?
+  createdAt        DateTime  @default(now())
+
+  donor       Donor        @relation(fields: [donorId], references: [id], onDelete: Cascade)
+  center      BloodCenter  @relation(fields: [centerId], references: [id])
+  appointment Appointment? @relation(fields: [appointmentId], references: [id])
+  certificate Certificate?
+
+  @@map("donations")
+}
+
+model Certificate {
+  id           String   @id @default(cuid())
+  donorId      String
+  donationId   String   @unique
+  issuedAt     DateTime @default(now())
+  serialNumber String   @unique
+  pdfUrl       String?
+
+  donor    Donor    @relation(fields: [donorId], references: [id], onDelete: Cascade)
+  donation Donation @relation(fields: [donationId], references: [id], onDelete: Cascade)
+
+  @@map("certificates")
+}
+
+// ─── TASK 6: Campaign Management ─────────────────────────────────────────────
+
+enum CampaignStatus {
+  DRAFT
+  PUBLISHED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+model Campaign {
+  id          String         @id @default(cuid())
+  name        String
+  description String?
+  centerId    String
+  organizer   String
+  location    String
+  city        String
+  startDate   DateTime
+  endDate     DateTime
+  capacity    Int
+  registered  Int            @default(0)
+  status      CampaignStatus @default(DRAFT)
+  imageUrl    String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  center  BloodCenter @relation(fields: [centerId], references: [id])
+  qrCodes QRCode[]
+
+  @@map("campaigns")
+}
+
+// ─── TASK 7: Emergency Requests ──────────────────────────────────────────────
+
+enum UrgencyLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum EmergencyStatus {
+  OPEN
+  IN_PROGRESS
+  FULFILLED
+  CANCELLED
+}
+
+model EmergencyRequest {
+  id           String          @id @default(cuid())
+  hospitalName String
+  hospitalId   String?
+  contactName  String
+  contactPhone String
+  bloodType    BloodType
+  unitsNeeded  Int
+  urgencyLevel UrgencyLevel    @default(HIGH)
+  status       EmergencyStatus @default(OPEN)
+  city         String
+  latitude     Float?
+  longitude    Float?
+  notes        String?
+  fulfilledAt  DateTime?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  responses EmergencyResponse[]
+
+  @@map("emergency_requests")
+}
+
+model EmergencyResponse {
+  id          String   @id @default(cuid())
+  requestId   String
+  donorId     String
+  respondedAt DateTime @default(now())
+  status      String   @default("PENDING")
+
+  request EmergencyRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  donor   Donor            @relation(fields: [donorId], references: [id], onDelete: Cascade)
+
+  @@map("emergency_responses")
+}
+
+// ─── TASK 8: Blood Inventory ──────────────────────────────────────────────────
+
+model BloodInventory {
+  id           String    @id @default(cuid())
+  centerId     String
+  bloodType    BloodType
+  units        Int       @default(0)
+  expiryDate   DateTime?
+  minThreshold Int       @default(10)
+  updatedAt    DateTime  @updatedAt
+
+  center BloodCenter @relation(fields: [centerId], references: [id])
+
+  @@unique([centerId, bloodType])
+  @@map("blood_inventory")
+}
+
+// ─── TASK 9: Notification System ─────────────────────────────────────────────
+
+enum NotificationType {
+  APPOINTMENT_REMINDER
+  APPOINTMENT_CONFIRMED
+  APPOINTMENT_CANCELLED
+  CAMPAIGN_INVITE
+  EMERGENCY_REQUEST
+  DONATION_RECORDED
+  NEXT_DONATION_DATE
+  BADGE_EARNED
+  GENERAL
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  isRead    Boolean          @default(false)
+  data      Json?
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model SentNotification {
+  id      String   @id @default(cuid())
+  userId  String
+  channel String
+  subject String?
+  body    String
+  sentAt  DateTime @default(now())
+  success Boolean  @default(true)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sent_notifications")
+}
+
+// ─── TASK 10: QR System ───────────────────────────────────────────────────────
+
+enum QRType {
+  DONOR
+  APPOINTMENT
+  CAMPAIGN
+}
+
+model QRCode {
+  id            String   @id @default(cuid())
+  type          QRType
+  referenceId   String
+  donorId       String?
+  appointmentId String?
+  campaignId    String?
+  payload       String   @unique
+  scannedAt     DateTime?
+  scannedBy     String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  donor       Donor?       @relation(fields: [donorId], references: [id])
+  appointment Appointment? @relation(fields: [appointmentId], references: [id])
+  campaign    Campaign?    @relation(fields: [campaignId], references: [id])
+
+  @@map("qr_codes")
+}
+
+// ─── TASK 14: Gamification ────────────────────────────────────────────────────
+
+model Badge {
+  id                String @id @default(cuid())
+  name              String @unique
+  description       String
+  iconUrl           String?
+  pointsRequired    Int    @default(0)
+  donationsRequired Int    @default(0)
+
+  donors DonorBadge[]
+
+  @@map("badges")
+}
+
+model DonorBadge {
+  id       String   @id @default(cuid())
+  donorId  String
+  badgeId  String
+  earnedAt DateTime @default(now())
+
+  donor Donor @relation(fields: [donorId], references: [id], onDelete: Cascade)
+  badge Badge @relation(fields: [badgeId], references: [id])
+
+  @@unique([donorId, badgeId])
+  @@map("donor_badges")
+}
