@@ -65,8 +65,6 @@ function LoginForm() {
         />
         {/* Floating blood drops */}
         {[...Array(6)].map((_, i) => (
-          <div
-            key={i}
             <div
               key={i}
               className={`absolute opacity-20 text-2xl animate-float ${portalType === "donor" ? "text-red-900" : "text-blue-900"}`}

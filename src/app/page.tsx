@@ -69,8 +69,8 @@ export default function HomePage() {
 
         <p className="text-lg text-slate-400 max-w-2xl mb-10 leading-relaxed">
           منصة متكاملة تربط المتبرعين بالدم بمراكز نقل الدم والمستشفيات في الوقت الفعلي.
-          سجّل الآن وكن جزءًا من شبكة الأبطال.
         </p>
+      </section>
 
       {/* Portals Section */}
       <section className="relative z-10 max-w-6xl mx-auto px-4 pb-20 mt-10">
