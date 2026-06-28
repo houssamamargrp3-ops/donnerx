@@ -94,7 +94,7 @@ export async function submitEligibilityCheck(data: EligibilityFormData) {
       });
     });
 
-    revalidatePath("/donor");
+    revalidatePath("/dashboard");
     return { success: true, isEligible, reason };
   } catch (error: any) {
     console.error("Eligibility check error:", error);

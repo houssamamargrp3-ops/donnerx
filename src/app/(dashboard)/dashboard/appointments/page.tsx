@@ -20,7 +20,7 @@ export default async function AppointmentsPage() {
       where: { userId: session.user.id },
     });
 
-    if (!donor) redirect("/donor/setup");
+    if (!donor) redirect("/dashboard/setup");
 
     const appointments = await prisma.appointment.findMany({
       where: { donorId: donor.id },

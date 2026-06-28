@@ -19,26 +19,26 @@ export default auth((req: any) => {
   if (isLoggedIn && isAuthRoute) {
     const role = (session.user as any)?.role;
     if (role === "DONOR") {
-      return NextResponse.redirect(new URL("/donor", nextUrl));
+      return NextResponse.redirect(new URL("/dashboard", nextUrl));
     }
     return NextResponse.redirect(new URL("/dashboard", nextUrl));
   }
 
-  // Prevent Donors from accessing Admin Dashboard
-  if (isLoggedIn && nextUrl.pathname.startsWith("/dashboard")) {
+  // Prevent Donors from accessing Admin Dashboard (no longer applicable as they share dashboard)
+  /* if (isLoggedIn && nextUrl.pathname.startsWith("/dashboard")) {
     const role = (session.user as any)?.role;
     if (role === "DONOR") {
-      return NextResponse.redirect(new URL("/donor", nextUrl));
+      return NextResponse.redirect(new URL("/dashboard", nextUrl));
     }
-  }
+  } */
 
-  // Prevent Admin from accessing Donor portal
-  if (isLoggedIn && nextUrl.pathname.startsWith("/donor")) {
+  // Prevent Admin from accessing Donor portal (no longer applicable)
+  /* if (isLoggedIn && nextUrl.pathname.startsWith("/donor")) {
     const role = (session.user as any)?.role;
     if (role !== "DONOR") {
       return NextResponse.redirect(new URL("/dashboard", nextUrl));
     }
-  }
+  } */
 
   // Redirect non-logged-in users to login
   if (!isLoggedIn && !isPublicRoute) {

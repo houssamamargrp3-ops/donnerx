@@ -25,7 +25,7 @@ export default async function DonationsPage() {
       }
     });
 
-    if (!donor) redirect("/donor/setup");
+    if (!donor) redirect("/dashboard/setup");
 
     const { donations } = donor;
 
