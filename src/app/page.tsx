@@ -67,9 +67,15 @@ export default function HomePage() {
           <span className="gradient-text">تُنقذ حياة</span>
         </h1>
 
-        <p className="text-lg text-slate-400 max-w-2xl mb-10 leading-relaxed">
+        <p className="text-lg text-slate-400 max-w-2xl mb-4 leading-relaxed">
           منصة متكاملة تربط المتبرعين بالدم بمراكز نقل الدم والمستشفيات في الوقت الفعلي.
         </p>
+
+        <div className="mt-4 px-6 py-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
+          <p className="text-slate-300 font-medium tracking-wide">
+            من تأطير <span className="text-red-400 font-bold">زرقاط ربيعة</span>
+          </p>
+        </div>
       </section>
 
       {/* Portals Section */}
