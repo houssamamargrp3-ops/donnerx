@@ -1,16 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { loginSchema, type LoginFormData } from "@/lib/validations/auth";
-import { Eye, EyeOff, Droplets, Mail, Lock, ArrowLeft, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, Droplets, Mail, Lock, ArrowLeft, ArrowRight, AlertCircle, Activity, Heart } from "lucide-react";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const portalType = searchParams?.get("type") === "medical" ? "medical" : "donor";
+  
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -54,54 +57,63 @@ export default function LoginPage() {
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div
           className="absolute -top-40 -right-40 w-96 h-96 rounded-full opacity-10"
-          style={{ background: "radial-gradient(circle, #dc2626, transparent)" }}
+          style={{ background: portalType === "donor" ? "radial-gradient(circle, #dc2626, transparent)" : "radial-gradient(circle, #3b82f6, transparent)" }}
         />
         <div
           className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full opacity-5"
-          style={{ background: "radial-gradient(circle, #3b82f6, transparent)" }}
+          style={{ background: portalType === "donor" ? "radial-gradient(circle, #991b1b, transparent)" : "radial-gradient(circle, #1d4ed8, transparent)" }}
         />
         {/* Floating blood drops */}
         {[...Array(6)].map((_, i) => (
           <div
             key={i}
-            className="absolute text-red-900 opacity-20 text-2xl animate-float"
-            style={{
-              right: `${10 + i * 15}%`,
-              top: `${20 + i * 12}%`,
-              animationDelay: `${i * 0.5}s`,
-              animationDuration: `${3 + i * 0.5}s`,
-            }}
-          >
-            🩸
-          </div>
-        ))}
-      </div>
-
-      <div className="w-full max-w-md animate-scale-in">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <div
-            className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-4 animate-pulse-red"
-            style={{
-              background: "linear-gradient(135deg, #dc2626, #991b1b)",
-              boxShadow: "0 0 40px rgba(220,38,38,0.4)",
-            }}
-          >
-            <Droplets className="w-10 h-10 text-white" />
-          </div>
-          <h1 className="text-4xl font-black gradient-text tracking-widest">DONNER.X</h1>
-          <p className="text-slate-400 mt-2 text-sm">منصة التبرع بالدم الوطنية</p>
+            <div
+              key={i}
+              className={`absolute opacity-20 text-2xl animate-float ${portalType === "donor" ? "text-red-900" : "text-blue-900"}`}
+              style={{
+                right: `${10 + i * 15}%`,
+                top: `${20 + i * 12}%`,
+                animationDelay: `${i * 0.5}s`,
+                animationDuration: `${3 + i * 0.5}s`,
+              }}
+            >
+              {portalType === "donor" ? "🩸" : "🏥"}
+            </div>
+          ))}
         </div>
 
-        {/* Card */}
-        <div className="glass-card p-8">
-          <h2 className="text-2xl font-bold text-white mb-2">تسجيل الدخول</h2>
-          <p className="text-slate-400 text-sm mb-6">
-            ليس لديك حساب؟{" "}
-            <Link href="/register" className="text-red-400 hover:text-red-300 font-semibold transition-colors">
-              سجّل الآن
+        <div className="w-full max-w-md animate-scale-in">
+          {/* Logo */}
+          <div className="text-center mb-8">
+            <div
+              className={`inline-flex items-center justify-center w-20 h-20 rounded-full mb-4 animate-pulse-red`}
+              style={{
+                background: portalType === "donor" ? "linear-gradient(135deg, #dc2626, #991b1b)" : "linear-gradient(135deg, #3b82f6, #1d4ed8)",
+                boxShadow: portalType === "donor" ? "0 0 40px rgba(220,38,38,0.4)" : "0 0 40px rgba(59,130,246,0.4)",
+              }}
+            >
+              {portalType === "donor" ? <Heart className="w-10 h-10 text-white" /> : <Activity className="w-10 h-10 text-white" />}
+            </div>
+            <h1 className="text-4xl font-black gradient-text tracking-widest">
+              {portalType === "donor" ? "بوابة المتبرعين" : "البوابة الطبية"}
+            </h1>
+            <p className="text-slate-400 mt-2 text-sm">
+              {portalType === "donor" ? "سجل دخولك كمتبرع بالدم" : "دخول المراكز والمستشفيات"}
+            </p>
+          </div>
+
+          {/* Card */}
+          <div className="glass-card p-8 relative">
+            <Link href="/" className="absolute top-6 left-6 text-slate-400 hover:text-white transition-colors">
+              <ArrowRight className="w-5 h-5" />
             </Link>
-          </p>
+            <h2 className="text-2xl font-bold text-white mb-2">تسجيل الدخول</h2>
+            <p className="text-slate-400 text-sm mb-6">
+              ليس لديك حساب؟{" "}
+              <Link href={`/register?role=${portalType === 'donor' ? 'donor' : 'center'}`} className={`${portalType === 'donor' ? 'text-red-400 hover:text-red-300' : 'text-blue-400 hover:text-blue-300'} font-semibold transition-colors`}>
+                سجّل الآن
+              </Link>
+            </p>
 
           {/* Error Alert */}
           {error && (
@@ -172,7 +184,7 @@ export default function LoginPage() {
             <div className="text-left">
               <Link
                 href="/forgot-password"
-                className="text-slate-400 text-sm hover:text-red-400 transition-colors"
+                className={`text-slate-400 text-sm transition-colors ${portalType === "donor" ? "hover:text-red-400" : "hover:text-blue-400"}`}
               >
                 نسيت كلمة المرور؟
               </Link>
@@ -206,19 +218,27 @@ export default function LoginPage() {
             <div className="flex-1 h-px bg-slate-800" />
           </div>
 
-          {/* Register Link */}
-          <Link
-            href="/register"
-            className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 hover:border-slate-600 transition-all font-medium text-sm"
-          >
-            إنشاء حساب جديد
-          </Link>
-        </div>
+            {/* Register Link */}
+            <Link
+              href={`/register?role=${portalType === 'donor' ? 'donor' : 'center'}`}
+              className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 hover:border-slate-600 transition-all font-medium text-sm"
+            >
+              إنشاء حساب جديد
+            </Link>
+          </div>
 
-        <p className="text-center text-slate-600 text-xs mt-6">
-          © {new Date().getFullYear()} DONNER.X — كل تبرع ينقذ حياة 🩸
-        </p>
+          <p className="text-center text-slate-600 text-xs mt-6">
+            © {new Date().getFullYear()} DONNER.X — {portalType === "donor" ? "كل تبرع ينقذ حياة 🩸" : "شريكك في إنقاذ الأرواح 🏥"}
+          </p>
+        </div>
       </div>
-    </div>
+    );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen auth-bg flex items-center justify-center"><div className="spinner"></div></div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

@@ -32,6 +32,8 @@ function RegisterForm() {
   
   const isRoleLocked = !!rawRoleParam; // If they came with a specific role link, hide the selector
 
+  const portalType = (initialRole === "CENTER_STAFF" || initialRole === "HOSPITAL_STAFF" || initialRole === "ADMIN") ? "medical" : "donor";
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -122,11 +124,11 @@ function RegisterForm() {
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div
           className="absolute -top-40 -left-40 w-96 h-96 rounded-full opacity-10"
-          style={{ background: "radial-gradient(circle, #dc2626, transparent)" }}
+          style={{ background: portalType === "donor" ? "radial-gradient(circle, #dc2626, transparent)" : "radial-gradient(circle, #3b82f6, transparent)" }}
         />
         <div
           className="absolute -bottom-40 -right-40 w-80 h-80 rounded-full opacity-5"
-          style={{ background: "radial-gradient(circle, #8b5cf6, transparent)" }}
+          style={{ background: portalType === "donor" ? "radial-gradient(circle, #8b5cf6, transparent)" : "radial-gradient(circle, #1d4ed8, transparent)" }}
         />
       </div>
 
@@ -136,13 +138,15 @@ function RegisterForm() {
           <div
             className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-3"
             style={{
-              background: "linear-gradient(135deg, #dc2626, #991b1b)",
-              boxShadow: "0 0 30px rgba(220,38,38,0.35)",
+              background: portalType === "donor" ? "linear-gradient(135deg, #dc2626, #991b1b)" : "linear-gradient(135deg, #3b82f6, #1d4ed8)",
+              boxShadow: portalType === "donor" ? "0 0 30px rgba(220,38,38,0.35)" : "0 0 30px rgba(59,130,246,0.35)",
             }}
           >
             <Droplets className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-black gradient-text tracking-widest">DONNER.X</h1>
+          <h1 className="text-3xl font-black gradient-text tracking-widest">
+            {portalType === "donor" ? "بوابة المتبرعين" : "البوابة الطبية"}
+          </h1>
           <p className="text-slate-400 text-sm mt-1">إنشاء حساب جديد</p>
         </div>
 
@@ -157,7 +161,7 @@ function RegisterForm() {
           </h2>
           <p className="text-slate-400 text-sm mb-6">
             لديك حساب بالفعل؟{" "}
-            <Link href="/login" className="text-red-400 hover:text-red-300 font-semibold transition-colors">
+            <Link href={`/login?type=${portalType}`} className={`${portalType === "donor" ? "text-red-400 hover:text-red-300" : "text-blue-400 hover:text-blue-300"} font-semibold transition-colors`}>
               تسجيل الدخول
             </Link>
           </p>
