@@ -96,16 +96,16 @@ function RegisterForm() {
 
   if (success) {
     return (
-      <div className="auth-bg min-h-screen flex items-center justify-center p-4">
-        <div className="glass-card p-10 text-center max-w-md w-full animate-scale-in">
+      <div className="bg-slate-50 min-h-screen flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg shadow-xl border border-slate-200 p-10 text-center max-w-md w-full animate-scale-in">
           <div
             className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-6"
             style={{ background: "rgba(16,185,129,0.1)", border: "2px solid #10b981" }}
           >
             <CheckCircle className="w-10 h-10 text-emerald-400" />
           </div>
-          <h2 className="text-2xl font-bold text-white mb-3">تم التسجيل بنجاح! 🎉</h2>
-          <p className="text-slate-400 mb-4">
+          <h2 className="text-2xl font-bold text-slate-800 mb-3">تم التسجيل بنجاح! 🎉</h2>
+          <p className="text-slate-500 mb-4">
             تم إرسال رابط التحقق إلى بريدك الإلكتروني. يرجى التحقق منه لتفعيل حسابك.
           </p>
           <div
@@ -120,7 +120,7 @@ function RegisterForm() {
   }
 
   return (
-    <div className="auth-bg min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="bg-slate-50 min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div
           className="absolute -top-40 -left-40 w-96 h-96 rounded-full opacity-10"
@@ -150,18 +150,18 @@ function RegisterForm() {
           <p className="text-slate-400 text-sm mt-1">إنشاء حساب جديد</p>
         </div>
 
-        <div className="glass-card p-8 relative">
-          <Link href="/" className="absolute top-6 left-6 text-slate-400 hover:text-white transition-colors">
+        <div className="bg-white rounded-lg shadow-xl border border-slate-200 p-8 relative">
+          <Link href="/" className="absolute top-6 left-6 text-slate-400 hover:text-slate-600 transition-colors">
             <ArrowRight className="w-5 h-5" />
           </Link>
-          <h2 className="text-2xl font-bold text-white mb-2">
+          <h2 className="text-2xl font-bold text-slate-800 mb-2">
             {initialRole === "DONOR" ? "سجل كمتبرع جديد" : 
              initialRole === "CENTER_STAFF" ? "تسجيل مركز طبي / بنك دم" : 
              initialRole === "HOSPITAL_STAFF" ? "تسجيل مستشفى" : "تسجيل إداري"}
           </h2>
-          <p className="text-slate-400 text-sm mb-6">
+          <p className="text-slate-500 text-sm mb-6">
             لديك حساب بالفعل؟{" "}
-            <Link href={`/login?type=${portalType}`} className={`${portalType === "donor" ? "text-red-400 hover:text-red-300" : "text-blue-400 hover:text-blue-300"} font-semibold transition-colors`}>
+            <Link href={`/login?type=${portalType}`} className={`${portalType === "donor" ? "text-red-600 hover:text-red-700" : "text-blue-600 hover:text-blue-700"} font-semibold transition-colors`}>
               تسجيل الدخول
             </Link>
           </p>
@@ -176,55 +176,55 @@ function RegisterForm() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* Name */}
             <div>
-              <label className="block text-slate-300 text-sm font-medium mb-2">الاسم الكامل</label>
+              <label className="block text-slate-700 text-sm font-medium mb-2">الاسم الكامل</label>
               <div className="relative">
-                <User className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <User className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   id="name"
                   type="text"
                   placeholder="محمد عبدالله"
-                  className={`form-input pr-10 ${errors.name ? "error" : ""}`}
+                  className={`w-full bg-white border ${errors.name ? "border-red-500" : "border-slate-300"} rounded-md px-4 py-3 pr-10 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   {...register("name")}
                 />
               </div>
-              {errors.name && <p className="error-msg"><AlertCircle className="w-3 h-3" /> {errors.name.message}</p>}
+              {errors.name && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.name.message}</p>}
             </div>
 
             {/* Email */}
             <div>
-              <label className="block text-slate-300 text-sm font-medium mb-2">البريد الإلكتروني</label>
+              <label className="block text-slate-700 text-sm font-medium mb-2">البريد الإلكتروني</label>
               <div className="relative">
-                <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   id="register-email"
                   type="email"
                   placeholder="example@email.com"
-                  className={`form-input pr-10 ${errors.email ? "error" : ""}`}
+                  className={`w-full bg-white border ${errors.email ? "border-red-500" : "border-slate-300"} rounded-md px-4 py-3 pr-10 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   style={{ direction: "ltr", textAlign: "right" }}
                   {...register("email")}
                 />
               </div>
-              {errors.email && <p className="error-msg"><AlertCircle className="w-3 h-3" /> {errors.email.message}</p>}
+              {errors.email && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.email.message}</p>}
             </div>
 
 
 
             {/* Password */}
             <div>
-              <label className="block text-slate-300 text-sm font-medium mb-2">كلمة المرور</label>
+              <label className="block text-slate-700 text-sm font-medium mb-2">كلمة المرور</label>
               <div className="relative">
-                <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   id="register-password"
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
-                  className={`form-input pr-10 pl-10 ${errors.password ? "error" : ""}`}
+                  className={`w-full bg-white border ${errors.password ? "border-red-500" : "border-slate-300"} rounded-md px-4 py-3 pr-10 pl-10 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   {...register("password")}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -238,7 +238,7 @@ function RegisterForm() {
                         key={level}
                         className="h-1 flex-1 rounded-full transition-all duration-300"
                         style={{
-                          background: level <= strength ? strengthColors[strength] : "rgba(255,255,255,0.1)",
+                          background: level <= strength ? strengthColors[strength] : "#e2e8f0",
                         }}
                       />
                     ))}
@@ -248,37 +248,37 @@ function RegisterForm() {
                   </span>
                 </div>
               )}
-              {errors.password && <p className="error-msg"><AlertCircle className="w-3 h-3" /> {errors.password.message}</p>}
+              {errors.password && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.password.message}</p>}
             </div>
 
             {/* Confirm Password */}
             <div>
-              <label className="block text-slate-300 text-sm font-medium mb-2">تأكيد كلمة المرور</label>
+              <label className="block text-slate-700 text-sm font-medium mb-2">تأكيد كلمة المرور</label>
               <div className="relative">
-                <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   id="confirm-password"
                   type={showConfirm ? "text" : "password"}
                   placeholder="••••••••"
-                  className={`form-input pr-10 pl-10 ${errors.confirmPassword ? "error" : ""}`}
+                  className={`w-full bg-white border ${errors.confirmPassword ? "border-red-500" : "border-slate-300"} rounded-md px-4 py-3 pr-10 pl-10 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   {...register("confirmPassword")}
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirm(!showConfirm)}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                 >
                   {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-              {errors.confirmPassword && <p className="error-msg"><AlertCircle className="w-3 h-3" /> {errors.confirmPassword.message}</p>}
+              {errors.confirmPassword && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.confirmPassword.message}</p>}
             </div>
 
             <button
               id="register-btn"
               type="submit"
               disabled={isLoading}
-              className="btn-primary flex items-center justify-center gap-2 mt-2"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-md font-bold text-sm flex items-center justify-center gap-2 mt-4 transition-colors"
             >
               {isLoading ? (
                 <><span className="spinner" /><span>جاري التسجيل...</span></>
@@ -288,10 +288,10 @@ function RegisterForm() {
             </button>
           </form>
 
-          <p className="text-center text-slate-600 text-xs mt-5">
+          <p className="text-center text-slate-500 text-xs mt-6">
             بالتسجيل، أنت توافق على{" "}
-            <span className="text-red-400">شروط الاستخدام</span> و{" "}
-            <span className="text-red-400">سياسة الخصوصية</span>
+            <span className="text-blue-600 hover:underline cursor-pointer">شروط الاستخدام</span> و{" "}
+            <span className="text-blue-600 hover:underline cursor-pointer">سياسة الخصوصية</span>
           </p>
         </div>
       </div>

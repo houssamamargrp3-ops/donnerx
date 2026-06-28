@@ -52,7 +52,7 @@ function LoginForm() {
   };
 
   return (
-    <div className="auth-bg min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="bg-slate-50 min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div
@@ -101,14 +101,14 @@ function LoginForm() {
           </div>
 
           {/* Card */}
-          <div className="glass-card p-8 relative">
-            <Link href="/" className="absolute top-6 left-6 text-slate-400 hover:text-white transition-colors">
+          <div className="bg-white rounded-lg shadow-xl border border-slate-200 p-8 relative">
+            <Link href="/" className="absolute top-6 left-6 text-slate-400 hover:text-slate-600 transition-colors">
               <ArrowRight className="w-5 h-5" />
             </Link>
-            <h2 className="text-2xl font-bold text-white mb-2">تسجيل الدخول</h2>
-            <p className="text-slate-400 text-sm mb-6">
+            <h2 className="text-2xl font-bold text-slate-800 mb-2">تسجيل الدخول</h2>
+            <p className="text-slate-500 text-sm mb-6">
               ليس لديك حساب؟{" "}
-              <Link href={`/register?role=${portalType === 'donor' ? 'donor' : 'center'}`} className={`${portalType === 'donor' ? 'text-red-400 hover:text-red-300' : 'text-blue-400 hover:text-blue-300'} font-semibold transition-colors`}>
+              <Link href={`/register?role=${portalType === 'donor' ? 'donor' : 'center'}`} className={`${portalType === 'donor' ? 'text-red-600 hover:text-red-700' : 'text-blue-600 hover:text-blue-700'} font-semibold transition-colors`}>
                 سجّل الآن
               </Link>
             </p>
@@ -124,24 +124,24 @@ function LoginForm() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             {/* Email */}
             <div>
-              <label className="block text-slate-300 text-sm font-medium mb-2">
+              <label className="block text-slate-700 text-sm font-medium mb-2">
                 البريد الإلكتروني
               </label>
               <div className="relative">
                 <Mail
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"
                 />
                 <input
                   id="email"
                   type="email"
                   placeholder="example@email.com"
-                  className={`form-input pr-10 ${errors.email ? "error" : ""}`}
+                  className={`w-full bg-white border ${errors.email ? "border-red-500" : "border-slate-300"} rounded-md px-4 py-3 pr-10 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   style={{ direction: "ltr", textAlign: "right" }}
                   {...register("email")}
                 />
               </div>
               {errors.email && (
-                <p className="error-msg">
+                <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
                   <AlertCircle className="w-3 h-3" /> {errors.email.message}
                 </p>
               )}
@@ -149,30 +149,30 @@ function LoginForm() {
 
             {/* Password */}
             <div>
-              <label className="block text-slate-300 text-sm font-medium mb-2">
+              <label className="block text-slate-700 text-sm font-medium mb-2">
                 كلمة المرور
               </label>
               <div className="relative">
                 <Lock
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"
                 />
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
-                  className={`form-input pr-10 pl-10 ${errors.password ? "error" : ""}`}
+                  className={`w-full bg-white border ${errors.password ? "border-red-500" : "border-slate-300"} rounded-md px-4 py-3 pr-10 pl-10 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   {...register("password")}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
               {errors.password && (
-                <p className="error-msg">
+                <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
                   <AlertCircle className="w-3 h-3" /> {errors.password.message}
                 </p>
               )}
@@ -182,7 +182,7 @@ function LoginForm() {
             <div className="text-left">
               <Link
                 href="/forgot-password"
-                className={`text-slate-400 text-sm transition-colors ${portalType === "donor" ? "hover:text-red-400" : "hover:text-blue-400"}`}
+                className={`text-slate-500 text-sm transition-colors ${portalType === "donor" ? "hover:text-red-600" : "hover:text-blue-600"}`}
               >
                 نسيت كلمة المرور؟
               </Link>
@@ -193,7 +193,7 @@ function LoginForm() {
               id="login-btn"
               type="submit"
               disabled={isLoading}
-              className="btn-primary flex items-center justify-center gap-2"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-md font-bold text-sm flex items-center justify-center gap-2 transition-colors"
             >
               {isLoading ? (
                 <>
@@ -211,21 +211,21 @@ function LoginForm() {
 
           {/* Divider */}
           <div className="flex items-center my-6">
-            <div className="flex-1 h-px bg-slate-800" />
-            <span className="px-4 text-slate-600 text-xs">أو</span>
-            <div className="flex-1 h-px bg-slate-800" />
+            <div className="flex-1 h-px bg-slate-200" />
+            <span className="px-4 text-slate-400 text-xs">أو</span>
+            <div className="flex-1 h-px bg-slate-200" />
           </div>
 
             {/* Register Link */}
             <Link
               href={`/register?role=${portalType === 'donor' ? 'donor' : 'center'}`}
-              className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 hover:border-slate-600 transition-all font-medium text-sm"
+              className="flex items-center justify-center gap-2 w-full py-3 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50 transition-all font-medium text-sm"
             >
               إنشاء حساب جديد
             </Link>
           </div>
 
-          <p className="text-center text-slate-600 text-xs mt-6">
+          <p className="text-center text-slate-500 text-xs mt-6">
             © {new Date().getFullYear()} DONNER.X — {portalType === "donor" ? "كل تبرع ينقذ حياة 🩸" : "شريكك في إنقاذ الأرواح 🏥"}
           </p>
         </div>
@@ -235,7 +235,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen auth-bg flex items-center justify-center"><div className="spinner"></div></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center"><div className="spinner"></div></div>}>
       <LoginForm />
     </Suspense>
   );
