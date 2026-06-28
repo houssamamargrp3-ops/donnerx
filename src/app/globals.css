@@ -78,16 +78,23 @@ body {
   min-height: 100vh;
 }
 
-/* ─── Glass Card ─────────────────────────────────────────────────────── */
+/* ─── Premium Glass Card ─────────────────────────────────────────────────── */
 .glass-card {
-  background: rgba(22, 22, 42, 0.8);
-  backdrop-filter: blur(24px);
-  border: 1px solid rgba(30, 30, 58, 0.8);
+  background: linear-gradient(135deg, rgba(30, 30, 58, 0.4) 0%, rgba(18, 18, 35, 0.6) 100%);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  box-shadow: 
+    0 4px 24px -1px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.glass-panel {
+  background: rgba(15, 15, 30, 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 20px;
-  box-shadow:
-    0 0 0 1px rgba(220, 38, 38, 0.05),
-    0 20px 60px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 /* ─── Blood Drop Animation ───────────────────────────────────────────── */
@@ -170,12 +177,12 @@ body {
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(220, 38, 38, 0.4);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 10px 30px rgba(220, 38, 38, 0.5);
 }
 
 .btn-primary:active {
-  transform: translateY(0);
+  transform: translateY(1px) scale(0.98);
 }
 
 .btn-primary:disabled {
@@ -248,9 +255,9 @@ body {
 }
 
 .stats-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(220, 38, 38, 0.2);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  transform: translateY(-6px);
+  border-color: rgba(220, 38, 38, 0.3);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 20px rgba(220, 38, 38, 0.1);
 }
 
 /* ─── Sidebar Nav ────────────────────────────────────────────────────── */
