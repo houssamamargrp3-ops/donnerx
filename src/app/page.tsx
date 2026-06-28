@@ -56,10 +56,16 @@ export default function HomePage() {
       {/* Hero */}
       <section className="relative z-10 flex flex-col items-center justify-center text-center px-4 pt-20 pb-16">
         <div
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold text-red-300 mb-8"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold text-red-300 mb-4"
           style={{ background: "rgba(220,38,38,0.08)", border: "1px solid rgba(220,38,38,0.15)" }}
         >
           🩸 منصة التبرع بالدم الوطنية الأولى
+        </div>
+
+        <div className="mb-8 px-6 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-md shadow-lg">
+          <p className="text-white font-bold text-lg tracking-wide">
+            من تأطير الأستاذة : <span className="text-white font-black underline decoration-red-500 decoration-2 underline-offset-4">زرقاط ربيعة</span>
+          </p>
         </div>
 
         <h1 className="text-6xl md:text-7xl font-black text-white mb-6 leading-tight">
@@ -67,15 +73,9 @@ export default function HomePage() {
           <span className="gradient-text">تُنقذ حياة</span>
         </h1>
 
-        <p className="text-lg text-slate-400 max-w-2xl mb-4 leading-relaxed">
+        <p className="text-lg text-slate-400 max-w-2xl mb-10 leading-relaxed">
           منصة متكاملة تربط المتبرعين بالدم بمراكز نقل الدم والمستشفيات في الوقت الفعلي.
         </p>
-
-        <div className="mt-4 px-6 py-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-          <p className="text-slate-300 font-medium tracking-wide">
-            من تأطير <span className="text-red-400 font-bold">زرقاط ربيعة</span>
-          </p>
-        </div>
       </section>
 
       {/* Portals Section */}
