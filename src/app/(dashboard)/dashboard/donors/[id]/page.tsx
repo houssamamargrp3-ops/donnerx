@@ -43,6 +43,11 @@ export default async function DonorDetailsPage({ params }: { params: Promise<{ i
     }
   };
 
+  const centers = await prisma.bloodCenter.findMany({
+    where: { isActive: true },
+    select: { id: true, name: true }
+  });
+
   return (
     <div className="space-y-6 mt-4">
       {/* Header */}
@@ -61,7 +66,7 @@ export default async function DonorDetailsPage({ params }: { params: Promise<{ i
           <Link href={`/dashboard/donors/${resolvedParams.id}/eligibility`} className="labo-btn-primary">
             <ShieldCheck className="w-4 h-4" /> فحص طبي جديد
           </Link>
-          <WalkInButton donorId={donor.id} />
+          <WalkInButton donorId={donor.id} centers={centers} />
           <Link href={`/dashboard/donors/${resolvedParams.id}/edit`} className="labo-btn-outline">
             <Edit className="w-4 h-4" /> تعديل البيانات
           </Link>

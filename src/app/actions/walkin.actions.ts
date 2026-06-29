@@ -4,10 +4,17 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
-export async function createWalkInDonation(donorId: string) {
+export async function createWalkInDonation(donorId: string, specificCenterId?: string) {
   try {
-    // 1. Get any active center (if admin isn't specifically tied to one, we'll just use the first available center)
-    const center = await prisma.bloodCenter.findFirst();
+    let center;
+    
+    if (specificCenterId) {
+      center = await prisma.bloodCenter.findUnique({ where: { id: specificCenterId } });
+    } else {
+      // Fallback
+      center = await prisma.bloodCenter.findFirst();
+    }
+    
     if (!center) {
       return { error: "لا يوجد مراكز طبية مسجلة في النظام لتسجيل التبرع." };
     }
