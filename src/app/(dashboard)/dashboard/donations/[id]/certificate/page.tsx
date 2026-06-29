@@ -96,7 +96,7 @@ export default async function CertificatePage({ params }: { params: Promise<{ id
             <div className="text-center space-y-2">
               <p className="text-sm font-bold text-slate-500">الختم والتوقيع</p>
               <div className="w-40 h-16 border-b-2 border-slate-300 mx-auto">
-                <img src="/signature-placeholder.png" className="w-full h-full object-contain opacity-50" alt="" onError={(e) => e.currentTarget.style.display = 'none'} />
+                <img src="/signature-placeholder.png" className="w-full h-full object-contain opacity-50" alt="" />
               </div>
               <p className="text-sm font-bold text-slate-800">{donation.center.name}</p>
             </div>
