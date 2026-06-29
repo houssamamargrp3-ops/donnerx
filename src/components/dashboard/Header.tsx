@@ -6,7 +6,7 @@ import { signOut } from "next-auth/react";
 
 export default function DashboardHeader({ user }: { user: any }) {
   return (
-    <header className="labo-header fixed top-0 w-full z-50">
+    <header className="h-16 bg-white border-b border-slate-200 fixed top-0 w-full z-50 px-6 flex items-center justify-between shadow-sm print:hidden">
       
       {/* Right side (RTL left): Logo & Brand */}
       <div className="flex items-center gap-3">

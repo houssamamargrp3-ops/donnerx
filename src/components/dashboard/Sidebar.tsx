@@ -59,7 +59,7 @@ export default function DashboardSidebar({ role }: { role: string }) {
   ];
 
   return (
-    <aside className="labo-sidebar">
+    <aside className="labo-sidebar print:hidden">
       <div className="py-6">
         {menuGroups.map((group, idx) => {
           const visibleItems = group.items.filter(item => item.roles.includes(role));

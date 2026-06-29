@@ -27,7 +27,7 @@ export default async function CertificatePage({ params }: { params: { id: string
   return (
     <div className="space-y-6 mt-4 max-w-5xl mx-auto">
       {/* Top Actions */}
-      <div className="flex justify-between items-center no-print">
+      <div className="flex justify-between items-center print:hidden">
         <Link href="/dashboard/donations" className="text-slate-500 hover:text-red-600 font-bold flex items-center gap-1 transition-colors">
           <ChevronRight className="w-5 h-5" />
           العودة لسجل التبرعات
@@ -106,21 +106,19 @@ export default async function CertificatePage({ params }: { params: { id: string
 
       <style dangerouslySetInnerHTML={{__html: `
         @media print {
-          body * {
-            visibility: hidden;
-          }
-          #certificate-area, #certificate-area * {
-            visibility: visible;
-          }
+          /* Expand certificate area to fill the printed page */
           #certificate-area {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100vh;
-            margin: 0;
-            box-shadow: none;
-            page-break-after: avoid;
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 297mm !important;
+            height: 210mm !important;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            transform: none !important;
+            border-radius: 0 !important;
           }
           @page {
             size: landscape;
