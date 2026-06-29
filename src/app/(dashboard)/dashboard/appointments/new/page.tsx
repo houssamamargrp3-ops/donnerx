@@ -54,7 +54,7 @@ export default async function NewAppointmentPage() {
   }
 
   // Fetch all active blood centers
-  const centers = await prisma.bloodCenter.findMany({
+  let centers = await prisma.bloodCenter.findMany({
     where: { isActive: true },
     select: {
       id: true,
@@ -64,6 +64,27 @@ export default async function NewAppointmentPage() {
       capacity: true,
     },
   });
+
+  // Auto-seed a center if none exists for testing purposes
+  if (centers.length === 0) {
+    const newCenter = await prisma.bloodCenter.create({
+      data: {
+        name: "المركز الوطني لنقل الدم - الرئيسي",
+        city: "الرياض",
+        address: "شارع الملك فهد، بجوار المستشفى التخصصي",
+        capacity: 50,
+        isActive: true,
+      }
+    });
+    
+    centers = [{
+      id: newCenter.id,
+      name: newCenter.name,
+      address: newCenter.address,
+      city: newCenter.city,
+      capacity: newCenter.capacity,
+    }];
+  }
 
   return (
     <div className="max-w-4xl mx-auto animate-fade-in-up space-y-6 mt-4">
