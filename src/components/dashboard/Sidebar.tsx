@@ -17,8 +17,11 @@ import {
   FileText
 } from "lucide-react";
 
+import { useState } from "react";
+
 export default function DashboardSidebar({ role }: { role: string }) {
   const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
 
   const menuGroups = [
     {
@@ -59,7 +62,25 @@ export default function DashboardSidebar({ role }: { role: string }) {
   ];
 
   return (
-    <aside className="labo-sidebar print:hidden">
+    <>
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/50 z-40 lg:hidden backdrop-blur-sm"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      {/* Mobile Toggle Button */}
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="lg:hidden fixed bottom-6 right-6 z-50 bg-red-600 text-white p-4 rounded-full shadow-2xl hover:bg-red-700 transition-transform active:scale-95 flex items-center justify-center print:hidden"
+      >
+        <LayoutDashboard className="w-6 h-6" />
+      </button>
+
+      {/* Sidebar */}
+      <aside className={`labo-sidebar print:hidden transition-transform duration-300 z-50 ${isOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}`}>
       <div className="py-6">
         {menuGroups.map((group, idx) => {
           const visibleItems = group.items.filter(item => item.roles.includes(role));
@@ -74,9 +95,10 @@ export default function DashboardSidebar({ role }: { role: string }) {
                 {visibleItems.map((item, i) => {
                   const isActive = pathname === item.href;
                   return (
-                    <Link 
-                      key={i} 
+                    <Link
+                      key={i}
                       href={item.href}
+                      onClick={() => setIsOpen(false)}
                       className={`labo-sidebar-item ${isActive ? 'active' : ''}`}
                     >
                       {item.icon}
@@ -90,5 +112,6 @@ export default function DashboardSidebar({ role }: { role: string }) {
         })}
       </div>
     </aside>
+    </>
   );
 }

@@ -21,9 +21,9 @@ export default async function DashboardLayout({
         <DashboardSidebar role={(session.user as any)?.role || "DONOR"} />
         
         {/* Main Content Area */}
-        <main className="flex-1 pr-64 print:pr-0 w-full">
+        <main className="flex-1 lg:pr-64 print:pr-0 w-full transition-all">
           {/* A container to keep content centered or padded nicely */}
-          <div className="p-8 max-w-7xl mx-auto">
+          <div className="p-4 md:p-8 max-w-7xl mx-auto">
             {children}
           </div>
         </main>
