@@ -33,7 +33,7 @@ export default async function CertificatePage({ params }: { params: Promise<{ id
           <ChevronRight className="w-5 h-5" />
           العودة لسجل التبرعات
         </Link>
-        <ClientPrintButton />
+        <ClientPrintButton donorName={donation.donor.user?.name || "متبرع"} />
       </div>
 
       {/* The Certificate Wrapper (Printed Area) */}
