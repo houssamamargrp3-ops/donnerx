@@ -9,8 +9,8 @@ export default function ClientPrintButton({ donorName = "donor" }: { donorName?:
   const handleDownloadPDF = async () => {
     setIsDownloading(true);
     try {
-      // Dynamic imports to prevent SSR issues
-      const html2canvas = (await import("html2canvas")).default;
+      // Use dom-to-image to bypass html2canvas CSS parsing errors (like lab() colors)
+      const domToImage = (await import("dom-to-image")).default;
       const { jsPDF } = await import("jspdf");
 
       const element = document.getElementById("certificate-area");
@@ -18,15 +18,18 @@ export default function ClientPrintButton({ donorName = "donor" }: { donorName?:
         throw new Error("Element not found");
       }
 
-      // Hide borders and decorations that might break html2canvas
-      const canvas = await html2canvas(element, {
-        scale: 2, // Higher resolution
-        useCORS: true,
-        logging: false,
-        backgroundColor: "#ffffff",
+      // Convert the DOM to a PNG image
+      const dataUrl = await domToImage.toPng(element, {
+        quality: 1.0,
+        bgcolor: '#ffffff',
+        // Optional: scale up for better resolution by transforming
+        style: {
+          transform: 'scale(2)',
+          transformOrigin: 'top left'
+        },
+        width: element.offsetWidth * 2,
+        height: element.offsetHeight * 2
       });
-
-      const imgData = canvas.toDataURL("image/jpeg", 1.0);
       
       // Calculate dimensions for landscape A4
       const pdf = new jsPDF({
@@ -38,11 +41,11 @@ export default function ClientPrintButton({ donorName = "donor" }: { donorName?:
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
       
-      const imgProps = pdf.getImageProperties(imgData);
+      const imgProps = pdf.getImageProperties(dataUrl);
       const imgWidth = pdfWidth;
       const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-      pdf.addImage(imgData, "JPEG", 0, (pdfHeight - imgHeight) / 2, imgWidth, imgHeight);
+      pdf.addImage(dataUrl, "PNG", 0, (pdfHeight - imgHeight) / 2, imgWidth, imgHeight);
       
       const fileName = `Donation_Certificate_${donorName.replace(/\s+/g, '_')}.pdf`;
       pdf.save(fileName);
