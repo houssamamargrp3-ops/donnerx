@@ -81,9 +81,10 @@ export default function DonorDashboard({ userId }: { userId: string }) {
             <Clock className="w-4 h-4" /> سجل الزيارات:
           </span>
           {donor.donations.map((donation: any, index: number) => (
-            <Link key={donation.id} href="/dashboard/donations">
-              <button className={`px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap ${index === 0 ? 'bg-blue-600 text-white' : 'border border-blue-600 text-blue-600 bg-white hover:bg-blue-50'}`}>
-                {index === 0 ? `أحدث زيارة (#${donor.donations.length})` : `${new Date(donation.donatedAt).toISOString().split('T')[0]} (#${donor.donations.length - index})`}
+            <Link key={donation.id} href={`/dashboard/donations/${donation.id}/certificate`}>
+              <button className={`px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap flex items-center gap-1 ${index === 0 ? 'bg-blue-600 text-white shadow-sm' : 'border border-blue-600 text-blue-600 bg-white hover:bg-blue-50'}`}>
+                <Award className="w-4 h-4" />
+                {index === 0 ? "شهادة أحدث تبرع" : `شهادة (${new Date(donation.donatedAt).toISOString().split('T')[0]})`}
               </button>
             </Link>
           ))}

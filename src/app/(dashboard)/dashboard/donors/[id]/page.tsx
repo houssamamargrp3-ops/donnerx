@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { ArrowLeft, User, Mail, Phone, MapPin, Droplet, Calendar, HeartPulse, Activity, CalendarDays, ShieldCheck, Edit } from "lucide-react";
+import { ArrowLeft, User, Mail, Phone, MapPin, Droplet, Calendar, HeartPulse, Activity, CalendarDays, ShieldCheck, Edit, Award } from "lucide-react";
 import Link from "next/link";
 import { bloodTypeLabel } from "@/lib/utils";
 import DeleteDonorButton from "./DeleteDonorButton";
@@ -220,6 +220,7 @@ export default async function DonorDetailsPage({ params }: { params: Promise<{ i
                     <th>المركز</th>
                     <th>التاريخ</th>
                     <th>الكمية (مل)</th>
+                    <th>الشهادة</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -243,6 +244,14 @@ export default async function DonorDetailsPage({ params }: { params: Promise<{ i
                         </td>
                         <td>
                           <span className="font-bold text-slate-700">{donation.volumeMl}</span>
+                        </td>
+                        <td>
+                          <Link 
+                            href={`/dashboard/donations/${donation.id}/certificate`} 
+                            className="inline-flex items-center gap-1 px-3 py-1.5 bg-amber-50 text-amber-700 hover:bg-amber-100 rounded-lg text-xs font-bold transition-colors border border-amber-200"
+                          >
+                            <Award className="w-4 h-4" /> عرض الشهادة
+                          </Link>
                         </td>
                       </tr>
                     ))
