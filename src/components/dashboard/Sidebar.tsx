@@ -25,6 +25,7 @@ export default function DashboardSidebar({ role }: { role: string }) {
         { label: "لوحة التحكم", href: "/dashboard", icon: <LayoutDashboard className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF", "DONOR"] },
         { label: "حملات التبرع", href: "/dashboard/campaigns", icon: <Megaphone className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF"] },
         { label: "نداءات الطوارئ", href: "/dashboard/emergency", icon: <AlertTriangle className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "HOSPITAL_STAFF"] },
+        { label: "مساعد الذكاء الاصطناعي", href: "/dashboard/ai", icon: <Activity className="w-5 h-5 text-purple-500" />, roles: ["SUPER_ADMIN", "ADMIN"] },
       ]
     },
     {
