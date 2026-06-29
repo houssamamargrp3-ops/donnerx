@@ -63,7 +63,31 @@ export async function registerDonation(appointmentId: string) {
         }
       });
 
-      // 4. Create Notification for the Donor
+      // 4. Update Blood Inventory
+      const existingInventory = await tx.bloodInventory.findFirst({
+        where: {
+          centerId: appointment.centerId,
+          bloodType: appointment.donor.bloodType
+        }
+      });
+
+      if (existingInventory) {
+        await tx.bloodInventory.update({
+          where: { id: existingInventory.id },
+          data: { units: { increment: 1 } }
+        });
+      } else {
+        await tx.bloodInventory.create({
+          data: {
+            centerId: appointment.centerId,
+            bloodType: appointment.donor.bloodType,
+            units: 1,
+            expiryDate: new Date(Date.now() + 42 * 24 * 60 * 60 * 1000) // Blood bags usually expire in 42 days
+          }
+        });
+      }
+
+      // 5. Create Notification for the Donor
       await tx.notification.create({
         data: {
           userId: appointment.donor.userId,
