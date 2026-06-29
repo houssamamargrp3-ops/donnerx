@@ -12,7 +12,8 @@ import {
   Megaphone,
   AlertTriangle,
   Award,
-  Bell
+  Bell,
+  Building2
 } from "lucide-react";
 
 export default function DashboardSidebar({ role }: { role: string }) {
@@ -49,6 +50,7 @@ export default function DashboardSidebar({ role }: { role: string }) {
     {
       title: "النظام",
       items: [
+        { label: "المراكز الطبية", href: "/dashboard/settings/centers", icon: <Building2 className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN"] },
         { label: "الإعدادات", href: "/dashboard/settings", icon: <Settings className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF", "DONOR"] },
       ]
     }
