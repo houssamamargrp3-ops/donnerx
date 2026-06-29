@@ -15,7 +15,7 @@ export default async function DonorsPage() {
 
   const getEligibilityBadge = (status: string) => {
     switch (status) {
-      case "ELIGIBLE": return <span className="labo-badge-success flex items-center gap-1 w-fit"><ShieldCheck className="w-3 h-3" /> مؤهل مبدئياً</span>;
+      case "ELIGIBLE": return <span className="labo-badge-success flex items-center gap-1 w-fit"><ShieldCheck className="w-3 h-3" /> مؤهل</span>;
       case "PENDING_CHECK": return <span className="labo-badge-warning flex items-center gap-1 w-fit"><CalendarDays className="w-3 h-3" /> بانتظار الفحص</span>;
       case "INELIGIBLE": return <span className="labo-badge-danger flex items-center gap-1 w-fit"><HeartPulse className="w-3 h-3" /> غير مؤهل</span>;
       default: return <span className="labo-badge-warning">غير محدد</span>;
