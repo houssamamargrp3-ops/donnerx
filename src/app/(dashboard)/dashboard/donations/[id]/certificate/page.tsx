@@ -64,8 +64,14 @@ export default async function CertificatePage({ params }: { params: Promise<{ id
             <div className="absolute top-0 right-1/4 -translate-y-4 opacity-10">
               <HeartHandshake className="w-32 h-32 text-red-600" />
             </div>
+            
+            {/* Logo area */}
+            <div className="mb-4">
+              <img src="/logo.png" alt="DONNER.X Logo" className="w-20 h-20 mx-auto object-contain drop-shadow-md" />
+            </div>
+            
             <h3 className="text-xl font-bold tracking-widest text-slate-400 uppercase" dir="ltr">DONNER.X Platform</h3>
-            <div className="w-32 h-1 bg-[#D4AF37] mx-auto rounded-full"></div>
+            <div className="w-32 h-1 bg-[#D4AF37] mx-auto rounded-full mt-2"></div>
             <h1 className="text-6xl font-black text-slate-800 mt-6 relative z-10" style={{ fontFamily: 'var(--font-cairo), sans-serif' }}>
               شهادة شكر وتقدير
             </h1>
@@ -73,20 +79,21 @@ export default async function CertificatePage({ params }: { params: Promise<{ id
           </div>
 
           {/* Body */}
-          <div className="space-y-6 w-full max-w-2xl mt-8">
-            <p className="text-xl text-slate-600 leading-relaxed flex items-center justify-center gap-2">
-              تتقدم منصة DONNER.X و <strong className="text-slate-800">{donation.center.name}</strong> بخالص الشكر والامتنان 🌟
+          <div className="space-y-6 w-full max-w-3xl mt-8">
+            <p className="text-2xl text-slate-700 leading-relaxed font-medium">
+              تتقدم إدارة منصة <span className="font-bold text-red-700" dir="ltr">DONNER.X</span> بالتعاون مع <strong className="text-slate-900 border-b-2 border-[#D4AF37]">{donation.center.name}</strong> 
+              <br/>بعظيم الشكر وخالص الامتنان إلى المتبرع المعطاء:
             </p>
             
-            <h2 className="text-5xl font-black text-red-700 py-4 border-y-2 border-red-100 bg-red-50/30 relative">
-              <span className="absolute -top-4 -right-4 text-3xl">🏅</span>
+            <h2 className="text-5xl font-black text-red-700 py-6 border-y-2 border-red-100 bg-red-50/50 relative shadow-sm rounded-xl">
+              <span className="absolute -top-5 -right-5 text-4xl drop-shadow-md">🏅</span>
               {donation.donor.user?.name || 'متبرع مجهول'}
-              <span className="absolute -bottom-4 -left-4 text-3xl">🩸</span>
+              <span className="absolute -bottom-5 -left-5 text-4xl drop-shadow-md">🩸</span>
             </h2>
             
-            <p className="text-xl text-slate-600 leading-relaxed">
-              على عطائه النبيل وتبرعه بالدم، مساهماً في إنقاذ حياة الآخرين وإحياء الأمل في نفوسهم. 
-              قطرات دمك هي شريان حياة لغيرك.. كتب الله أجرك وجعلها في ميزان حسناتك! ❤️
+            <p className="text-xl text-slate-600 leading-relaxed px-8">
+              لقاء عطائه الإنساني النبيل ومساهمته الفاعلة في إنقاذ الأرواح من خلال تبرعه بالدم. 
+              إن قطرات دمك هي شريان حياة للمرضى، سائلين المولى عز وجل أن يكتب أجرك ويجعلها في ميزان حسناتك! ❤️
             </p>
           </div>
 
