@@ -1,7 +1,6 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import crypto from "crypto";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
@@ -23,7 +22,7 @@ export async function createWalkInDonation(donorId: string) {
         confirmedAt: new Date(),
         isExamined: true, // Auto-pass physical exam because it's a direct walk-in flow
         examinationNotes: "تسجيل زيارة مباشرة (Walk-in)",
-        qrCode: crypto.randomBytes(16).toString("hex"),
+        qrCode: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
       },
     });
 

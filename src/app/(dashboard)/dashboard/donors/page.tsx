@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { bloodTypeLabel } from "@/lib/utils";
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
 export const metadata = { title: "إدارة المتبرعين" };
 
 export default async function DonorsPage() {
