@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { CalendarDays, Clock, MapPin, QrCode, ArrowLeft, CheckCircle2, AlertTriangle, Phone } from "lucide-react";
+import { CalendarDays, Clock, MapPin, QrCode, ArrowLeft, CheckCircle2, AlertTriangle, Droplet } from "lucide-react";
 import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
 import CancelAppointmentButton from "./CancelAppointmentButton";
@@ -25,11 +25,13 @@ export default async function AppointmentDetailsPage({ params }: { params: Promi
 
   // Allow only the owner or staff to view
   const role = (session.user as any).role;
+  const isAdminOrStaff = role === "SUPER_ADMIN" || role === "ADMIN" || role === "CENTER_STAFF" || role === "HOSPITAL_STAFF";
+  
   if (role === "DONOR" && appointment.donor.userId !== session.user.id) {
     redirect("/dashboard/appointments");
   }
 
-  const isCancellable = appointment.status === "PENDING" || appointment.status === "CONFIRMED";
+  const isCancellable = (appointment.status === "PENDING" || appointment.status === "CONFIRMED") && role === "DONOR";
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 mt-4">
@@ -111,6 +113,19 @@ export default async function AppointmentDetailsPage({ params }: { params: Promi
             <div className="labo-card p-6 bg-red-50 border-red-200">
               <h3 className="text-red-800 font-bold text-lg mb-1">تم إلغاء الموعد</h3>
               <p className="text-red-600 text-sm">سبب الإلغاء: {appointment.cancelReason || "غير محدد"}</p>
+            </div>
+          )}
+
+          {/* Admin Tools */}
+          {isAdminOrStaff && appointment.status === "CONFIRMED" && (
+            <div className="labo-card p-6 bg-emerald-50 border-emerald-200">
+              <h3 className="text-emerald-800 font-bold text-lg mb-2 flex items-center gap-2">
+                <Droplet className="w-5 h-5" /> إجراءات الإدارة
+              </h3>
+              <p className="text-emerald-700 text-sm mb-4">هذا الموعد مؤكد وبانتظار حضور المتبرع.</p>
+              <Link href={`/dashboard/donations/new?appointmentId=${appointment.id}`} className="labo-btn-primary bg-emerald-600 hover:bg-emerald-700 w-full justify-center flex">
+                تسجيل التبرع للمريض
+              </Link>
             </div>
           )}
         </div>

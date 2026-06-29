@@ -1,126 +1,109 @@
+import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
-import { Droplet, MapPin, Calendar, Clock, ArrowLeft } from "lucide-react";
+import { Droplet, Award, Calendar, Search } from "lucide-react";
 import Link from "next/link";
 
 export const metadata = { title: "سجل التبرعات" };
 
-export default async function DonationsHistoryPage() {
+export default async function DonationsPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
 
-  const donor = await prisma.donor.findUnique({
-    where: { userId: session.user.id },
-    include: {
-      donations: {
-        orderBy: { donatedAt: "desc" },
-        include: {
-          center: true
-        }
-      }
-    }
-  });
+  const role = (session.user as any).role;
+  const isAdmin = role === "SUPER_ADMIN" || role === "ADMIN" || role === "CENTER_STAFF";
 
-  if (!donor) {
-    return (
-      <div className="labo-card p-12 text-center text-slate-500 max-w-2xl mx-auto mt-10">
-        <h2 className="text-xl font-bold text-slate-800 mb-2">الملف الطبي غير مكتمل</h2>
-        <p>الرجاء إكمال ملفك الطبي أولاً لعرض سجل تبرعاتك.</p>
-        <Link href="/dashboard/setup" className="labo-btn-primary mt-4 inline-block">
-          إكمال الملف الطبي
-        </Link>
-      </div>
-    );
+  if (!isAdmin) {
+    redirect("/dashboard");
   }
 
-  const donations = donor.donations || [];
+  const donations = await prisma.donation.findMany({
+    include: {
+      donor: { include: { user: true } },
+      center: true,
+      certificate: true,
+    },
+    orderBy: { donatedAt: "desc" },
+  });
 
   return (
     <div className="space-y-6 mt-4">
       <div className="labo-page-title mb-8 flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-            <Droplet className="w-6 h-6 text-red-600 fill-red-600" />
-            سجل التبرعات
+            <Droplet className="w-6 h-6 text-red-600" />
+            سجل التبرعات الناجحة
           </h1>
-          <p className="text-slate-500 text-sm mt-1">تتبع مساهماتك في إنقاذ الأرواح وتفاصيل زياراتك السابقة.</p>
-        </div>
-        <Link href="/dashboard" className="text-sm font-bold text-slate-500 hover:text-slate-800 flex items-center gap-1 transition-colors bg-white px-4 py-2 border border-slate-200 rounded-lg shadow-sm">
-          العودة <ArrowLeft className="w-4 h-4" />
-        </Link>
-      </div>
-
-      {/* Summary Stat */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="labo-stat-card border-l-4 border-l-red-500">
-          <div className="labo-stat-icon bg-red-50 text-red-600">
-            <Droplet className="w-6 h-6 fill-red-600" />
-          </div>
-          <div>
-            <p className="text-slate-500 text-xs font-bold uppercase mb-1">إجمالي التبرعات</p>
-            <h2 className="text-2xl font-black text-slate-800">{donor.totalDonations}</h2>
-          </div>
+          <p className="text-slate-500 text-sm mt-1">تتبع وإدارة جميع عمليات التبرع التي تمت في المراكز.</p>
         </div>
       </div>
 
       <div className="labo-card overflow-hidden p-0">
-        <div className="p-4 border-b border-gray-200 bg-white">
-          <h3 className="text-base font-bold text-slate-800">تفاصيل الزيارات السابقة</h3>
+        <div className="p-4 border-b border-gray-200 bg-white flex justify-between items-center">
+          <h3 className="text-base font-bold text-slate-800">قائمة التبرعات</h3>
+          <div className="relative">
+            <Search className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input 
+              type="text" 
+              placeholder="البحث بالاسم أو الفصيلة..." 
+              className="w-64 bg-slate-50 border border-slate-200 text-slate-800 rounded-lg py-1.5 pr-9 pl-4 outline-none focus:border-blue-500 text-sm"
+            />
+          </div>
         </div>
-
+        
         <div className="labo-table-wrapper">
-          {donations.length > 0 ? (
+          {donations.length === 0 ? (
+            <div className="p-12 text-center text-slate-500">
+              <Droplet className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+              <p>لا توجد تبرعات مسجلة حتى الآن.</p>
+            </div>
+          ) : (
             <table className="labo-table w-full">
               <thead>
                 <tr>
-                  <th>رقم الزيارة</th>
+                  <th>المتبرع</th>
                   <th>تاريخ التبرع</th>
-                  <th>المركز / المستشفى</th>
-                  <th>الكمية المستخلصة</th>
-                  <th>النقاط المكتسبة</th>
+                  <th>الكمية والفصيلة</th>
+                  <th>الشهادة</th>
                 </tr>
               </thead>
               <tbody>
-                {donations.map((donation, index) => (
-                  <tr key={donation.id}>
-                    <td className="font-bold text-slate-800">#{donations.length - index}</td>
+                {donations.map(donation => (
+                  <tr key={donation.id} className="hover:bg-slate-50 transition-colors">
+                    <td>
+                      <div className="font-bold text-slate-800">{donation.donor.user?.name}</div>
+                      <div className="text-xs text-slate-500">{donation.center.name}</div>
+                    </td>
+                    <td>
+                      <div className="font-bold text-slate-800" dir="ltr">
+                        {new Intl.DateTimeFormat("en-GB", { dateStyle: "medium" }).format(donation.donatedAt)}
+                      </div>
+                    </td>
                     <td>
                       <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-slate-400" />
-                        <span className="font-bold text-slate-700" dir="ltr">
-                          {new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(donation.donatedAt)}
+                        <span className="bg-red-50 text-red-700 font-black px-2 py-1 rounded text-xs border border-red-100" dir="ltr">
+                          {donation.bloodType.replace('_', ' ')}
                         </span>
+                        <span className="text-slate-600 text-sm font-bold">{donation.volumeMl}ml</span>
                       </div>
                     </td>
                     <td>
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-slate-400" />
-                        <span className="font-bold text-slate-700">{donation.center?.name || "مركز غير معروف"}</span>
-                      </div>
-                    </td>
-                    <td>
-                      <span className="bg-red-50 text-red-700 font-bold px-2 py-1 rounded text-xs border border-red-100">
-                        {donation.volumeMl} مل
-                      </span>
-                    </td>
-                    <td>
-                      <span className="bg-yellow-50 text-yellow-700 font-bold px-2 py-1 rounded text-xs border border-yellow-200 flex items-center gap-1 w-fit">
-                        +100 نجمة
-                      </span>
+                      {donation.certificate ? (
+                        <Link 
+                          href={`/dashboard/donations/${donation.id}/certificate`} 
+                          className="inline-flex items-center gap-1 px-3 py-1.5 bg-amber-50 text-amber-700 hover:bg-amber-100 rounded-lg text-xs font-bold transition-colors border border-amber-200"
+                        >
+                          <Award className="w-4 h-4" />
+                          عرض الشهادة
+                        </Link>
+                      ) : (
+                        <span className="text-slate-400 text-xs">لا يوجد شهادة</span>
+                      )}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          ) : (
-            <div className="p-12 text-center text-slate-500">
-              <Droplet className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-              <p>لم تقم بأي تبرع حتى الآن. بادر بحجز موعد لإنقاذ حياة!</p>
-              <Link href="/dashboard/appointments/new" className="text-blue-600 font-bold hover:underline mt-2 block">
-                حجز موعد جديد
-              </Link>
-            </div>
           )}
         </div>
       </div>

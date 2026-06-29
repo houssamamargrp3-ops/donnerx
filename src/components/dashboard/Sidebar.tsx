@@ -24,8 +24,9 @@ export default function DashboardSidebar({ role }: { role: string }) {
       title: "الرئيسية",
       items: [
         { label: "لوحة التحكم", href: "/dashboard", icon: <LayoutDashboard className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF", "DONOR"] },
-        { label: "حملات التبرع", href: "/dashboard/campaigns", icon: <Megaphone className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF"] },
-        { label: "نداءات الطوارئ", href: "/dashboard/emergency", icon: <AlertTriangle className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "HOSPITAL_STAFF"] },
+        { label: "سجل التبرعات", href: "/dashboard/donations", icon: <Droplet className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF"] },
+        { label: "المواعيد", href: "/dashboard/appointments", icon: <CalendarDays className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF", "DONOR"] },
+        { label: "المتبرعين", href: "/dashboard/donors", icon: <Users className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF"] },
         { label: "مساعد الذكاء الاصطناعي", href: "/dashboard/ai", icon: <Activity className="w-5 h-5 text-purple-500" />, roles: ["SUPER_ADMIN", "ADMIN"] },
       ]
     },
@@ -39,12 +40,12 @@ export default function DashboardSidebar({ role }: { role: string }) {
       ]
     },
     {
-      title: "المتبرع",
+      title: "قسم المتبرع",
       items: [
-        { label: "سجلي الطبي", href: "/dashboard/profile", icon: <Activity className="w-5 h-5" />, roles: ["DONOR"] },
-        { label: "مواعيدي", href: "/dashboard/appointments", icon: <CalendarDays className="w-5 h-5" />, roles: ["DONOR"] },
-        { label: "الإشعارات", href: "/dashboard/notifications", icon: <Bell className="w-5 h-5" />, roles: ["DONOR"] },
-        { label: "المكافآت (قريباً)", href: "/dashboard/gamification", icon: <Award className="w-5 h-5" />, roles: ["DONOR"] },
+        { label: "سجلاتي الطبية", href: "/dashboard/profile", icon: <FileText className="w-5 h-5" />, roles: ["DONOR"] },
+        { label: "شهاداتي", href: "/dashboard/profile/certificates", icon: <Award className="w-5 h-5" />, roles: ["DONOR"] },
+        { label: "المكافآت", href: "/dashboard/gamification", icon: <Award className="w-5 h-5" />, roles: ["DONOR"] },
+        { label: "حملات التبرع", href: "/dashboard/campaigns", icon: <Megaphone className="w-5 h-5" />, roles: ["DONOR"] },
       ]
     },
     {
