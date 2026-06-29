@@ -24,11 +24,11 @@ export default async function NewAppointmentPage() {
 
   if (!donor) {
     return (
-      <div className="glass-card p-8 text-center animate-fade-in-up max-w-2xl mx-auto mt-10">
+      <div className="labo-card p-8 text-center animate-fade-in-up max-w-2xl mx-auto mt-10">
         <AlertTriangle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-white mb-2">الملف الطبي غير مكتمل</h2>
-        <p className="text-slate-400 mb-6">يجب إكمال ملفك الطبي لتتمكن من حجز موعد تبرع بالدم.</p>
-        <a href="/donor/setup" className="btn-primary inline-block">
+        <h2 className="text-2xl font-bold text-slate-800 mb-2">الملف الطبي غير مكتمل</h2>
+        <p className="text-slate-500 mb-6">يجب إكمال ملفك الطبي لتتمكن من حجز موعد تبرع بالدم.</p>
+        <a href="/dashboard/setup" className="labo-btn-primary inline-block">
           أكمل ملفك الآن
         </a>
       </div>
@@ -38,14 +38,14 @@ export default async function NewAppointmentPage() {
   // Check if they are eligible
   if (donor.eligibilityStatus === "INELIGIBLE") {
     return (
-      <div className="glass-card p-8 text-center animate-fade-in-up max-w-2xl mx-auto mt-10">
+      <div className="labo-card p-8 text-center animate-fade-in-up max-w-2xl mx-auto mt-10">
         <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-white mb-2">غير مؤهل حالياً</h2>
-        <p className="text-slate-400 mb-6">
+        <h2 className="text-2xl font-bold text-slate-800 mb-2">غير مؤهل حالياً</h2>
+        <p className="text-slate-500 mb-6">
           عذراً، بناءً على بياناتك الطبية، أنت غير مؤهل للتبرع بالدم في الوقت الحالي.
         </p>
         {donor.nextEligibleDate && (
-          <p className="text-slate-300 font-bold bg-slate-800 p-4 rounded-xl">
+          <p className="text-blue-800 font-bold bg-blue-50 border border-blue-100 p-4 rounded-xl">
             يمكنك المحاولة مرة أخرى بعد: {new Intl.DateTimeFormat("ar-SA", { dateStyle: "long" }).format(donor.nextEligibleDate)}
           </p>
         )}
@@ -66,19 +66,15 @@ export default async function NewAppointmentPage() {
   });
 
   return (
-    <div className="max-w-4xl mx-auto animate-fade-in-up space-y-6">
-      <div className="flex items-center gap-3 mb-8">
-        <div className="w-12 h-12 rounded-xl flex items-center justify-center"
-             style={{ background: "linear-gradient(135deg, #dc2626, #991b1b)", boxShadow: "0 10px 25px rgba(220,38,38,0.4)" }}>
-          <CalendarDays className="w-6 h-6 text-white" />
-        </div>
+    <div className="max-w-4xl mx-auto animate-fade-in-up space-y-6 mt-4">
+      <div className="labo-page-title mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-white">حجز موعد تبرع</h1>
-          <p className="text-slate-400 text-sm">اختر المركز الطبي والوقت المناسب لك للتبرع.</p>
+          <h1 className="text-2xl font-bold text-slate-800">حجز موعد تبرع</h1>
+          <p className="text-slate-500 text-sm mt-1">اختر المركز الطبي والوقت المناسب لك للتبرع بالدم.</p>
         </div>
       </div>
 
-      <div className="glass-card p-6 md:p-8">
+      <div className="labo-card p-6 md:p-8">
         <AppointmentForm centers={centers} donorId={donor.id} />
       </div>
     </div>
