@@ -21,6 +21,10 @@ export default async function DonorDetailsPage({ params }: { params: Promise<{ i
         include: { center: true },
         orderBy: { scheduledAt: "desc" },
         take: 5
+      },
+      eligibilityChecks: {
+        orderBy: { checkedAt: "desc" },
+        take: 5
       }
     },
   });
@@ -53,7 +57,10 @@ export default async function DonorDetailsPage({ params }: { params: Promise<{ i
           <Link href="/dashboard/donors" className="text-sm font-bold text-slate-500 hover:text-slate-800 flex items-center gap-1 transition-colors bg-white px-4 py-2 border border-slate-200 rounded-lg shadow-sm">
             العودة للقائمة <ArrowLeft className="w-4 h-4" />
           </Link>
-          <Link href={`/dashboard/donors/${donor.id}/edit`} className="labo-btn-outline">
+          <Link href={`/dashboard/donors/${resolvedParams.id}/eligibility`} className="labo-btn-primary">
+            <ShieldCheck className="w-4 h-4" /> فحص طبي جديد
+          </Link>
+          <Link href={`/dashboard/donors/${resolvedParams.id}/edit`} className="labo-btn-outline">
             <Edit className="w-4 h-4" /> تعديل البيانات
           </Link>
           <DeleteDonorButton donorId={donor.id} />
@@ -124,7 +131,7 @@ export default async function DonorDetailsPage({ params }: { params: Promise<{ i
                 <span className="text-sm font-bold text-slate-500">الوزن</span>
                 <span className="text-sm font-bold text-slate-800">{donor.weight} كجم</span>
               </div>
-              <div className="py-2">
+              <div className="py-2 border-b border-slate-100 pb-4">
                 <span className="text-sm font-bold text-slate-500 block mb-2">الأمراض المزمنة</span>
                 {(donor.chronicDiseases || []).length > 0 ? (
                   <div className="flex flex-wrap gap-2">
@@ -136,6 +143,26 @@ export default async function DonorDetailsPage({ params }: { params: Promise<{ i
                   </div>
                 ) : (
                   <span className="text-sm text-slate-400">لا يوجد سجل أمراض مزمنة.</span>
+                )}
+              </div>
+              
+              <div className="py-2">
+                <span className="text-sm font-bold text-slate-500 block mb-2">آخر الفحوصات الطبية</span>
+                {(donor.eligibilityChecks || []).length > 0 ? (
+                  <div className="space-y-2">
+                    {(donor.eligibilityChecks || []).map((check) => (
+                      <div key={check.id} className="flex justify-between items-center text-xs p-2 rounded bg-slate-50 border border-slate-100">
+                        <span className="text-slate-500">{new Intl.DateTimeFormat("ar-SA", { dateStyle: "medium" }).format(new Date(check.checkedAt))}</span>
+                        {check.isEligible ? (
+                          <span className="text-emerald-600 font-bold">مؤهل (Hb: {check.hemoglobin || '-'})</span>
+                        ) : (
+                          <span className="text-red-600 font-bold truncate max-w-[150px]" title={check.reason || "غير مؤهل"}>مرفوض: {check.reason}</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <span className="text-sm text-slate-400">لم يتم إجراء فحص أهلية لهذا المتبرع بعد.</span>
                 )}
               </div>
             </div>

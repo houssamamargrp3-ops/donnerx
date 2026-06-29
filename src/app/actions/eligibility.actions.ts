@@ -2,102 +2,119 @@
 
 import { prisma } from "@/lib/prisma";
 import { eligibilitySchema, EligibilityFormData } from "@/lib/validations/eligibility";
-import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
-import { EligibilityStatus } from "@prisma/client";
 
 export async function submitEligibilityCheck(data: EligibilityFormData) {
   try {
-    const session = await auth();
-    if (!session || !session.user?.id) {
-      return { error: "يجب تسجيل الدخول أولاً" };
-    }
-
     const validatedData = eligibilitySchema.parse(data);
+    const { donorId, ...checkData } = validatedData;
 
-    // Find the donor record associated with this user
-    const donor = await prisma.donor.findFirst({
-      where: { userId: session.user.id },
-    });
+    const donor = await prisma.donor.findUnique({ where: { id: donorId } });
+    if (!donor) return { error: "المتبرع غير موجود" };
 
-    if (!donor) {
-      return { error: "لم يتم العثور على ملف المتبرع" };
-    }
-
+    // --- Medical Algorithm ---
     let isEligible = true;
-    let reason = "";
+    let reasons: string[] = [];
+    let waitMonths = 0; // Temporary deferral duration
 
-    // Convert string booleans
-    const isPregnant = validatedData.isPregnant === "true";
-    const recentSurgery = validatedData.recentSurgery === "true";
-    const hasRecentTattoo = validatedData.hasRecentTattoo === "true";
-
-    // Medical Logic
-    if (validatedData.age < 18 || validatedData.age > 65) {
+    // 1. Age and Weight (Zod already catches basic bounds, but we check explicitly for reasons)
+    if (checkData.age < 18 || checkData.age > 65) {
       isEligible = false;
-      reason = "العمر يجب أن يكون بين 18 و 65 عاماً.";
-    } else if (validatedData.weight < 50) {
+      reasons.push(`العمر (${checkData.age}) غير مسموح به`);
+    }
+    if (checkData.weight < 50) {
       isEligible = false;
-      reason = "الوزن يجب أن يكون 50 كجم على الأقل للتبرع بالدم.";
-    } else if (isPregnant) {
-      isEligible = false;
-      reason = "يمنع التبرع أثناء فترة الحمل والرضاعة.";
-    } else if (recentSurgery) {
-      isEligible = false;
-      reason = "يمنع التبرع لمدة 6 أشهر بعد العمليات الجراحية الكبرى.";
-    } else if (hasRecentTattoo) {
-      isEligible = false;
-      reason = "يمنع التبرع لمدة 6 أشهر بعد عمل وشم أو ثقب تجميلي (Piercing).";
+      reasons.push(`الوزن (${checkData.weight} كجم) أقل من الحد الأدنى (50 كجم)`);
     }
 
-    // Process lists
-    const chronicConditionsList = validatedData.chronicConditions
-      ? validatedData.chronicConditions.split(",").map(s => s.trim()).filter(Boolean)
-      : [];
-    const currentMedicationsList = validatedData.currentMedications
-      ? validatedData.currentMedications.split(",").map(s => s.trim()).filter(Boolean)
-      : [];
-
-    // Further automatic disqualification based on keywords (Optional but good for demo)
-    if (isEligible && chronicConditionsList.some(c => c.includes("سرطان") || c.includes("قلب") || c.includes("إيدز"))) {
+    // 2. Hemoglobin (General rule: < 12.5 is ineligible)
+    if (checkData.hemoglobin && checkData.hemoglobin < 12.5) {
       isEligible = false;
-      reason = "وجود أمراض مزمنة تمنع التبرع بالدم حرصاً على سلامتك وسلامة المريض.";
+      reasons.push(`الهيموغلوبين (${checkData.hemoglobin}) أقل من 12.5`);
+      waitMonths = Math.max(waitMonths, 1); // Defer for 1 month
     }
 
-    await prisma.$transaction(async (tx) => {
-      // 1. Create the EligibilityCheck record
-      await tx.eligibilityCheck.create({
+    // 3. Blood Pressure
+    if (checkData.bloodPressureSystolic && (checkData.bloodPressureSystolic < 100 || checkData.bloodPressureSystolic > 160)) {
+      isEligible = false;
+      reasons.push(`الضغط الانقباضي (${checkData.bloodPressureSystolic}) غير طبيعي`);
+    }
+    if (checkData.bloodPressureDiastolic && (checkData.bloodPressureDiastolic < 60 || checkData.bloodPressureDiastolic > 100)) {
+      isEligible = false;
+      reasons.push(`الضغط الانبساطي (${checkData.bloodPressureDiastolic}) غير طبيعي`);
+    }
+
+    // 4. Medical History Boolean Flags
+    if (checkData.isPregnant) {
+      isEligible = false;
+      reasons.push("الحمل أو الرضاعة");
+      waitMonths = Math.max(waitMonths, 6); 
+    }
+    if (checkData.recentSurgery) {
+      isEligible = false;
+      reasons.push("عملية جراحية قريبة");
+      waitMonths = Math.max(waitMonths, 6);
+    }
+    if (checkData.hasRecentTattoo) {
+      isEligible = false;
+      reasons.push("وشم أو حجامة قريبة");
+      waitMonths = Math.max(waitMonths, 6);
+    }
+
+    // Format final reason string
+    const finalReason = reasons.length > 0 ? reasons.join("، ") : null;
+
+    // Calculate next eligible date if temporarily deferred
+    let nextEligibleDate: Date | null = null;
+    if (!isEligible && waitMonths > 0) {
+      nextEligibleDate = new Date();
+      nextEligibleDate.setMonth(nextEligibleDate.getMonth() + waitMonths);
+    }
+
+    // Create EligibilityCheck record and update Donor in a transaction
+    const result = await prisma.$transaction(async (tx) => {
+      // Create the record
+      const checkRecord = await tx.eligibilityCheck.create({
         data: {
-          donorId: donor.id,
-          age: validatedData.age,
-          weight: validatedData.weight,
-          isPregnant: isPregnant,
-          recentSurgery: recentSurgery,
-          hasRecentTattoo: hasRecentTattoo,
-          recentTravel: validatedData.recentTravel || null,
-          chronicConditions: chronicConditionsList,
-          currentMedications: currentMedicationsList,
-          isEligible: isEligible,
-          reason: reason || null,
-        },
+          donorId,
+          age: checkData.age,
+          weight: checkData.weight,
+          bloodPressureSystolic: checkData.bloodPressureSystolic,
+          bloodPressureDiastolic: checkData.bloodPressureDiastolic,
+          hemoglobin: checkData.hemoglobin,
+          isPregnant: checkData.isPregnant,
+          recentSurgery: checkData.recentSurgery,
+          hasRecentTattoo: checkData.hasRecentTattoo,
+          chronicConditions: checkData.chronicConditions ? checkData.chronicConditions.split(",").map(c => c.trim()).filter(Boolean) : [],
+          currentMedications: checkData.currentMedications ? checkData.currentMedications.split(",").map(c => c.trim()).filter(Boolean) : [],
+          recentTravel: checkData.recentTravel || null,
+          isEligible,
+          reason: finalReason,
+          nextEligibleDate
+        }
       });
 
-      // 2. Update the Donor record
+      // Update Donor Status
       await tx.donor.update({
-        where: { id: donor.id },
+        where: { id: donorId },
         data: {
-          eligibilityStatus: isEligible ? EligibilityStatus.ELIGIBLE : EligibilityStatus.INELIGIBLE,
-          eligibilityReason: reason || null,
-          // Calculate next eligible date (if eligible, usually they can donate now. If they just donated, it's 2-3 months.
-          // For ineligible due to surgery/tattoo, we could set nextEligibleDate to 6 months from now, but for simplicity we leave it.)
-        },
+          eligibilityStatus: isEligible ? "ELIGIBLE" : "INELIGIBLE",
+          eligibilityReason: finalReason,
+          nextEligibleDate: nextEligibleDate,
+          // Always keep their weight up to date
+          weight: checkData.weight,
+        }
       });
+
+      return checkRecord;
     });
 
-    revalidatePath("/dashboard");
-    return { success: true, isEligible, reason };
+    revalidatePath(`/dashboard/donors/${donorId}`);
+    revalidatePath(`/dashboard/donors`);
+    return { success: true, isEligible, reason: finalReason };
+
   } catch (error: any) {
-    console.error("Eligibility check error:", error);
-    return { error: error.message || "حدث خطأ أثناء حفظ التقييم" };
+    console.error("Error submitting eligibility check:", error);
+    return { error: error.message || "حدث خطأ أثناء حفظ التقييم الطبي" };
   }
 }
