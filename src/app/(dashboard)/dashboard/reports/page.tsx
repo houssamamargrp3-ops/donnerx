@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { FileText, Download, Activity, CheckCircle, Clock, ShieldCheck, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import PrintReportButton from "@/components/dashboard/PrintReportButton";
 
 export const metadata = { title: "التقارير الطبية" };
 
@@ -85,9 +86,7 @@ export default async function ReportsPage() {
               </div>
             </div>
           </div>
-          <button className="w-full py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-slate-50 transition-colors mt-auto">
-            <Download className="w-4 h-4" /> تحميل الشهادة (PDF)
-          </button>
+          <PrintReportButton label="طباعة الشهادة (PDF)" />
         </div>
 
         {/* Report 2: Blood Type Card */}
@@ -108,9 +107,7 @@ export default async function ReportsPage() {
               </div>
             </div>
           </div>
-          <button className="w-full py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-slate-50 transition-colors mt-auto">
-            <Download className="w-4 h-4" /> تحميل البطاقة
-          </button>
+          <PrintReportButton label="طباعة البطاقة" />
         </div>
 
         {/* Report 3: Donation Certificate */}
@@ -143,12 +140,7 @@ export default async function ReportsPage() {
               )}
             </div>
           </div>
-          <button 
-            disabled={!hasDonated}
-            className="w-full py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-slate-50 transition-colors mt-auto disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Download className="w-4 h-4" /> {hasDonated ? "تحميل الشهادة" : "غير متاح حالياً"}
-          </button>
+          <PrintReportButton disabled={!hasDonated} label={hasDonated ? "طباعة الشهادة" : "غير متاح حالياً"} />
         </div>
         
         {/* Report 4: Appointment Confirmation */}
@@ -181,12 +173,7 @@ export default async function ReportsPage() {
               )}
             </div>
           </div>
-          <button 
-            disabled={!hasAppointment}
-            className="w-full py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-slate-50 transition-colors mt-auto disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Download className="w-4 h-4" /> {hasAppointment ? "تحميل الاستدعاء" : "غير متاح حالياً"}
-          </button>
+          <PrintReportButton disabled={!hasAppointment} label={hasAppointment ? "طباعة الاستدعاء" : "غير متاح حالياً"} />
         </div>
 
       </div>

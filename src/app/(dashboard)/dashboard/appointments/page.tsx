@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { CalendarDays, CheckCircle2, Clock, XCircle, Search, AlertTriangle } from "lucide-react";
+import { CalendarDays, CheckCircle2, Clock, XCircle, Search, AlertTriangle, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 export const metadata = {
@@ -29,76 +29,100 @@ export default async function AppointmentsPage() {
     });
 
     return (
-      <div className="space-y-6 animate-fade-in-up">
-        <div className="flex items-center justify-between">
+      <div className="space-y-6 mt-4">
+        
+        <div className="labo-page-title mb-8 flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-              <CalendarDays className="w-6 h-6 text-red-400" />
+            <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+              <CalendarDays className="w-6 h-6 text-red-600" />
               سجل المواعيد
             </h1>
-            <p className="text-slate-400 text-sm mt-1">قائمة بجميع مواعيد التبرع السابقة والقادمة</p>
+            <p className="text-slate-500 text-sm mt-1">إدارة ومتابعة جميع مواعيد التبرع القادمة والسابقة.</p>
           </div>
-          <Link href="/dashboard/appointments/new" className="btn-primary">
-            حجز موعد جديد
-          </Link>
+          <div className="flex gap-3">
+            <Link href="/dashboard" className="text-sm font-bold text-slate-500 hover:text-slate-800 flex items-center gap-1 transition-colors bg-white px-4 py-2 border border-slate-200 rounded-lg shadow-sm">
+              العودة <ArrowLeft className="w-4 h-4" />
+            </Link>
+            <Link href="/dashboard/appointments/new" className="labo-btn-primary">
+              حجز موعد جديد
+            </Link>
+          </div>
         </div>
 
-        <div className="glass-card overflow-hidden">
-          {appointments.length === 0 ? (
-            <div className="p-12 text-center">
-              <CalendarDays className="w-16 h-16 text-slate-700 mx-auto mb-4" />
-              <p className="text-slate-400">لا توجد مواعيد مسجلة حتى الآن.</p>
-            </div>
-          ) : (
-            <div className="divide-y divide-slate-800/50">
-              {appointments.map(apt => (
-                <div key={apt.id} className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-800/20 transition-colors">
-                  <div>
-                    <h3 className="text-lg font-bold text-white">{apt.center.name}</h3>
-                    <p className="text-slate-400 text-sm">{apt.center.address}</p>
-                  </div>
-                  <div className="flex items-center gap-6">
-                    <div className="text-right">
-                      <p className="text-white font-medium">
-                        {new Intl.DateTimeFormat("ar-SA", { dateStyle: "medium" }).format(apt.scheduledAt)}
-                      </p>
-                      <p className="text-slate-400 text-sm">
-                        الساعة {new Intl.DateTimeFormat("ar-SA", { timeStyle: "short" }).format(apt.scheduledAt)}
-                      </p>
-                    </div>
-                    <div className={`px-3 py-1 rounded-full text-xs font-bold border flex items-center gap-1
-                      ${apt.status === "CONFIRMED" ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : 
-                        apt.status === "PENDING" ? "bg-yellow-500/10 text-yellow-400 border-yellow-500/20" : 
-                        apt.status === "CANCELLED" ? "bg-red-500/10 text-red-400 border-red-500/20" : 
-                        "bg-blue-500/10 text-blue-400 border-blue-500/20"}`}
-                    >
-                      {apt.status === "CONFIRMED" ? <CheckCircle2 className="w-3 h-3" /> : 
-                       apt.status === "PENDING" ? <Clock className="w-3 h-3" /> : 
-                       apt.status === "CANCELLED" ? <XCircle className="w-3 h-3" /> : 
-                       <CheckCircle2 className="w-3 h-3" />}
-                      {apt.status === "CONFIRMED" ? "مؤكد" : 
-                       apt.status === "PENDING" ? "قيد الانتظار" : 
-                       apt.status === "CANCELLED" ? "ملغي" : 
-                       apt.status === "COMPLETED" ? "مكتمل" : "مفقود"}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+        <div className="labo-card overflow-hidden p-0">
+          <div className="p-4 border-b border-gray-200 bg-white">
+            <h3 className="text-base font-bold text-slate-800">قائمة المواعيد</h3>
+          </div>
+          
+          <div className="labo-table-wrapper">
+            {appointments.length === 0 ? (
+              <div className="p-12 text-center text-slate-500">
+                <CalendarDays className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                <p>لا توجد مواعيد مسجلة حتى الآن.</p>
+                <Link href="/dashboard/appointments/new" className="text-blue-600 font-bold hover:underline mt-2 block">
+                  ابدأ بحجز موعدك الأول
+                </Link>
+              </div>
+            ) : (
+              <table className="labo-table w-full">
+                <thead>
+                  <tr>
+                    <th>المركز / المستشفى</th>
+                    <th>التاريخ والوقت</th>
+                    <th>حالة الموعد</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {appointments.map(apt => (
+                    <tr key={apt.id}>
+                      <td>
+                        <div className="font-bold text-slate-800">{apt.center.name}</div>
+                        <div className="text-xs text-slate-500">{apt.center.address}</div>
+                      </td>
+                      <td>
+                        <div className="font-bold text-slate-800" dir="ltr">
+                          {new Intl.DateTimeFormat("en-GB", { dateStyle: "medium" }).format(apt.scheduledAt)}
+                        </div>
+                        <div className="text-xs text-slate-500 font-bold">
+                          الساعة {new Intl.DateTimeFormat("ar-SA", { timeStyle: "short" }).format(apt.scheduledAt)}
+                        </div>
+                      </td>
+                      <td>
+                        <div className={`px-3 py-1 rounded-full text-xs font-bold border flex items-center gap-1 w-fit
+                          ${apt.status === "CONFIRMED" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : 
+                            apt.status === "PENDING" ? "bg-yellow-50 text-yellow-700 border-yellow-200" : 
+                            apt.status === "CANCELLED" ? "bg-red-50 text-red-700 border-red-200" : 
+                            "bg-blue-50 text-blue-700 border-blue-200"}`}
+                        >
+                          {apt.status === "CONFIRMED" ? <CheckCircle2 className="w-4 h-4" /> : 
+                           apt.status === "PENDING" ? <Clock className="w-4 h-4" /> : 
+                           apt.status === "CANCELLED" ? <XCircle className="w-4 h-4" /> : 
+                           <CheckCircle2 className="w-4 h-4" />}
+                          {apt.status === "CONFIRMED" ? "مؤكد" : 
+                           apt.status === "PENDING" ? "قيد الانتظار" : 
+                           apt.status === "CANCELLED" ? "ملغي" : 
+                           apt.status === "COMPLETED" ? "مكتمل" : "مفقود"}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
         </div>
       </div>
     );
   }
 
   // MEDICAL CENTER APPOINTMENTS VIEW
-  const center = await prisma.bloodCenter.findFirst(); // For now, grab the first center for this demo. In reality, linked to user.
+  const center = await prisma.bloodCenter.findFirst(); 
   
   if (!center) {
     return (
-      <div className="glass-card p-8 text-center animate-fade-in-up">
+      <div className="labo-card p-12 text-center text-slate-500">
         <AlertTriangle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
-        <h2 className="text-xl font-bold text-white mb-2">المركز غير موجود</h2>
+        <h2 className="text-xl font-bold text-slate-800 mb-2">المركز غير موجود</h2>
       </div>
     );
   }
@@ -109,83 +133,77 @@ export default async function AppointmentsPage() {
     orderBy: { scheduledAt: "asc" },
   });
 
+  const formatBloodType = (type: string) => type.replace("_POSITIVE", "+").replace("_NEGATIVE", "-");
+
   return (
-    <div className="space-y-6 animate-fade-in-up">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 mt-4">
+      <div className="labo-page-title mb-8 flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-            <CalendarDays className="w-6 h-6 text-blue-400" />
+          <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+            <CalendarDays className="w-6 h-6 text-blue-600" />
             إدارة المواعيد
           </h1>
-          <p className="text-slate-400 text-sm mt-1">جدول مواعيد المتبرعين لمركز: {center.name}</p>
+          <p className="text-slate-500 text-sm mt-1">جدول مواعيد المتبرعين لمركز: {center.name}</p>
         </div>
         <div className="relative">
           <Search className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input 
             type="text" 
             placeholder="البحث برقم الهاتف أو الاسم..." 
-            className="form-input pr-10 py-2 w-64"
+            className="w-64 bg-white border border-slate-200 text-slate-800 rounded-lg py-2 pr-10 pl-4 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all text-sm"
           />
         </div>
       </div>
 
-      <div className="glass-card overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-right">
-            <thead className="bg-slate-800/50 border-b border-slate-700/50">
+      <div className="labo-card overflow-hidden p-0">
+        <div className="labo-table-wrapper">
+          <table className="labo-table w-full">
+            <thead>
               <tr>
-                <th className="px-6 py-4 text-sm font-semibold text-slate-300">المتبرع</th>
-                <th className="px-6 py-4 text-sm font-semibold text-slate-300">فصيلة الدم</th>
-                <th className="px-6 py-4 text-sm font-semibold text-slate-300">التاريخ والوقت</th>
-                <th className="px-6 py-4 text-sm font-semibold text-slate-300">الحالة</th>
-                <th className="px-6 py-4 text-sm font-semibold text-slate-300">إجراءات</th>
+                <th>المتبرع</th>
+                <th>فصيلة الدم</th>
+                <th>التاريخ والوقت</th>
+                <th>الحالة</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/50">
+            <tbody>
               {appointments.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-slate-400">
+                  <td colSpan={4} className="px-6 py-12 text-center text-slate-400">
                     لا يوجد مواعيد مسجلة اليوم.
                   </td>
                 </tr>
               ) : (
                 appointments.map(apt => (
-                  <tr key={apt.id} className="hover:bg-slate-800/20 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="font-bold text-white">{apt.donor.user.name}</div>
-                      <div className="text-sm text-slate-400">{apt.donor.phone}</div>
+                  <tr key={apt.id}>
+                    <td>
+                      <div className="font-bold text-slate-800">{apt.donor.user?.name || 'متبرع'}</div>
+                      <div className="text-xs text-slate-500" dir="ltr">{apt.donor.phone}</div>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-500/10 text-red-400 font-bold text-xs border border-red-500/20">
-                        {apt.donor.bloodType.replace("_POSITIVE", "+").replace("_NEGATIVE", "-")}
-                      </div>
+                    <td>
+                      <span className="bg-red-50 text-red-600 font-bold px-2 py-1 rounded text-xs border border-red-100">
+                        {formatBloodType(apt.donor.bloodType)}
+                      </span>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="text-white">
-                        {new Intl.DateTimeFormat("ar-SA", { dateStyle: "medium" }).format(apt.scheduledAt)}
+                    <td>
+                      <div className="font-bold text-slate-800" dir="ltr">
+                        {new Intl.DateTimeFormat("en-GB", { dateStyle: "medium" }).format(apt.scheduledAt)}
                       </div>
-                      <div className="text-sm text-slate-400">
+                      <div className="text-xs text-slate-500 font-bold">
                         {new Intl.DateTimeFormat("ar-SA", { timeStyle: "short" }).format(apt.scheduledAt)}
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td>
                       <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold border
-                        ${apt.status === "CONFIRMED" ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : 
-                          apt.status === "PENDING" ? "bg-yellow-500/10 text-yellow-400 border-yellow-500/20" : 
-                          apt.status === "CANCELLED" ? "bg-red-500/10 text-red-400 border-red-500/20" : 
-                          "bg-blue-500/10 text-blue-400 border-blue-500/20"}`}
+                        ${apt.status === "CONFIRMED" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : 
+                          apt.status === "PENDING" ? "bg-yellow-50 text-yellow-700 border-yellow-200" : 
+                          apt.status === "CANCELLED" ? "bg-red-50 text-red-700 border-red-200" : 
+                          "bg-blue-50 text-blue-700 border-blue-200"}`}
                       >
                         {apt.status === "CONFIRMED" ? "مؤكد" : 
                          apt.status === "PENDING" ? "قيد الانتظار" : 
                          apt.status === "CANCELLED" ? "ملغي" : "مكتمل"}
                       </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      {apt.status === "CONFIRMED" && (
-                        <button className="text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1.5 rounded-lg hover:bg-blue-500/20 transition-colors">
-                          تسجيل الحضور
-                        </button>
-                      )}
                     </td>
                   </tr>
                 ))

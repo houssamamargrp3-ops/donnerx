@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 @theme {
   --color-slate-50: #f8fafc;
@@ -87,7 +87,7 @@
     border-right-color: #3b82f6;
   }
 
-  /* Page Title Box (Gérer les analyses style) */
+  /* Page Title Box (GÃ©rer les analyses style) */
   .labo-page-title {
     background-color: white;
     border-width: 1px;
@@ -312,3 +312,7 @@
     font-weight: 700;
   }
 }
+@media print { .labo-sidebar, header, nav, .print\:hidden { display: none !important; } .labo-card { border: none !important; box-shadow: none !important; } }
+
+
+@media print { .labo-sidebar, header, nav, .print\:hidden { display: none !important; } .labo-card { border: none !important; box-shadow: none !important; margin: 0 !important; padding: 0 !important; page-break-inside: avoid; } body { background: white !important; } }
