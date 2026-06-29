@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 export async function createWalkInDonation(donorId: string) {
   try {
     // 1. Get any active center (if admin isn't specifically tied to one, we'll just use the first available center)
-    const center = await prisma.center.findFirst();
+    const center = await prisma.bloodCenter.findFirst();
     if (!center) {
       return { error: "لا يوجد مراكز طبية مسجلة في النظام لتسجيل التبرع." };
     }
@@ -31,6 +31,6 @@ export async function createWalkInDonation(donorId: string) {
     return { success: true, appointmentId: appointment.id };
   } catch (error: any) {
     console.error("Error creating walk-in appointment:", error);
-    return { error: "حدث خطأ أثناء تهيئة الزيارة المباشرة." };
+    return { error: "حدث خطأ أثناء تهيئة الزيارة المباشرة: " + error.message };
   }
 }
