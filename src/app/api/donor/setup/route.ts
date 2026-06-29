@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 
 export async function POST(request: Request) {
   try {
@@ -49,6 +50,7 @@ export async function POST(request: Request) {
       }
     });
 
+    revalidatePath("/dashboard/donors");
     return NextResponse.json({ success: true, donor });
   } catch (error: any) {
     console.error("Error setting up donor:", error);

@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { CalendarDays, CheckCircle2, Clock, XCircle, Search, AlertTriangle, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "نظام المواعيد",
 };

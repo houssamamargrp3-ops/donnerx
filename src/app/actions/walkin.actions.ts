@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import crypto from "crypto";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 export async function createWalkInDonation(donorId: string) {
   try {
@@ -26,6 +27,7 @@ export async function createWalkInDonation(donorId: string) {
       },
     });
 
+    revalidatePath("/dashboard/appointments");
     // 3. Return the ID so the client can redirect
     return { success: true, appointmentId: appointment.id };
   } catch (error: any) {

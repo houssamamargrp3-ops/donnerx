@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import crypto from "crypto";
+import { revalidatePath } from "next/cache";
 
 export async function POST(request: Request) {
   try {
@@ -39,6 +40,7 @@ export async function POST(request: Request) {
       }
     });
 
+    revalidatePath("/dashboard/appointments");
     return NextResponse.json({ success: true, appointment });
   } catch (error: any) {
     console.error("Error creating appointment:", error);

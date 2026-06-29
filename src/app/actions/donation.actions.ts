@@ -71,8 +71,9 @@ export async function recordDonation(formData: FormData) {
       return { donation, certificate };
     });
 
-    revalidatePath("/dashboard/appointments");
     revalidatePath("/dashboard/donations");
+    revalidatePath("/dashboard/donors");
+    revalidatePath("/dashboard/appointments");
     
     return { success: true, donationId: result.donation.id };
   } catch (error: any) {
