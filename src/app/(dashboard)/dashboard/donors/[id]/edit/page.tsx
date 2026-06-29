@@ -6,9 +6,10 @@ import { notFound } from "next/navigation";
 
 export const metadata = { title: "تعديل بيانات المتبرع" };
 
-export default async function EditDonorPage({ params }: { params: { id: string } }) {
+export default async function EditDonorPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params;
   const donor = await prisma.donor.findUnique({
-    where: { id: params.id },
+    where: { id: resolvedParams.id },
     include: { user: true },
   });
 
@@ -41,7 +42,7 @@ export default async function EditDonorPage({ params }: { params: { id: string }
           </h1>
           <p className="text-slate-500 text-sm mt-1">تحديث البيانات الطبية أو الشخصية للمتبرع: {donor.user.name}</p>
         </div>
-        <Link href={`/dashboard/donors/${params.id}`} className="text-sm font-bold text-slate-500 hover:text-slate-800 flex items-center gap-1 transition-colors bg-white px-4 py-2 border border-slate-200 rounded-lg shadow-sm">
+        <Link href={`/dashboard/donors/${resolvedParams.id}`} className="text-sm font-bold text-slate-500 hover:text-slate-800 flex items-center gap-1 transition-colors bg-white px-4 py-2 border border-slate-200 rounded-lg shadow-sm">
           العودة للملف <ArrowLeft className="w-4 h-4" />
         </Link>
       </div>

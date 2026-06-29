@@ -7,9 +7,10 @@ import DeleteDonorButton from "./DeleteDonorButton";
 
 export const metadata = { title: "ملف المتبرع" };
 
-export default async function DonorDetailsPage({ params }: { params: { id: string } }) {
+export default async function DonorDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params;
   const donor = await prisma.donor.findUnique({
-    where: { id: params.id },
+    where: { id: resolvedParams.id },
     include: {
       user: true,
       donations: {
