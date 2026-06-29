@@ -51,11 +51,13 @@ export default function AppointmentForm({ centers, donorId }: { centers: Center[
         }),
       });
 
+      const appointmentData = await res.json();
+
       if (!res.ok) {
-        throw new Error("فشل حجز الموعد");
+        throw new Error(appointmentData.error || "فشل حجز الموعد");
       }
 
-      setStep(4); // Success step
+      router.push(`/dashboard/appointments/${appointmentData.appointment.id}`);
       router.refresh();
     } catch (err: any) {
       setError(err.message || "حدث خطأ غير متوقع.");
