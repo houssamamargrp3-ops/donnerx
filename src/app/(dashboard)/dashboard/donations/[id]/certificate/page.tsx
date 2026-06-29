@@ -7,12 +7,13 @@ import ClientPrintButton from "./ClientPrintButton";
 
 export const metadata = { title: "شهادة شكر وتقدير" };
 
-export default async function CertificatePage({ params }: { params: { id: string } }) {
+export default async function CertificatePage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
   if (!session?.user) redirect("/login");
 
+  const resolvedParams = await params;
   const donation = await prisma.donation.findUnique({
-    where: { id: params.id },
+    where: { id: resolvedParams.id },
     include: {
       donor: { include: { user: true } },
       center: true,
