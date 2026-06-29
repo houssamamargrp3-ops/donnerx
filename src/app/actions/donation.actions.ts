@@ -57,10 +57,13 @@ export async function recordDonation(formData: FormData) {
         data: { status: "COMPLETED" },
       });
 
-      // 5. Update Donor's nextEligibleDate
+      // 5. Update Donor's nextEligibleDate and totalDonations
       await tx.donor.update({
         where: { id: donorId },
-        data: { nextEligibleDate },
+        data: { 
+          nextEligibleDate,
+          totalDonations: { increment: 1 } 
+        },
       });
 
       return { donation, certificate };

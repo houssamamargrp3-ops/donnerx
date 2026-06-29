@@ -140,7 +140,15 @@ export default async function ReportsPage() {
               )}
             </div>
           </div>
-          <PrintReportButton disabled={!hasDonated} label={hasDonated ? "طباعة الشهادة" : "غير متاح حالياً"} />
+          {hasDonated ? (
+            <Link href={`/dashboard/donations/${donor.donations[0].id}/certificate`} className="w-full">
+              <button className="w-full flex items-center justify-center gap-2 py-3 bg-blue-50 text-blue-700 font-bold hover:bg-blue-100 transition-colors rounded-b-xl border-t border-blue-100">
+                <CheckCircle className="w-4 h-4" /> عرض وطباعة الشهادة
+              </button>
+            </Link>
+          ) : (
+            <PrintReportButton disabled={true} label="غير متاح حالياً" />
+          )}
         </div>
         
         {/* Report 4: Appointment Confirmation */}
