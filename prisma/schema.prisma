@@ -226,6 +226,8 @@ model Appointment {
   confirmedAt  DateTime?
   cancelledAt  DateTime?
   cancelReason String?
+  isExamined   Boolean           @default(false)
+  examinationNotes String?
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
 

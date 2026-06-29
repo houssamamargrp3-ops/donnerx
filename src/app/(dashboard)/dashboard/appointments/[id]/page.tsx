@@ -5,6 +5,7 @@ import { CalendarDays, Clock, MapPin, QrCode, ArrowLeft, CheckCircle2, AlertTria
 import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
 import CancelAppointmentButton from "./CancelAppointmentButton";
+import PhysicalExamModal from "./PhysicalExamModal";
 
 export const metadata = { title: "تفاصيل الموعد" };
 
@@ -120,12 +121,25 @@ export default async function AppointmentDetailsPage({ params }: { params: Promi
           {isAdminOrStaff && appointment.status === "CONFIRMED" && (
             <div className="labo-card p-6 bg-emerald-50 border-emerald-200">
               <h3 className="text-emerald-800 font-bold text-lg mb-2 flex items-center gap-2">
-                <Droplet className="w-5 h-5" /> إجراءات الإدارة
+                <Droplet className="w-5 h-5" /> إجراءات المركز
               </h3>
-              <p className="text-emerald-700 text-sm mb-4">هذا الموعد مؤكد وبانتظار حضور المتبرع.</p>
-              <Link href={`/dashboard/donations/new?appointmentId=${appointment.id}`} className="labo-btn-primary bg-emerald-600 hover:bg-emerald-700 w-full justify-center flex">
-                تسجيل التبرع للمريض
-              </Link>
+              
+              {!appointment.isExamined ? (
+                <>
+                  <p className="text-emerald-700 text-sm mb-4">هذا الموعد مؤكد وبانتظار حضور المتبرع. يجب إجراء الفحص الطبي السريري أولاً.</p>
+                  <PhysicalExamModal appointmentId={appointment.id} donorName={appointment.donor.user?.name || "المتبرع"} />
+                </>
+              ) : (
+                <>
+                  <p className="text-emerald-700 text-sm mb-4">
+                    <CheckCircle2 className="w-4 h-4 inline-block ml-1" />
+                    تم اجتياز الفحص الطبي السريري بنجاح.
+                  </p>
+                  <Link href={`/dashboard/donations/new?appointmentId=${appointment.id}`} className="labo-btn-primary bg-emerald-600 hover:bg-emerald-700 w-full justify-center flex">
+                    تسجيل التبرع للمريض
+                  </Link>
+                </>
+              )}
             </div>
           )}
         </div>
