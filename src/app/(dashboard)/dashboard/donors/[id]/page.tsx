@@ -26,7 +26,7 @@ export default async function DonorDetailsPage({ params }: { params: { id: strin
 
   if (!donor) notFound();
 
-  const age = Math.floor((new Date().getTime() - new Date(donor.dateOfBirth).getTime()) / 3.15576e+10);
+  const age = donor.dateOfBirth ? Math.floor((new Date().getTime() - new Date(donor.dateOfBirth).getTime()) / 3.15576e+10) : 0;
 
   const getEligibilityBadge = (status: string) => {
     switch (status) {
@@ -66,9 +66,9 @@ export default async function DonorDetailsPage({ params }: { params: { id: strin
           <div className="labo-card p-6">
             <div className="flex flex-col items-center text-center pb-6 border-b border-slate-200 mb-6">
               <div className="w-20 h-20 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 text-3xl font-bold border border-blue-100 mb-4 shadow-sm">
-                {donor.user.name?.charAt(0)}
+                {donor.user?.name?.charAt(0) || "U"}
               </div>
-              <h2 className="text-xl font-bold text-slate-800">{donor.user.name}</h2>
+              <h2 className="text-xl font-bold text-slate-800">{donor.user?.name || "مستخدم غير معروف"}</h2>
               <div className="text-sm text-slate-500 mt-1 flex items-center justify-center gap-2">
                 <span className="bg-red-50 text-red-600 font-bold px-2 py-1 rounded border border-red-100" dir="ltr">
                   {bloodTypeLabel(donor.bloodType)}
@@ -83,7 +83,7 @@ export default async function DonorDetailsPage({ params }: { params: { id: strin
             <div className="space-y-4">
               <div className="flex items-center gap-3 text-slate-700">
                 <Mail className="w-5 h-5 text-slate-400" />
-                <span className="text-sm font-medium">{donor.user.email}</span>
+                <span className="text-sm font-medium">{donor.user?.email || "غير متوفر"}</span>
               </div>
               <div className="flex items-center gap-3 text-slate-700">
                 <Phone className="w-5 h-5 text-slate-400" />
@@ -95,7 +95,7 @@ export default async function DonorDetailsPage({ params }: { params: { id: strin
               </div>
               <div className="flex items-center gap-3 text-slate-700">
                 <Calendar className="w-5 h-5 text-slate-400" />
-                <span className="text-sm font-medium">تاريخ الانضمام: {new Intl.DateTimeFormat("ar-SA", { dateStyle: "long" }).format(donor.createdAt)}</span>
+                <span className="text-sm font-medium">تاريخ الانضمام: {donor.createdAt ? new Intl.DateTimeFormat("ar-SA", { dateStyle: "long" }).format(new Date(donor.createdAt)) : "غير متوفر"}</span>
               </div>
             </div>
           </div>
@@ -115,7 +115,7 @@ export default async function DonorDetailsPage({ params }: { params: { id: strin
                 <div className="flex justify-between items-center py-2 border-b border-slate-100">
                   <span className="text-sm font-bold text-slate-500">مؤهل بعد</span>
                   <span className="text-sm font-bold text-slate-800 bg-blue-50 px-2 py-1 rounded">
-                    {new Intl.DateTimeFormat("ar-SA", { dateStyle: "medium" }).format(donor.nextEligibleDate)}
+                    {new Intl.DateTimeFormat("ar-SA", { dateStyle: "medium" }).format(new Date(donor.nextEligibleDate))}
                   </span>
                 </div>
               )}
@@ -125,9 +125,9 @@ export default async function DonorDetailsPage({ params }: { params: { id: strin
               </div>
               <div className="py-2">
                 <span className="text-sm font-bold text-slate-500 block mb-2">الأمراض المزمنة</span>
-                {donor.chronicDiseases.length > 0 ? (
+                {(donor.chronicDiseases || []).length > 0 ? (
                   <div className="flex flex-wrap gap-2">
-                    {donor.chronicDiseases.map((disease, idx) => (
+                    {(donor.chronicDiseases || []).map((disease, idx) => (
                       <span key={idx} className="bg-slate-100 text-slate-700 text-xs font-bold px-2 py-1 rounded">
                         {disease}
                       </span>
@@ -151,7 +151,7 @@ export default async function DonorDetailsPage({ params }: { params: { id: strin
               </div>
               <div>
                 <p className="labo-stat-title">إجمالي التبرعات</p>
-                <p className="labo-stat-value">{donor.donations.length}</p>
+                <p className="labo-stat-value">{(donor.donations || []).length}</p>
               </div>
             </div>
             <div className="labo-stat-card border-none shadow-sm h-full">
@@ -170,8 +170,8 @@ export default async function DonorDetailsPage({ params }: { params: { id: strin
               <div>
                 <p className="labo-stat-title">آخر تبرع</p>
                 <p className="labo-stat-value text-xl">
-                  {donor.donations.length > 0 
-                    ? new Intl.DateTimeFormat("en-GB", { dateStyle: "short" }).format(donor.donations[0].donatedAt) 
+                  {(donor.donations || []).length > 0 && donor.donations[0]?.donatedAt
+                    ? new Intl.DateTimeFormat("en-GB", { dateStyle: "short" }).format(new Date(donor.donations[0].donatedAt)) 
                     : "-"}
                 </p>
               </div>
@@ -195,22 +195,22 @@ export default async function DonorDetailsPage({ params }: { params: { id: strin
                   </tr>
                 </thead>
                 <tbody>
-                  {donor.donations.length === 0 ? (
+                  {(donor.donations || []).length === 0 ? (
                     <tr>
                       <td colSpan={4} className="py-12 text-center text-slate-400">
                         لم يقم هذا المتبرع بأي عملية تبرع حتى الآن.
                       </td>
                     </tr>
                   ) : (
-                    donor.donations.map((donation) => (
+                    (donor.donations || []).map((donation) => (
                       <tr key={donation.id}>
                         <td>
-                          <div className="font-bold text-slate-800">{donation.center.name}</div>
-                          <div className="text-xs text-slate-500">{donation.center.address}</div>
+                          <div className="font-bold text-slate-800">{donation.center?.name || "مركز غير معروف"}</div>
+                          <div className="text-xs text-slate-500">{donation.center?.address || ""}</div>
                         </td>
                         <td>
                           <div className="font-bold text-slate-800" dir="ltr">
-                            {new Intl.DateTimeFormat("en-GB", { dateStyle: "medium" }).format(donation.donatedAt)}
+                            {donation.donatedAt ? new Intl.DateTimeFormat("en-GB", { dateStyle: "medium" }).format(new Date(donation.donatedAt)) : "-"}
                           </div>
                         </td>
                         <td>
