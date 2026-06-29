@@ -9,8 +9,7 @@ export default function ClientPrintButton({ donorName = "donor" }: { donorName?:
   const handleDownloadPDF = async () => {
     setIsDownloading(true);
     try {
-      // Use dom-to-image to bypass html2canvas CSS parsing errors (like lab() colors)
-      const domToImage = (await import("dom-to-image")).default;
+      const htmlToImage = await import("html-to-image");
       const { jsPDF } = await import("jspdf");
 
       const element = document.getElementById("certificate-area");
@@ -18,20 +17,13 @@ export default function ClientPrintButton({ donorName = "donor" }: { donorName?:
         throw new Error("Element not found");
       }
 
-      // Convert the DOM to a PNG image
-      const dataUrl = await domToImage.toPng(element, {
+      // Convert the DOM to a PNG image with high quality
+      const dataUrl = await htmlToImage.toPng(element, {
         quality: 1.0,
-        bgcolor: '#ffffff',
-        // Optional: scale up for better resolution by transforming
-        style: {
-          transform: 'scale(2)',
-          transformOrigin: 'top left'
-        },
-        width: element.offsetWidth * 2,
-        height: element.offsetHeight * 2
+        backgroundColor: '#ffffff',
+        pixelRatio: 2, // For better resolution
       });
       
-      // Calculate dimensions for landscape A4
       const pdf = new jsPDF({
         orientation: "landscape",
         unit: "mm",
@@ -52,7 +44,7 @@ export default function ClientPrintButton({ donorName = "donor" }: { donorName?:
       
     } catch (error: any) {
       console.error("Failed to generate PDF:", error);
-      alert("حدث خطأ أثناء إنشاء ملف PDF: " + (error.message || ""));
+      alert("حدث خطأ أثناء إنشاء ملف PDF: " + (error.message || "الرجاء المحاولة باستخدام زر الطباعة المباشرة"));
     } finally {
       setIsDownloading(false);
     }
