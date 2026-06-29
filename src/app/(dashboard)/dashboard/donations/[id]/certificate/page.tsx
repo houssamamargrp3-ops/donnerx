@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { Award, Printer, ChevronRight } from "lucide-react";
+import { Award, ChevronRight, Droplet, HeartPulse, HeartHandshake } from "lucide-react";
 import Link from "next/link";
 import ClientPrintButton from "./ClientPrintButton";
 
@@ -48,14 +48,25 @@ export default async function CertificatePage({ params }: { params: Promise<{ id
           <Award className="w-96 h-96 text-red-900" />
         </div>
 
+        {/* Corner Decorations */}
+        <div className="absolute top-10 left-10 opacity-20 pointer-events-none">
+          <HeartPulse className="w-16 h-16 text-red-600" />
+        </div>
+        <div className="absolute bottom-10 right-10 opacity-20 pointer-events-none">
+          <Droplet className="w-16 h-16 text-red-600" />
+        </div>
+
         {/* Content */}
         <div className="relative z-10 p-16 flex flex-col items-center text-center h-full justify-between">
           
           {/* Header */}
-          <div className="space-y-4 w-full">
+          <div className="space-y-4 w-full relative">
+            <div className="absolute top-0 right-1/4 -translate-y-4 opacity-10">
+              <HeartHandshake className="w-32 h-32 text-red-600" />
+            </div>
             <h3 className="text-xl font-bold tracking-widest text-slate-400 uppercase" dir="ltr">DONNER.X Platform</h3>
             <div className="w-32 h-1 bg-[#D4AF37] mx-auto rounded-full"></div>
-            <h1 className="text-6xl font-black text-slate-800 mt-6" style={{ fontFamily: 'var(--font-cairo), sans-serif' }}>
+            <h1 className="text-6xl font-black text-slate-800 mt-6 relative z-10" style={{ fontFamily: 'var(--font-cairo), sans-serif' }}>
               شهادة شكر وتقدير
             </h1>
             <p className="text-2xl text-slate-600 font-medium">Certificate of Appreciation</p>
@@ -63,17 +74,19 @@ export default async function CertificatePage({ params }: { params: Promise<{ id
 
           {/* Body */}
           <div className="space-y-6 w-full max-w-2xl mt-8">
-            <p className="text-xl text-slate-600 leading-relaxed">
-              تتقدم منصة DONNER.X و <strong className="text-slate-800">{donation.center.name}</strong> بخالص الشكر والامتنان والتقدير إلى
+            <p className="text-xl text-slate-600 leading-relaxed flex items-center justify-center gap-2">
+              تتقدم منصة DONNER.X و <strong className="text-slate-800">{donation.center.name}</strong> بخالص الشكر والامتنان 🌟
             </p>
             
-            <h2 className="text-5xl font-black text-red-700 py-4 border-y-2 border-red-100 bg-red-50/30">
+            <h2 className="text-5xl font-black text-red-700 py-4 border-y-2 border-red-100 bg-red-50/30 relative">
+              <span className="absolute -top-4 -right-4 text-3xl">🏅</span>
               {donation.donor.user?.name || 'متبرع مجهول'}
+              <span className="absolute -bottom-4 -left-4 text-3xl">🩸</span>
             </h2>
             
             <p className="text-xl text-slate-600 leading-relaxed">
               على عطائه النبيل وتبرعه بالدم، مساهماً في إنقاذ حياة الآخرين وإحياء الأمل في نفوسهم. 
-              كتب الله أجرك وجعلها في ميزان حسناتك.
+              قطرات دمك هي شريان حياة لغيرك.. كتب الله أجرك وجعلها في ميزان حسناتك! ❤️
             </p>
           </div>
 
@@ -87,10 +100,13 @@ export default async function CertificatePage({ params }: { params: Promise<{ id
             </div>
 
             <div className="text-center space-y-4">
-              <div className="w-24 h-24 bg-red-50 rounded-full border border-red-100 flex items-center justify-center mx-auto shadow-inner">
-                <div className="text-3xl font-black text-red-600" dir="ltr">{donation.bloodType.replace('_', ' ')}</div>
+              <div className="w-24 h-24 bg-red-50 rounded-full border border-red-100 flex items-center justify-center mx-auto shadow-inner relative">
+                <Droplet className="absolute text-red-100 w-20 h-20 -z-0" fill="currentColor" />
+                <div className="text-3xl font-black text-red-700 z-10" dir="ltr">{donation.bloodType.replace('_', ' ')}</div>
               </div>
-              <p className="text-sm font-bold text-red-800 bg-red-100 px-3 py-1 rounded-full">قطرة دم = حياة</p>
+              <p className="text-sm font-bold text-red-800 bg-red-100 px-3 py-1 rounded-full flex items-center gap-1 justify-center">
+                قطرة دم = حياة <HeartPulse className="w-4 h-4" />
+              </p>
             </div>
 
             <div className="text-center space-y-2">
