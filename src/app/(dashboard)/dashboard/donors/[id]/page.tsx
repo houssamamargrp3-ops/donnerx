@@ -1,210 +1,229 @@
-import { Users, ChevronLeft, Edit, Droplet, Calendar, Phone, Mail, Activity, MapPin, Heart, ShieldCheck } from "lucide-react";
-import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
+import { ArrowLeft, User, Mail, Phone, MapPin, Droplet, Calendar, HeartPulse, Activity, CalendarDays, ShieldCheck, Edit } from "lucide-react";
+import Link from "next/link";
 import { bloodTypeLabel } from "@/lib/utils";
+import DeleteDonorButton from "./DeleteDonorButton";
 
-export const metadata = { title: "الملف الشخصي للمتبرع" };
+export const metadata = { title: "ملف المتبرع" };
 
-export default async function DonorProfilePage({ params }: { params: { id: string } }) {
+export default async function DonorDetailsPage({ params }: { params: { id: string } }) {
   const donor = await prisma.donor.findUnique({
     where: { id: params.id },
-    include: { 
+    include: {
       user: true,
       donations: {
-        orderBy: { donatedAt: "desc" },
+        include: { center: true },
+        orderBy: { donatedAt: "desc" }
+      },
+      appointments: {
+        include: { center: true },
+        orderBy: { scheduledAt: "desc" },
         take: 5
       }
     },
   });
 
-  if (!donor) {
-    notFound();
-  }
+  if (!donor) notFound();
 
-  const age = Math.floor((new Date().getTime() - donor.dateOfBirth.getTime()) / 3.15576e+10);
+  const age = Math.floor((new Date().getTime() - new Date(donor.dateOfBirth).getTime()) / 3.15576e+10);
+
+  const getEligibilityBadge = (status: string) => {
+    switch (status) {
+      case "ELIGIBLE": return <span className="labo-badge-success flex items-center gap-1 w-fit"><ShieldCheck className="w-4 h-4" /> مؤهل للتبرع</span>;
+      case "PENDING_CHECK": return <span className="labo-badge-warning flex items-center gap-1 w-fit"><CalendarDays className="w-4 h-4" /> قيد الفحص</span>;
+      case "INELIGIBLE": return <span className="labo-badge-danger flex items-center gap-1 w-fit"><HeartPulse className="w-4 h-4" /> غير مؤهل</span>;
+      default: return null;
+    }
+  };
 
   return (
-    <div className="space-y-6 animate-fade-in-up">
+    <div className="space-y-6 mt-4">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Link
-            href="/dashboard/donors"
-            className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-slate-400 hover:bg-white/10 hover:text-white transition-all"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </Link>
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full flex items-center justify-center text-white text-xl font-bold shadow-lg"
-                 style={{ background: "linear-gradient(135deg, #dc2626, #991b1b)" }}>
-              {donor.user.name[0]}
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-                {donor.user.name}
-              </h1>
-              <p className="text-slate-400 text-sm mt-1">{donor.user.email}</p>
-            </div>
-          </div>
+      <div className="labo-page-title mb-8 flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+            <User className="w-6 h-6 text-blue-600" />
+            الملف الطبي للمتبرع
+          </h1>
+          <p className="text-slate-500 text-sm mt-1">عرض السجل الطبي الكامل وتاريخ التبرعات للمتبرع.</p>
         </div>
-        <div className="flex items-center gap-3">
-          <Link
-            href={`/dashboard/donors/${donor.id}/edit`}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-semibold transition-all hover:-translate-y-0.5"
-            style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}
-          >
-            <Edit className="w-4 h-4" />
-            تعديل البيانات
+        <div className="flex gap-3">
+          <Link href="/dashboard/donors" className="text-sm font-bold text-slate-500 hover:text-slate-800 flex items-center gap-1 transition-colors bg-white px-4 py-2 border border-slate-200 rounded-lg shadow-sm">
+            العودة للقائمة <ArrowLeft className="w-4 h-4" />
           </Link>
-          <button
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-semibold transition-all hover:-translate-y-0.5"
-            style={{ background: "linear-gradient(135deg, #dc2626, #991b1b)", boxShadow: "0 4px 15px rgba(220,38,38,0.3)" }}
-          >
-            <Droplet className="w-4 h-4" />
-            تسجيل تبرع
-          </button>
+          <Link href={`/dashboard/donors/${donor.id}/edit`} className="labo-btn-outline">
+            <Edit className="w-4 h-4" /> تعديل البيانات
+          </Link>
+          <DeleteDonorButton donorId={donor.id} />
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column - Details */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="stats-card">
-            <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
-              <Users className="w-5 h-5 text-red-400" />
-              البيانات الشخصية والطبية
-            </h3>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-              <div className="space-y-1">
-                <p className="text-slate-400 text-xs font-medium flex items-center gap-1.5"><Droplet className="w-3.5 h-3.5" /> فصيلة الدم</p>
-                <p className="text-white font-bold text-lg text-red-400">{bloodTypeLabel(donor.bloodType)}</p>
+        
+        {/* Basic Info Card */}
+        <div className="lg:col-span-1 space-y-6">
+          <div className="labo-card p-6">
+            <div className="flex flex-col items-center text-center pb-6 border-b border-slate-200 mb-6">
+              <div className="w-20 h-20 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 text-3xl font-bold border border-blue-100 mb-4 shadow-sm">
+                {donor.user.name?.charAt(0)}
               </div>
-              <div className="space-y-1">
-                <p className="text-slate-400 text-xs font-medium flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" /> العمر</p>
-                <p className="text-slate-200 font-semibold">{age} سنة</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-slate-400 text-xs font-medium flex items-center gap-1.5"><Users className="w-3.5 h-3.5" /> الجنس</p>
-                <p className="text-slate-200 font-semibold">{donor.gender === "MALE" ? "ذكر" : "أنثى"}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-slate-400 text-xs font-medium flex items-center gap-1.5"><Activity className="w-3.5 h-3.5" /> الوزن</p>
-                <p className="text-slate-200 font-semibold">{donor.weight} كجم</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-slate-400 text-xs font-medium flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" /> الهاتف</p>
-                <p className="text-slate-200 font-semibold" dir="ltr">{donor.phone}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-slate-400 text-xs font-medium flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" /> المدينة</p>
-                <p className="text-slate-200 font-semibold">{donor.city || "غير محدد"}</p>
+              <h2 className="text-xl font-bold text-slate-800">{donor.user.name}</h2>
+              <div className="text-sm text-slate-500 mt-1 flex items-center justify-center gap-2">
+                <span className="bg-red-50 text-red-600 font-bold px-2 py-1 rounded border border-red-100" dir="ltr">
+                  {bloodTypeLabel(donor.bloodType)}
+                </span>
+                <span>•</span>
+                <span>{donor.gender === "MALE" ? "ذكر" : "أنثى"}</span>
+                <span>•</span>
+                <span>{age} سنة</span>
               </div>
             </div>
 
-            <div className="mt-6 pt-6 border-t border-white/5 space-y-4">
-              <div>
-                <p className="text-slate-400 text-xs font-medium mb-1">أمراض مزمنة</p>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 text-slate-700">
+                <Mail className="w-5 h-5 text-slate-400" />
+                <span className="text-sm font-medium">{donor.user.email}</span>
+              </div>
+              <div className="flex items-center gap-3 text-slate-700">
+                <Phone className="w-5 h-5 text-slate-400" />
+                <span className="text-sm font-medium" dir="ltr">{donor.phone || "غير متوفر"}</span>
+              </div>
+              <div className="flex items-center gap-3 text-slate-700">
+                <MapPin className="w-5 h-5 text-slate-400" />
+                <span className="text-sm font-medium">{donor.city || "المدينة غير محددة"} {donor.address ? `- ${donor.address}` : ""}</span>
+              </div>
+              <div className="flex items-center gap-3 text-slate-700">
+                <Calendar className="w-5 h-5 text-slate-400" />
+                <span className="text-sm font-medium">تاريخ الانضمام: {new Intl.DateTimeFormat("ar-SA", { dateStyle: "long" }).format(donor.createdAt)}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="labo-card p-6">
+            <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+              <HeartPulse className="w-5 h-5 text-red-500" />
+              البيانات الصحية
+            </h3>
+            
+            <div className="space-y-4">
+              <div className="flex justify-between items-center py-2 border-b border-slate-100">
+                <span className="text-sm font-bold text-slate-500">حالة الأهلية</span>
+                {getEligibilityBadge(donor.eligibilityStatus)}
+              </div>
+              {donor.nextEligibleDate && (
+                <div className="flex justify-between items-center py-2 border-b border-slate-100">
+                  <span className="text-sm font-bold text-slate-500">مؤهل بعد</span>
+                  <span className="text-sm font-bold text-slate-800 bg-blue-50 px-2 py-1 rounded">
+                    {new Intl.DateTimeFormat("ar-SA", { dateStyle: "medium" }).format(donor.nextEligibleDate)}
+                  </span>
+                </div>
+              )}
+              <div className="flex justify-between items-center py-2 border-b border-slate-100">
+                <span className="text-sm font-bold text-slate-500">الوزن</span>
+                <span className="text-sm font-bold text-slate-800">{donor.weight} كجم</span>
+              </div>
+              <div className="py-2">
+                <span className="text-sm font-bold text-slate-500 block mb-2">الأمراض المزمنة</span>
                 {donor.chronicDiseases.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
-                    {donor.chronicDiseases.map((d, i) => (
-                      <span key={i} className="px-3 py-1 rounded-full text-xs font-medium bg-red-500/10 text-red-400 border border-red-500/20">
-                        {d}
+                    {donor.chronicDiseases.map((disease, idx) => (
+                      <span key={idx} className="bg-slate-100 text-slate-700 text-xs font-bold px-2 py-1 rounded">
+                        {disease}
                       </span>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-slate-300 text-sm">لا يوجد</p>
+                  <span className="text-sm text-slate-400">لا يوجد سجل أمراض مزمنة.</span>
                 )}
               </div>
             </div>
           </div>
-
-          {/* Recent Donations */}
-          <div className="stats-card">
-            <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
-              <Heart className="w-5 h-5 text-red-400" />
-              سجل التبرعات الأخير
-            </h3>
-            
-            {donor.donations.length === 0 ? (
-              <div className="py-12 text-center border border-dashed border-white/10 rounded-2xl bg-white/2">
-                <Droplet className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-                <p className="text-slate-400 font-medium">لم يقم بأي تبرع بعد</p>
-                <p className="text-slate-500 text-sm mt-1">سجل التبرعات فارغ حالياً</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {donor.donations.map((donation) => (
-                  <div key={donation.id} className="p-4 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-red-500/10 text-red-400 flex items-center justify-center">
-                        <Droplet className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <p className="text-white font-medium">تبرع بالدم</p>
-                        <p className="text-slate-400 text-xs">{new Intl.DateTimeFormat("ar-SA").format(donation.donatedAt)}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-red-400 font-bold">{donation.volumeMl} مل</p>
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                        ناجح
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
         </div>
 
-        {/* Right Column - Status & Stats */}
-        <div className="space-y-6">
-          <div className="stats-card bg-gradient-to-br from-[#1e1e3a] to-[#121225]">
-            <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-red-400" />
-              حالة الأهلية
-            </h3>
-            
-            <div className="text-center p-6 rounded-2xl bg-white/5 border border-white/5">
-              <div className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4 ${
-                donor.eligibilityStatus === "ELIGIBLE" ? "bg-emerald-500/20 text-emerald-400" :
-                donor.eligibilityStatus === "INELIGIBLE" ? "bg-red-500/20 text-red-400" :
-                "bg-amber-500/20 text-amber-400"
-              }`}>
-                <ShieldCheck className="w-8 h-8" />
+        {/* History and Stats */}
+        <div className="lg:col-span-2 space-y-6">
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="labo-stat-card border-none shadow-sm h-full">
+              <div className="labo-stat-icon bg-red-50 text-red-600">
+                <Droplet className="w-6 h-6" />
               </div>
-              <h4 className={`text-xl font-bold mb-2 ${
-                donor.eligibilityStatus === "ELIGIBLE" ? "text-emerald-400" :
-                donor.eligibilityStatus === "INELIGIBLE" ? "text-red-400" :
-                "text-amber-400"
-              }`}>
-                {donor.eligibilityStatus === "ELIGIBLE" ? "مؤهل للتبرع" :
-                 donor.eligibilityStatus === "INELIGIBLE" ? "غير مؤهل" :
-                 "قيد الفحص الطوعي"}
-              </h4>
-              {donor.eligibilityReason && (
-                <p className="text-slate-400 text-sm mt-2">{donor.eligibilityReason}</p>
-              )}
+              <div>
+                <p className="labo-stat-title">إجمالي التبرعات</p>
+                <p className="labo-stat-value">{donor.donations.length}</p>
+              </div>
             </div>
-
-            <div className="mt-6 grid grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl bg-white/5 border border-white/5 text-center">
-                <p className="text-slate-400 text-xs font-medium mb-1">النقاط</p>
-                <p className="text-2xl font-bold text-white">{donor.points}</p>
+            <div className="labo-stat-card border-none shadow-sm h-full">
+              <div className="labo-stat-icon bg-emerald-50 text-emerald-600">
+                <Activity className="w-6 h-6" />
               </div>
-              <div className="p-4 rounded-xl bg-white/5 border border-white/5 text-center">
-                <p className="text-slate-400 text-xs font-medium mb-1">المستوى</p>
-                <p className="text-2xl font-bold text-white">{donor.level}</p>
+              <div>
+                <p className="labo-stat-title">نقاط المتبرع</p>
+                <p className="labo-stat-value">{donor.points}</p>
               </div>
-              <div className="col-span-2 p-4 rounded-xl bg-white/5 border border-white/5 text-center">
-                <p className="text-slate-400 text-xs font-medium mb-1">إجمالي التبرعات</p>
-                <p className="text-3xl font-bold text-red-400">{donor.totalDonations}</p>
+            </div>
+            <div className="labo-stat-card border-none shadow-sm h-full">
+              <div className="labo-stat-icon bg-blue-50 text-blue-600">
+                <CalendarDays className="w-6 h-6" />
+              </div>
+              <div>
+                <p className="labo-stat-title">آخر تبرع</p>
+                <p className="labo-stat-value text-xl">
+                  {donor.donations.length > 0 
+                    ? new Intl.DateTimeFormat("en-GB", { dateStyle: "short" }).format(donor.donations[0].donatedAt) 
+                    : "-"}
+                </p>
               </div>
             </div>
           </div>
+
+          <div className="labo-card p-0 overflow-hidden">
+            <div className="p-4 border-b border-slate-200 bg-white">
+              <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
+                <Activity className="w-5 h-5 text-blue-600" />
+                سجل التبرعات
+              </h3>
+            </div>
+            <div className="labo-table-wrapper">
+              <table className="labo-table w-full">
+                <thead>
+                  <tr>
+                    <th>المركز</th>
+                    <th>التاريخ</th>
+                    <th>الكمية (مل)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {donor.donations.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="py-12 text-center text-slate-400">
+                        لم يقم هذا المتبرع بأي عملية تبرع حتى الآن.
+                      </td>
+                    </tr>
+                  ) : (
+                    donor.donations.map((donation) => (
+                      <tr key={donation.id}>
+                        <td>
+                          <div className="font-bold text-slate-800">{donation.center.name}</div>
+                          <div className="text-xs text-slate-500">{donation.center.address}</div>
+                        </td>
+                        <td>
+                          <div className="font-bold text-slate-800" dir="ltr">
+                            {new Intl.DateTimeFormat("en-GB", { dateStyle: "medium" }).format(donation.donatedAt)}
+                          </div>
+                        </td>
+                        <td>
+                          <span className="font-bold text-slate-700">{donation.volumeMl}</span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
