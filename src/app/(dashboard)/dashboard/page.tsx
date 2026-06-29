@@ -17,10 +17,10 @@ export default async function DashboardPage() {
     <div className="space-y-6 animate-fade-in-up">
       {/* Welcome */}
       <div>
-        <h1 className="text-2xl font-bold text-white">
+        <h1 className="text-2xl font-bold text-slate-800">
           مرحباً، {session.user.name} 👋
         </h1>
-        <p className="text-slate-400 text-sm mt-1">
+        <p className="text-slate-500 text-sm mt-1 font-medium">
           {new Intl.DateTimeFormat("ar-SA", { weekday: "long", year: "numeric", month: "long", day: "numeric" }).format(new Date())}
         </p>
       </div>
