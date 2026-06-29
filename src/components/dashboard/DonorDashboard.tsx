@@ -81,9 +81,11 @@ export default function DonorDashboard({ userId }: { userId: string }) {
             <Clock className="w-4 h-4" /> سجل الزيارات:
           </span>
           {donor.donations.map((donation: any, index: number) => (
-            <button key={donation.id} className={`px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap ${index === 0 ? 'bg-blue-600 text-white' : 'border border-blue-600 text-blue-600 bg-white hover:bg-blue-50'}`}>
-              {index === 0 ? `أحدث زيارة (#${donor.donations.length})` : `${new Date(donation.donatedAt).toISOString().split('T')[0]} (#${donor.donations.length - index})`}
-            </button>
+            <Link key={donation.id} href="/dashboard/donations">
+              <button className={`px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap ${index === 0 ? 'bg-blue-600 text-white' : 'border border-blue-600 text-blue-600 bg-white hover:bg-blue-50'}`}>
+                {index === 0 ? `أحدث زيارة (#${donor.donations.length})` : `${new Date(donation.donatedAt).toISOString().split('T')[0]} (#${donor.donations.length - index})`}
+              </button>
+            </Link>
           ))}
         </div>
       )}
@@ -141,10 +143,12 @@ export default function DonorDashboard({ userId }: { userId: string }) {
                 </p>
               </div>
               
-              <button className="bg-emerald-500 text-white font-bold py-2 px-6 rounded-md shadow-sm hover:bg-emerald-600 transition-colors flex items-center gap-2">
-                <FileText className="w-5 h-5" />
-                التقرير الطبي (PDF)
-              </button>
+              <Link href="/dashboard/reports">
+                <button className="bg-emerald-500 text-white font-bold py-2 px-6 rounded-md shadow-sm hover:bg-emerald-600 transition-colors flex items-center gap-2">
+                  <FileText className="w-5 h-5" />
+                  التقرير الطبي (PDF)
+                </button>
+              </Link>
             </div>
           </div>
           
@@ -208,10 +212,12 @@ export default function DonorDashboard({ userId }: { userId: string }) {
               <Download className="w-5 h-5 text-blue-600" />
               التقارير الرسمية
             </h3>
-            <div className="flex items-center gap-3 p-3 border border-gray-200 rounded-md bg-white hover:bg-gray-50 cursor-pointer">
-              <FileText className="w-5 h-5 text-red-500" />
-              <span className="text-sm text-slate-700 font-medium">تأكيد الموعد</span>
-            </div>
+            <Link href="/dashboard/reports">
+              <div className="flex items-center gap-3 p-3 border border-gray-200 rounded-md bg-white hover:bg-gray-50 cursor-pointer transition-colors">
+                <FileText className="w-5 h-5 text-red-500" />
+                <span className="text-sm text-slate-700 font-medium">عرض وطباعة التقارير</span>
+              </div>
+            </Link>
           </div>
 
           {/* Notifications */}
