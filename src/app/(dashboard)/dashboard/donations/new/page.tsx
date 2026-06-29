@@ -6,11 +6,12 @@ import { Droplet, Calendar, User } from "lucide-react";
 
 export const metadata = { title: "تسجيل تبرع جديد" };
 
-export default async function NewDonationPage({ searchParams }: { searchParams: { appointmentId?: string } }) {
+export default async function NewDonationPage({ searchParams }: { searchParams: Promise<{ appointmentId?: string }> }) {
   const session = await auth();
   if (!session?.user) redirect("/login");
 
-  const appointmentId = searchParams.appointmentId;
+  const resolvedParams = await searchParams;
+  const appointmentId = resolvedParams.appointmentId;
   if (!appointmentId) {
     return (
       <div className="p-8 text-center text-red-500">
