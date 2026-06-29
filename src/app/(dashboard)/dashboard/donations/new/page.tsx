@@ -22,7 +22,7 @@ export default async function NewDonationPage({ searchParams }: { searchParams: 
   const appointment = await prisma.appointment.findUnique({
     where: { id: appointmentId },
     include: {
-      donor: true,
+      donor: { include: { user: true } },
       center: true,
     }
   });
@@ -65,8 +65,8 @@ export default async function NewDonationPage({ searchParams }: { searchParams: 
               <User className="w-4 h-4 text-slate-500" />
               بيانات المتبرع
             </h3>
-            <p className="text-sm text-slate-600 mb-1"><strong>الاسم:</strong> {appointment.donor.firstName} {appointment.donor.lastName}</p>
-            <p className="text-sm text-slate-600 mb-1"><strong>الهوية:</strong> {appointment.donor.nationalId}</p>
+            <p className="text-sm text-slate-600 mb-1"><strong>الاسم:</strong> {appointment.donor.user?.name || 'متبرع'}</p>
+            <p className="text-sm text-slate-600 mb-1"><strong>رقم الهاتف:</strong> <span dir="ltr">{appointment.donor.phone}</span></p>
             <p className="text-sm text-slate-600"><strong>فصيلة الدم المسجلة:</strong> <span className="text-red-600 font-bold" dir="ltr">{appointment.donor.bloodType?.replace('_', ' ')}</span></p>
           </div>
 
@@ -86,7 +86,7 @@ export default async function NewDonationPage({ searchParams }: { searchParams: 
               appointmentId={appointment.id}
               donorId={appointment.donor.id}
               centerId={appointment.center.id}
-              staffId={session.user.id}
+              staffId={session.user.id || ""}
               donorBloodType={appointment.donor.bloodType || "O_POSITIVE"}
               defaultNextDate={defaultNextDate.toISOString().slice(0,10)}
             />

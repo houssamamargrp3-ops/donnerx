@@ -14,7 +14,7 @@ export default async function CertificatePage({ params }: { params: { id: string
   const donation = await prisma.donation.findUnique({
     where: { id: params.id },
     include: {
-      donor: true,
+      donor: { include: { user: true } },
       center: true,
       certificate: true,
     }
@@ -67,7 +67,7 @@ export default async function CertificatePage({ params }: { params: { id: string
             </p>
             
             <h2 className="text-5xl font-black text-red-700 py-4 border-y-2 border-red-100 bg-red-50/30">
-              {donation.donor.firstName} {donation.donor.lastName}
+              {donation.donor.user?.name || 'متبرع مجهول'}
             </h2>
             
             <p className="text-xl text-slate-600 leading-relaxed">

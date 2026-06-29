@@ -13,7 +13,8 @@ import {
   AlertTriangle,
   Award,
   Bell,
-  Building2
+  Building2,
+  FileText
 } from "lucide-react";
 
 export default function DashboardSidebar({ role }: { role: string }) {
