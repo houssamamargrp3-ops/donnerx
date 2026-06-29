@@ -17,7 +17,7 @@ export async function recordDonation(formData: FormData) {
     const nextEligibleDateStr = formData.get("nextEligibleDate") as string;
     const nextEligibleDate = new Date(nextEligibleDateStr);
 
-    if (!appointmentId || !centerId || !donorId || !volumeMl || !bloodType) {
+    if (!centerId || !donorId || !volumeMl || !bloodType) {
       return { error: "يرجى تعبئة جميع الحقول الإلزامية." };
     }
 
@@ -52,10 +52,12 @@ export async function recordDonation(formData: FormData) {
       });
 
       // 4. Update Appointment Status to COMPLETED
-      await tx.appointment.update({
-        where: { id: appointmentId },
-        data: { status: "COMPLETED" },
-      });
+      if (appointmentId) {
+        await tx.appointment.update({
+          where: { id: appointmentId },
+          data: { status: "COMPLETED" },
+        });
+      }
 
       // 5. Update Donor's nextEligibleDate and totalDonations
       await tx.donor.update({

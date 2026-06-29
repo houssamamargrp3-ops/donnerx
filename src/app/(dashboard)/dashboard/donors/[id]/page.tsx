@@ -4,6 +4,7 @@ import { ArrowLeft, User, Mail, Phone, MapPin, Droplet, Calendar, HeartPulse, Ac
 import Link from "next/link";
 import { bloodTypeLabel } from "@/lib/utils";
 import DeleteDonorButton from "./DeleteDonorButton";
+import WalkInButton from "./WalkInButton";
 
 export const metadata = { title: "ملف المتبرع" };
 
@@ -60,6 +61,7 @@ export default async function DonorDetailsPage({ params }: { params: Promise<{ i
           <Link href={`/dashboard/donors/${resolvedParams.id}/eligibility`} className="labo-btn-primary">
             <ShieldCheck className="w-4 h-4" /> فحص طبي جديد
           </Link>
+          <WalkInButton donorId={donor.id} />
           <Link href={`/dashboard/donors/${resolvedParams.id}/edit`} className="labo-btn-outline">
             <Edit className="w-4 h-4" /> تعديل البيانات
           </Link>
