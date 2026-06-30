@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 interface Props {
   donorName: string;
@@ -21,10 +21,8 @@ export default function BloodTypeCard({
   age = 0,
   eligibilityStatus = "",
 }: Props) {
-
   const bt = bloodType.replace("_", " ");
 
-  // Blood type to color mapping
   const btColors: Record<string, { bg: string; accent: string; glow: string }> = {
     "A POSITIVE":  { bg: "#7f1d1d", accent: "#dc2626", glow: "#ef4444" },
     "A NEGATIVE":  { bg: "#7f1d1d", accent: "#dc2626", glow: "#ef4444" },
@@ -38,20 +36,22 @@ export default function BloodTypeCard({
 
   const colors = btColors[bt] || { bg: "#7f1d1d", accent: "#dc2626", glow: "#ef4444" };
 
-  const eligibilityText = eligibilityStatus === "ELIGIBLE" 
-    ? "âœ… Ù…Ø¤Ù‡Ù„ Ù„Ù„ØªØ¨Ø±Ø¹" 
-    : eligibilityStatus === "INELIGIBLE" 
-    ? "âŒ ØºÙŠØ± Ù…Ø¤Ù‡Ù„ Ø­Ø§Ù„ÙŠØ§Ù‹" 
-    : "â³ Ù‚ÙŠØ¯ Ø§Ù„ÙØ­Øµ";
+  const eligibilityText =
+    eligibilityStatus === "ELIGIBLE"
+      ? "✅ مؤهل للتبرع"
+      : eligibilityStatus === "INELIGIBLE"
+      ? "❌ غير مؤهل حالياً"
+      : "⏳ قيد الفحص";
 
-  const genderText = gender === "MALE" ? "Ø°ÙƒØ±" : gender === "FEMALE" ? "Ø£Ù†Ø«Ù‰" : "";
+  const genderText = gender === "MALE" ? "ذكر" : gender === "FEMALE" ? "أنثى" : "";
 
   const printCard = () => {
     const html = `<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8"/>
-  <title>Ø¨Ø·Ø§Ù‚Ø© Ø²Ù…Ø±Ø© Ø§Ù„Ø¯Ù… - ${donorName}</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>بطاقة زمرة الدم - ${donorName}</title>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     body {
@@ -64,8 +64,6 @@ export default function BloodTypeCard({
       font-family: 'Segoe UI', Arial, sans-serif;
       padding: 20px;
     }
-
-    /* Instructions bar */
     .bar {
       background: #16213e;
       border: 1px solid #0f3460;
@@ -93,8 +91,6 @@ export default function BloodTypeCard({
       font-family: inherit;
       white-space: nowrap;
     }
-
-    /* Card container - shows front and back side by side */
     .cards-row {
       display: flex;
       gap: 24px;
@@ -102,17 +98,13 @@ export default function BloodTypeCard({
       flex-wrap: wrap;
       justify-content: center;
     }
-
     .card-label {
       color: #94a3b8;
       font-size: 12px;
       text-align: center;
       margin-bottom: 8px;
       letter-spacing: 1px;
-      text-transform: uppercase;
     }
-
-    /* Standard credit card size: 85.6mm x 53.98mm */
     .card {
       width: 323px;
       height: 204px;
@@ -121,12 +113,9 @@ export default function BloodTypeCard({
       overflow: hidden;
       box-shadow: 0 20px 60px rgba(0,0,0,0.5);
     }
-
-    /* ===== FRONT CARD ===== */
     .front {
       background: linear-gradient(135deg, ${colors.bg} 0%, ${colors.accent} 60%, ${colors.glow} 100%);
     }
-
     .front::before {
       content: '';
       position: absolute;
@@ -143,7 +132,6 @@ export default function BloodTypeCard({
       border-radius: 50%;
       background: rgba(255,255,255,0.05);
     }
-
     .front-content {
       position: relative;
       z-index: 2;
@@ -153,156 +141,29 @@ export default function BloodTypeCard({
       flex-direction: column;
       justify-content: space-between;
     }
-
-    .front-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
-
-    .brand {
-      font-size: 15px;
-      font-weight: 900;
-      color: rgba(255,255,255,0.9);
-      letter-spacing: -0.5px;
-    }
+    .front-header { display: flex; justify-content: space-between; align-items: flex-start; }
+    .brand { font-size: 15px; font-weight: 900; color: rgba(255,255,255,0.9); letter-spacing: -0.5px; }
     .brand span { color: rgba(255,255,255,0.6); }
-
-    .card-title {
-      font-size: 9px;
-      color: rgba(255,255,255,0.6);
-      font-weight: bold;
-      letter-spacing: 1.5px;
-      text-align: left;
-    }
-
-    /* Big blood type in center */
-    .blood-center {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 4px;
-    }
-
-    .blood-display {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-    }
-
-    .blood-label-sm {
-      font-size: 9px;
-      color: rgba(255,255,255,0.6);
-      font-weight: bold;
-      letter-spacing: 2px;
-      margin-bottom: 2px;
-    }
-
-    .blood-type-big {
-      font-size: 56px;
-      font-weight: 900;
-      color: white;
-      line-height: 1;
-      text-shadow: 0 4px 20px rgba(0,0,0,0.3);
-      direction: ltr;
-    }
-
-    .drop-icon {
-      font-size: 56px;
-      opacity: 0.3;
-    }
-
-    .front-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-    }
-
-    .donor-name-card {
-      font-size: 15px;
-      font-weight: bold;
-      color: white;
-    }
-    .donor-meta {
-      font-size: 10px;
-      color: rgba(255,255,255,0.65);
-      margin-top: 2px;
-    }
-
-    .eligibility-badge {
-      font-size: 10px;
-      background: rgba(255,255,255,0.15);
-      color: white;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-weight: bold;
-      border: 1px solid rgba(255,255,255,0.25);
-    }
-
-    /* ===== BACK CARD ===== */
-    .back {
-      background: linear-gradient(160deg, #0f172a 0%, #1e293b 100%);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .back-stripe {
-      position: absolute;
-      top: 30px; left: 0; right: 0;
-      height: 44px;
-      background: #000;
-    }
-
-    .back-content {
-      position: relative;
-      z-index: 2;
-      padding: 16px 18px;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      gap: 10px;
-    }
-
-    .info-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid rgba(255,255,255,0.07);
-      padding: 5px 0;
-    }
+    .card-title { font-size: 9px; color: rgba(255,255,255,0.6); font-weight: bold; letter-spacing: 1.5px; text-align: left; }
+    .blood-center { display: flex; align-items: center; justify-content: space-between; padding: 0 4px; }
+    .blood-display { display: flex; flex-direction: column; align-items: flex-start; }
+    .blood-label-sm { font-size: 9px; color: rgba(255,255,255,0.6); font-weight: bold; letter-spacing: 2px; margin-bottom: 2px; }
+    .blood-type-big { font-size: 56px; font-weight: 900; color: white; line-height: 1; text-shadow: 0 4px 20px rgba(0,0,0,0.3); direction: ltr; }
+    .drop-icon { font-size: 56px; opacity: 0.3; }
+    .front-footer { display: flex; justify-content: space-between; align-items: flex-end; }
+    .donor-name-card { font-size: 15px; font-weight: bold; color: white; }
+    .donor-meta { font-size: 10px; color: rgba(255,255,255,0.65); margin-top: 2px; }
+    .eligibility-badge { font-size: 10px; background: rgba(255,255,255,0.15); color: white; padding: 4px 10px; border-radius: 20px; font-weight: bold; border: 1px solid rgba(255,255,255,0.25); }
+    .back { background: linear-gradient(160deg, #0f172a 0%, #1e293b 100%); border: 1px solid rgba(255,255,255,0.08); }
+    .back-stripe { position: absolute; top: 30px; left: 0; right: 0; height: 44px; background: #000; }
+    .back-content { position: relative; z-index: 2; padding: 16px 18px; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; }
+    .info-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.07); padding: 5px 0; }
     .info-label { font-size: 9px; color: #64748b; font-weight: bold; letter-spacing: 0.5px; }
     .info-value { font-size: 11px; color: #e2e8f0; font-weight: bold; }
-
-    .back-brand {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 4px;
-    }
-    .back-brand-text {
-      font-size: 12px;
-      font-weight: 900;
-      color: ${colors.glow};
-    }
-    .emergency-text {
-      font-size: 9px;
-      color: #ef4444;
-      font-weight: bold;
-    }
-
-    .back-blood-chip {
-      position: absolute;
-      top: 8px;
-      left: 18px;
-      background: ${colors.accent};
-      color: white;
-      font-size: 13px;
-      font-weight: 900;
-      padding: 4px 12px;
-      border-radius: 8px;
-      direction: ltr;
-    }
-
+    .back-brand { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+    .back-brand-text { font-size: 12px; font-weight: 900; color: ${colors.glow}; }
+    .emergency-text { font-size: 9px; color: #ef4444; font-weight: bold; }
+    .back-blood-chip { position: absolute; top: 8px; left: 18px; background: ${colors.accent}; color: white; font-size: 13px; font-weight: 900; padding: 4px 12px; border-radius: 8px; direction: ltr; }
     @media print {
       body { background: white; padding: 0; }
       .bar { display: none !important; }
@@ -314,62 +175,53 @@ export default function BloodTypeCard({
 </head>
 <body>
   <div class="bar">
-    <span>ðŸ–¨ï¸ Ù„Ø·Ø¨Ø§Ø¹Ø© Ø£Ùˆ Ø­ÙØ¸ ÙƒÙ€ PDF: Ø§Ø¶ØºØ· Ø§Ù„Ø²Ø± â† Ø§Ø®ØªØ± "Microsoft Print to PDF"</span>
-    <button class="print-btn" onclick="window.print()">ðŸ–¨ï¸ Ø·Ø¨Ø§Ø¹Ø© / Ø­ÙØ¸ PDF</button>
+    <span>🖨️ لطباعة أو حفظ كـ PDF: اضغط الزر ← اختر "Microsoft Print to PDF"</span>
+    <button class="print-btn" onclick="window.print()">🖨️ طباعة / حفظ PDF</button>
   </div>
-
   <div class="cards-row">
-    <!-- FRONT -->
     <div>
-      <div class="card-label">Ø§Ù„ÙˆØ¬Ù‡ Ø§Ù„Ø£Ù…Ø§Ù…ÙŠ</div>
+      <div class="card-label">الوجه الأمامي</div>
       <div class="card front">
         <div class="front-content">
           <div class="front-header">
             <div class="brand">DONNER<span>.X</span></div>
             <div class="card-title">BLOOD DONOR<br/>IDENTITY CARD</div>
           </div>
-          
           <div class="blood-center">
             <div class="blood-display">
               <div class="blood-label-sm">BLOOD TYPE</div>
               <div class="blood-type-big">${bt}</div>
             </div>
-            <div class="drop-icon">ðŸ©¸</div>
+            <div class="drop-icon">🩸</div>
           </div>
-          
           <div class="front-footer">
             <div>
               <div class="donor-name-card">${donorName}</div>
-              <div class="donor-meta">${genderText} ${age ? `â€¢ ${age} Ø³Ù†Ø©` : ""} ${city ? `â€¢ ${city}` : ""}</div>
+              <div class="donor-meta">${genderText}${age ? ` • ${age} سنة` : ""}${city ? ` • ${city}` : ""}</div>
             </div>
             <div class="eligibility-badge">${eligibilityText}</div>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- BACK -->
     <div>
-      <div class="card-label">Ø§Ù„ÙˆØ¬Ù‡ Ø§Ù„Ø®Ù„ÙÙŠ</div>
+      <div class="card-label">الوجه الخلفي</div>
       <div class="card back">
         <div class="back-stripe"></div>
         <div class="back-blood-chip">${bt}</div>
         <div class="back-content">
           <div class="info-row">
-            <div class="info-label">Ø±Ù‚Ù… Ø§Ù„Ù…ØªØ¨Ø±Ø¹</div>
+            <div class="info-label">رقم المتبرع</div>
             <div class="info-value" style="direction:ltr;font-family:monospace">${donorId.slice(0, 16).toUpperCase()}</div>
           </div>
-          ${phone ? `<div class="info-row">
-            <div class="info-label">Ø±Ù‚Ù… Ø§Ù„Ù‡Ø§ØªÙ Ù„Ù„Ø·ÙˆØ§Ø±Ø¦</div>
-            <div class="info-value" style="direction:ltr">${phone}</div>
-          </div>` : ""}
+          ${phone ? `<div class="info-row"><div class="info-label">رقم الهاتف للطوارئ</div><div class="info-value" style="direction:ltr">${phone}</div></div>` : ""}
           <div class="info-row">
-            <div class="info-label">Ø§Ù„Ù…Ù†ØµØ©</div>
-            <div class="info-value">DONNER.X â€” Ù…Ù†ØµØ© Ø§Ù„ØªØ¨Ø±Ø¹ Ø¨Ø§Ù„Ø¯Ù…</div>
+            <div class="info-label">المنصة</div>
+            <div class="info-value">DONNER.X — منصة التبرع بالدم</div>
           </div>
           <div class="back-brand">
             <div class="back-brand-text">DONNER.X</div>
-            <div class="emergency-text">ðŸš¨ ÙÙŠ Ø­Ø§Ù„Ø© Ø§Ù„Ø·ÙˆØ§Ø±Ø¦ â€” Ø²Ù…Ø±Ø© Ø¯Ù…ÙŠ: ${bt}</div>
+            <div class="emergency-text">🚨 في حالة الطوارئ — زمرة دمي: ${bt}</div>
           </div>
         </div>
       </div>
@@ -378,32 +230,28 @@ export default function BloodTypeCard({
 </body>
 </html>`;
 
-    const w = window.open("", "_blank", "width=900,height=700");
+    // Use Blob URL to properly handle UTF-8 Arabic characters
+    const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const w = window.open(url, "_blank", "width=900,height=700");
     if (!w) {
-      alert("âš ï¸ ÙŠØ±Ø¬Ù‰ Ø§Ù„Ø³Ù…Ø§Ø­ Ø¨Ø§Ù„Ù†ÙˆØ§ÙØ° Ø§Ù„Ù…Ù†Ø¨Ø«Ù‚Ø© Ù„Ù‡Ø°Ø§ Ø§Ù„Ù…ÙˆÙ‚Ø¹.");
-      return;
+      alert("يرجى السماح بالنوافذ المنبثقة لهذا الموقع.");
     }
-    w.document.write(html);
-    w.document.close();
+    // Revoke URL after a short delay
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
   };
 
   return (
     <div
-      className="relative rounded-2xl overflow-hidden cursor-pointer group"
+      className="relative rounded-2xl overflow-hidden"
       style={{
         background: `linear-gradient(135deg, ${colors.bg} 0%, ${colors.accent} 100%)`,
         minHeight: "180px",
       }}
     >
       {/* Decorative circles */}
-      <div
-        className="absolute -top-10 -right-10 w-44 h-44 rounded-full opacity-10"
-        style={{ background: "white" }}
-      />
-      <div
-        className="absolute -bottom-14 -left-8 w-52 h-52 rounded-full opacity-[0.07]"
-        style={{ background: "white" }}
-      />
+      <div className="absolute -top-10 -right-10 w-44 h-44 rounded-full opacity-10" style={{ background: "white" }} />
+      <div className="absolute -bottom-14 -left-8 w-52 h-52 rounded-full opacity-[0.07]" style={{ background: "white" }} />
 
       {/* Content */}
       <div className="relative z-10 p-5 flex flex-col justify-between h-full min-h-[180px]">
@@ -423,7 +271,7 @@ export default function BloodTypeCard({
             <div className="text-[9px] font-bold text-white/60 tracking-widest mb-1">BLOOD TYPE</div>
             <div className="text-5xl font-black text-white leading-none" dir="ltr">{bt}</div>
           </div>
-          <div className="text-5xl opacity-25">ðŸ©¸</div>
+          <div className="text-5xl opacity-25">🩸</div>
         </div>
 
         {/* Footer */}
@@ -431,14 +279,14 @@ export default function BloodTypeCard({
           <div>
             <div className="text-white font-bold text-sm">{donorName}</div>
             <div className="text-white/60 text-[10px] mt-0.5">
-              {genderText} {age ? `â€¢ ${age} Ø³Ù†Ø©` : ""} {city ? `â€¢ ${city}` : ""}
+              {genderText}{age ? ` • ${age} سنة` : ""}{city ? ` • ${city}` : ""}
             </div>
           </div>
           <button
             onClick={printCard}
             className="bg-white/20 hover:bg-white/30 text-white text-[11px] font-bold px-3 py-1.5 rounded-full border border-white/30 transition-all flex items-center gap-1"
           >
-            ðŸ–¨ï¸ Ø·Ø¨Ø§Ø¹Ø© / PDF
+            🖨️ طباعة / PDF
           </button>
         </div>
       </div>
