@@ -14,7 +14,8 @@ import {
   Award,
   Bell,
   Building2,
-  FileText
+  FileText,
+  QrCode
 } from "lucide-react";
 
 import { useState } from "react";
@@ -42,11 +43,13 @@ export default function DashboardSidebar({ role }: { role: string }) {
         { label: "سجل التبرعات", href: "/dashboard/donations", icon: <Activity className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF"] },
         { label: "المخزون", href: "/dashboard/inventory", icon: <Droplet className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF"] },
         { label: "إدارة الحملات", href: "/dashboard/campaigns", icon: <Megaphone className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF"] },
+        { label: "ماسح البطاقات (QR)", href: "/dashboard/qr", icon: <QrCode className="w-5 h-5 text-blue-500" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"] },
       ]
     },
     {
       title: "قسم المتبرع",
       items: [
+        { label: "البطاقة الذكية (QR)", href: "/dashboard/qr", icon: <QrCode className="w-5 h-5 text-red-500" />, roles: ["DONOR"] },
         { label: "سجلاتي الطبية", href: "/dashboard/profile", icon: <FileText className="w-5 h-5" />, roles: ["DONOR"] },
         { label: "شهاداتي", href: "/dashboard/profile/certificates", icon: <Award className="w-5 h-5" />, roles: ["DONOR"] },
         { label: "المكافآت", href: "/dashboard/gamification", icon: <Award className="w-5 h-5" />, roles: ["DONOR"] },
