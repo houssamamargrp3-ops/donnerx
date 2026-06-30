@@ -11,21 +11,31 @@ import {
   Info,
   Trophy,
   Star,
-  Award
+  Award,
+  ShieldAlert
 } from "lucide-react";
 import Link from "next/link";
 
 export default function DonorDashboard({ userId }: { userId: string }) {
   const [donor, setDonor] = useState<any>(null);
+  const [emergencies, setEmergencies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDonor = async () => {
-      try {
-        const res = await fetch("/api/donor/me");
-        if (res.ok) {
-          const data = await res.json();
+        const [resDonor, resEmerg] = await Promise.all([
+          fetch("/api/donor/me"),
+          fetch("/api/emergency?status=OPEN")
+        ]);
+
+        if (resDonor.ok) {
+          const data = await resDonor.json();
           setDonor(data);
+        }
+        if (resEmerg.ok) {
+          const data = await resEmerg.json();
+          // Filter out completed/cancelled ones just in case
+          setEmergencies(data.filter((e: any) => e.status === "OPEN"));
         }
       } catch (e) {
         console.error(e);
@@ -73,6 +83,37 @@ export default function DonorDashboard({ userId }: { userId: string }) {
           <p className="text-slate-500 mt-1 text-sm">إليك الحالة الحالية لتبرعاتك ونتائجك المتاحة.</p>
         </div>
       </div>
+
+      {/* Emergency Alert Banner */}
+      {emergencies.length > 0 && (
+        <div className="bg-red-50 border-r-4 border-red-600 p-4 rounded-lg shadow-sm animate-fade-in-up">
+          <div className="flex justify-between items-start">
+            <div className="flex gap-3">
+              <div className="mt-1 bg-red-100 p-2 rounded-full text-red-600 animate-pulse">
+                <ShieldAlert className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="font-bold text-red-800 text-lg">نداءات طوارئ نشطة ({emergencies.length})</h3>
+                <p className="text-red-700 text-sm mt-1">
+                  هناك {emergencies.length} طلبات طوارئ عاجلة للدم حالياً. قد تكون أنت المنقذ!
+                </p>
+                <div className="mt-3 flex gap-2 overflow-x-auto pb-2">
+                  {emergencies.slice(0, 3).map(em => (
+                    <span key={em.id} className="bg-white border border-red-200 text-red-700 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">
+                      {em.hospitalName} ({em.city}) - فصيلة {em.bloodType.replace("_POSITIVE", "+").replace("_NEGATIVE", "-")}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <Link href="/dashboard/emergency">
+              <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg text-sm transition-colors whitespace-nowrap">
+                عرض التفاصيل
+              </button>
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* History Pills */}
       {donor.donations && donor.donations.length > 0 && (

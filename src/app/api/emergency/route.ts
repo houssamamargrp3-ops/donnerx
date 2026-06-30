@@ -82,10 +82,14 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const city = searchParams.get("city");
+    const status = searchParams.get("status");
     
-    let whereClause = {};
+    let whereClause: any = {};
     if (city) {
-      whereClause = { city: { equals: city, mode: 'insensitive' } };
+      whereClause.city = { equals: city, mode: 'insensitive' };
+    }
+    if (status) {
+      whereClause.status = status;
     }
 
     const requests = await prisma.emergencyRequest.findMany({
