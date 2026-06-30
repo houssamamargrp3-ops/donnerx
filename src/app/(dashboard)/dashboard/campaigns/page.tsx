@@ -1,15 +1,21 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Megaphone, Plus, CalendarDays, MapPin, Users } from "lucide-react";
+import { Megaphone, Plus, CalendarDays, MapPin, Users, Edit3, Trash2, Eye } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function CampaignsPage() {
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  
   const [formData, setFormData] = useState({
     name: "", description: "", organizer: "", location: "", city: "", startDate: "", endDate: "", capacity: ""
   });
+
+  const router = useRouter();
 
   const fetchCampaigns = async () => {
     try {
@@ -29,24 +35,68 @@ export default function CampaignsPage() {
     fetchCampaigns();
   }, []);
 
+  const openCreateModal = () => {
+    setEditingId(null);
+    setFormData({ name: "", description: "", organizer: "", location: "", city: "", startDate: "", endDate: "", capacity: "" });
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (camp: any) => {
+    setEditingId(camp.id);
+    setFormData({
+      name: camp.name || "",
+      description: camp.description || "",
+      organizer: camp.organizer || "",
+      location: camp.location || "",
+      city: camp.city || "",
+      startDate: camp.startDate ? new Date(camp.startDate).toISOString().slice(0, 16) : "",
+      endDate: camp.endDate ? new Date(camp.endDate).toISOString().slice(0, 16) : "",
+      capacity: camp.capacity ? String(camp.capacity) : ""
+    });
+    setIsModalOpen(true);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch("/api/campaigns", {
-        method: "POST",
+      const url = editingId ? `/api/campaigns/${editingId}` : "/api/campaigns";
+      const method = editingId ? "PUT" : "POST";
+      
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)
       });
+      
       if (res.ok) {
         setIsModalOpen(false);
-        setFormData({ name: "", description: "", organizer: "", location: "", city: "", startDate: "", endDate: "", capacity: "" });
         fetchCampaigns();
-        alert("تم إنشاء الحملة وإرسال إشعارات للمتبرعين بنجاح!");
+        if (!editingId) {
+          alert("تم إنشاء الحملة وإرسال إشعارات للمتبرعين بنجاح!");
+        } else {
+          alert("تم تحديث بيانات الحملة بنجاح!");
+        }
       } else {
-        alert("فشل إنشاء الحملة.");
+        alert("فشل في حفظ بيانات الحملة.");
       }
     } catch (e) {
       console.error(e);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (confirm("هل أنت متأكد من حذف هذه الحملة بشكل نهائي؟")) {
+      try {
+        const res = await fetch(`/api/campaigns/${id}`, { method: "DELETE" });
+        if (res.ok) {
+          fetchCampaigns();
+          alert("تم الحذف بنجاح.");
+        } else {
+          alert("فشل حذف الحملة.");
+        }
+      } catch (e) {
+        console.error(e);
+      }
     }
   };
 
@@ -69,7 +119,7 @@ export default function CampaignsPage() {
           <h1 className="text-xl font-bold text-slate-800">إدارة الحملات</h1>
         </div>
         <button 
-          onClick={() => setIsModalOpen(true)}
+          onClick={openCreateModal}
           className="labo-btn-primary"
         >
           <Plus className="w-4 h-4" />
@@ -119,12 +169,15 @@ export default function CampaignsPage() {
                     </td>
                     <td>{getStatusBadge(camp.status)}</td>
                     <td>
-                      <div className="flex gap-1">
-                        <button className="labo-action-btn labo-action-edit" title="إدارة">
-                          <Megaphone className="w-4 h-4"/>
+                      <div className="flex gap-2">
+                        <Link href={`/dashboard/campaigns/${camp.id}`} className="labo-action-btn bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border-indigo-200" title="عرض التفاصيل">
+                          <Eye className="w-4 h-4"/>
+                        </Link>
+                        <button onClick={() => openEditModal(camp)} className="labo-action-btn labo-action-edit" title="تعديل">
+                          <Edit3 className="w-4 h-4"/>
                         </button>
-                        <button className="labo-action-btn labo-action-delete" title="حذف">
-                          <Plus className="w-4 h-4 transform rotate-45"/>
+                        <button onClick={() => handleDelete(camp.id)} className="labo-action-btn labo-action-delete" title="حذف">
+                          <Trash2 className="w-4 h-4"/>
                         </button>
                       </div>
                     </td>
@@ -141,12 +194,12 @@ export default function CampaignsPage() {
         )}
       </div>
 
-      {/* Create Modal */}
+      {/* Create / Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-md shadow-xl w-full max-w-2xl overflow-hidden">
             <div className="p-4 border-b border-gray-200 flex items-center justify-between bg-slate-50">
-              <h2 className="text-lg font-bold text-slate-800">إنشاء حملة تبرع بالدم</h2>
+              <h2 className="text-lg font-bold text-slate-800">{editingId ? "تعديل بيانات الحملة" : "إنشاء حملة تبرع بالدم"}</h2>
               <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600 font-bold text-xl">&times;</button>
             </div>
             
@@ -198,7 +251,7 @@ export default function CampaignsPage() {
                   إلغاء
                 </button>
                 <button type="submit" className="labo-btn-primary">
-                  إنشاء ونشر الحملة
+                  {editingId ? "تحديث الحملة" : "إنشاء ونشر الحملة"}
                 </button>
               </div>
             </form>
