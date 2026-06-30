@@ -5,7 +5,7 @@ import Link from "next/link";
 import { bloodTypeLabel } from "@/lib/utils";
 import DeleteDonorButton from "./DeleteDonorButton";
 import WalkInButton from "./WalkInButton";
-import BloodTypeCard from "./BloodTypeCard";
+import BloodTypeCard from "@/components/BloodTypeCard";
 
 export const metadata = { title: "ملف المتبرع" };
 

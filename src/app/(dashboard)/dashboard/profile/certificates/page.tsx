@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Award, ArrowLeft, Download, ShieldCheck, HeartPulse } from "lucide-react";
 import Link from "next/link";
-import BloodTypeCard from "../../../donors/[id]/BloodTypeCard";
+import BloodTypeCard from "@/components/BloodTypeCard";
 
 export const metadata = { title: "شهاداتي" };
 
