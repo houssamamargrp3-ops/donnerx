@@ -7,12 +7,13 @@ import RegisterCampaignButton from "@/components/dashboard/RegisterCampaignButto
 
 export const metadata = { title: "تفاصيل الحملة" };
 
-export default async function CampaignDetailsPage({ params }: { params: { id: string } }) {
+export default async function CampaignDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params;
   const session = await auth();
   const role = session?.user ? (session.user as any).role : "DONOR";
 
   const campaign = await prisma.campaign.findUnique({
-    where: { id: params.id }
+    where: { id: resolvedParams.id }
   });
 
   if (!campaign) {
