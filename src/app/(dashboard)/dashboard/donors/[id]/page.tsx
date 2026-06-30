@@ -5,6 +5,7 @@ import Link from "next/link";
 import { bloodTypeLabel } from "@/lib/utils";
 import DeleteDonorButton from "./DeleteDonorButton";
 import WalkInButton from "./WalkInButton";
+import BloodTypeCard from "./BloodTypeCard";
 
 export const metadata = { title: "ملف المتبرع" };
 
@@ -114,6 +115,18 @@ export default async function DonorDetailsPage({ params }: { params: Promise<{ i
               </div>
             </div>
           </div>
+
+          {/* Blood Type Card */}
+          <BloodTypeCard
+            donorName={donor.user?.name || "متبرع"}
+            bloodType={donor.bloodType}
+            donorId={donor.id}
+            phone={donor.phone || ""}
+            city={donor.city || ""}
+            gender={donor.gender}
+            age={age}
+            eligibilityStatus={donor.eligibilityStatus}
+          />
 
           <div className="labo-card p-6">
             <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
