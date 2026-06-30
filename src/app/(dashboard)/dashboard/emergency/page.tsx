@@ -1,8 +1,9 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { ShieldAlert, Plus, MapPin, Droplet, Clock } from "lucide-react";
+import { ShieldAlert, Plus, MapPin, Droplet, Clock, CheckCircle } from "lucide-react";
 import Link from "next/link";
+import { closeEmergencyRequest } from "@/app/actions/emergency.actions";
 
 export const metadata = { title: "نداءات الطوارئ" };
 
@@ -25,8 +26,6 @@ export default async function EmergencyPage() {
     const activeRequests = await prisma.emergencyRequest.findMany({
       where: { 
         status: "OPEN",
-        city: donor.city || undefined,
-        bloodType: donor.bloodType // Ideal matching
       },
       orderBy: { createdAt: "desc" },
       include: {
@@ -44,7 +43,7 @@ export default async function EmergencyPage() {
               <ShieldAlert className="w-6 h-6 text-red-600" />
               نداءات الطوارئ العاجلة
             </h1>
-            <p className="text-slate-500 text-sm mt-1">المستشفيات في مدينتك بحاجة ماسة لفصيلة دمك الآن.</p>
+            <p className="text-slate-500 text-sm mt-1">نداءات الطوارئ العاجلة من المستشفيات التي تحتاج لتدخل سريع.</p>
           </div>
         </div>
 
@@ -52,7 +51,7 @@ export default async function EmergencyPage() {
           <div className="labo-card p-12 text-center text-slate-500">
             <ShieldAlert className="w-16 h-16 text-slate-300 mx-auto mb-4" />
             <h2 className="text-xl font-bold text-slate-800 mb-2">لا توجد نداءات طوارئ حالياً</h2>
-            <p>الحمد لله، لا يوجد احتياج طارئ لفصيلة دمك في مدينتك حالياً.</p>
+            <p>الحمد لله، لا يوجد احتياج طارئ للدم حالياً.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -75,7 +74,7 @@ export default async function EmergencyPage() {
                   
                   <div className="bg-red-50 p-3 rounded-lg mb-4 text-sm text-red-800 border border-red-100 flex items-start gap-2">
                     <Clock className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                    <p>المستشفى بحاجة ماسة إلى <strong>{req.unitsNeeded} أكياس</strong>. النداء موجه لك شخصياً بناءً على فصيلة دمك وتواجدك في نفس المدينة.</p>
+                    <p>المستشفى بحاجة ماسة إلى <strong>{req.unitsNeeded} أكياس</strong>. إذا كانت فصيلتك مطابقة أو كنت تعرف من يتطابق معها، بادر بإنقاذ حياة!</p>
                   </div>
 
                   {hasResponded ? (
@@ -146,6 +145,17 @@ export default async function EmergencyPage() {
                     <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${req.status === 'OPEN' ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'}`}>
                       {req.status === 'OPEN' ? 'نشط' : 'مكتمل'}
                     </span>
+                    {req.status === 'OPEN' && (
+                      <form action={async () => {
+                        "use server";
+                        await closeEmergencyRequest(req.id);
+                      }}>
+                        <button type="submit" className="text-xs flex items-center gap-1 bg-white border border-gray-200 text-gray-600 px-2 py-1 rounded hover:bg-gray-50 transition-colors">
+                          <CheckCircle className="w-3 h-3" />
+                          إغلاق النداء
+                        </button>
+                      </form>
+                    )}
                   </div>
                   <p className="text-slate-500 text-sm mt-1">الاحتياج: {req.unitsNeeded} أكياس | الفصيلة: {formatBloodType(req.bloodType)}</p>
                 </div>

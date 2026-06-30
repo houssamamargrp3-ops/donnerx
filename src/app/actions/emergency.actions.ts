@@ -65,3 +65,21 @@ export async function createEmergencyRequest(formData: FormData) {
     return { error: "فشل في إطلاق نداء الطوارئ" };
   }
 }
+
+export async function closeEmergencyRequest(id: string) {
+  try {
+    const session = await auth();
+    if (!session?.user) return { error: "غير مصرح" };
+
+    await prisma.emergencyRequest.update({
+      where: { id },
+      data: { status: "COMPLETED" }
+    });
+
+    revalidatePath("/dashboard/emergency");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to close emergency request:", error);
+    return { error: "فشل في إغلاق النداء" };
+  }
+}
