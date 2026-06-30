@@ -23,6 +23,7 @@ export default function DonorDashboard({ userId }: { userId: string }) {
 
   useEffect(() => {
     const fetchDonor = async () => {
+      try {
         const [resDonor, resEmerg] = await Promise.all([
           fetch("/api/donor/me"),
           fetch("/api/emergency?status=OPEN")
