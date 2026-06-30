@@ -1,24 +1,42 @@
-export const metadata = { title: 'نظام QR' };
-import { QrCode } from 'lucide-react';
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { QrCode } from "lucide-react";
+import SmartDonorCard from "@/components/dashboard/SmartDonorCard";
 
-export default function QrPage() {
-  return (
-    <div className="space-y-6 animate-fade-in-up">
-      <div>
-        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-          <QrCode className="w-6 h-6 text-red-400" />
-          نظام QR
-        </h1>
-        <p className="text-slate-400 text-sm mt-1">Task 7 — قيد التطوير</p>
-      </div>
-      <div className="glass-card p-16 text-center">
-        <QrCode className="w-20 h-20 text-slate-700 mx-auto mb-6" />
-        <h2 className="text-xl font-bold text-white mb-3">نظام QR</h2>
-        <p className="text-slate-400 max-w-md mx-auto">هذه الميزة قيد التطوير وستكون متاحة قريباً ضمن منصة DONNER.X</p>
-        <div className="inline-flex items-center gap-2 mt-6 px-4 py-2 rounded-full text-xs font-semibold text-yellow-300" style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.15)' }}>
-          🔧 قيد التطوير
+export const metadata = { title: "البطاقة الصحية الذكية | DONNER.X" };
+
+export default async function QRPage() {
+  const session = await auth();
+  if (!session?.user) redirect("/login");
+
+  const role = (session.user as any).role || "DONOR";
+
+  // Admin/Staff view
+  if (role !== "DONOR") {
+    return (
+      <div className="space-y-6">
+        <div className="labo-page-title">
+          <div className="flex items-center gap-3">
+            <QrCode className="w-6 h-6 text-blue-600" />
+            <h1 className="text-xl font-bold text-slate-800">نظام QR والبطاقات الصحية</h1>
+          </div>
+        </div>
+        <div className="labo-card p-12 text-center">
+          <QrCode className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-slate-800 mb-2">ماسح البطاقات الصحية</h2>
+          <p className="text-slate-500 max-w-md mx-auto">
+            يمكنك مسح رمز QR الخاص بأي متبرع للتحقق الفوري من هويته، فصيلة دمه، وحالة أهليته للتبرع.
+          </p>
+          <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-200 max-w-sm mx-auto">
+            <p className="text-blue-700 text-sm font-bold">
+              💡 استخدم كاميرا الهاتف أو قارئ QR لمسح بطاقة المتبرع
+            </p>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  // Donor view: Smart Card
+  return <SmartDonorCard />;
 }
