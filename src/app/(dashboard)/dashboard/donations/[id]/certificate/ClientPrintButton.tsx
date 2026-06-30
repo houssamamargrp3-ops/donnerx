@@ -1,291 +1,6 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { Printer, Download, Loader2 } from "lucide-react";
-import {
-  Document,
-  Page,
-  Text,
-  View,
-  StyleSheet,
-  Font,
-} from "@react-pdf/renderer";
-
-// Register an Arabic-compatible font
-Font.register({
-  family: "Cairo",
-  src: "https://fonts.gstatic.com/s/cairo/v28/SLXgc1nY6HkvalIkTpumxdt0UX8.woff2",
-});
-
-Font.registerHyphenationCallback((word) => [word]);
-
-interface CertificateData {
-  donorName: string;
-  centerName: string;
-  serialNumber: string;
-  bloodType: string;
-  donatedAt: string;
-}
-
-const styles = StyleSheet.create({
-  page: {
-    backgroundColor: "#ffffff",
-    fontFamily: "Cairo",
-    direction: "rtl",
-    padding: 0,
-  },
-  outerBorder: {
-    position: "absolute",
-    top: 16,
-    left: 16,
-    right: 16,
-    bottom: 16,
-    border: "3px double #D4AF37",
-    opacity: 0.85,
-  },
-  innerBorder: {
-    position: "absolute",
-    top: 28,
-    left: 28,
-    right: 28,
-    bottom: 28,
-    border: "1px solid #D4AF37",
-    opacity: 0.45,
-  },
-  content: {
-    flex: 1,
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "40 60",
-    height: "100%",
-  },
-  header: {
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  logo: {
-    fontSize: 28,
-    fontWeight: "bold",
-    letterSpacing: -0.5,
-    color: "#1e293b",
-    marginBottom: 4,
-  },
-  logoX: {
-    color: "#dc2626",
-  },
-  goldLine: {
-    width: 80,
-    height: 3,
-    backgroundColor: "#D4AF37",
-    borderRadius: 2,
-    marginVertical: 8,
-  },
-  title: {
-    fontSize: 36,
-    fontWeight: "bold",
-    color: "#1e293b",
-    textAlign: "center",
-  },
-  subtitle: {
-    fontSize: 14,
-    color: "#64748b",
-    textAlign: "center",
-    marginTop: 4,
-  },
-  body: {
-    alignItems: "center",
-    flex: 1,
-    justifyContent: "center",
-    width: "100%",
-  },
-  bodyText: {
-    fontSize: 14,
-    color: "#475569",
-    textAlign: "center",
-    lineHeight: 2.2,
-    marginBottom: 14,
-  },
-  bold: {
-    fontWeight: "bold",
-    color: "#1e293b",
-  },
-  centerName: {
-    fontWeight: "bold",
-    color: "#1e293b",
-    borderBottom: "1.5px solid #D4AF37",
-  },
-  donorBox: {
-    borderTop: "1.5px solid #fee2e2",
-    borderBottom: "1.5px solid #fee2e2",
-    backgroundColor: "#fff5f5",
-    borderRadius: 10,
-    paddingHorizontal: 50,
-    paddingVertical: 8,
-    marginVertical: 10,
-    width: "80%",
-    alignItems: "center",
-  },
-  donorName: {
-    fontSize: 30,
-    fontWeight: "bold",
-    color: "#b91c1c",
-    textAlign: "center",
-  },
-  detailText: {
-    fontSize: 12,
-    color: "#64748b",
-    textAlign: "center",
-    lineHeight: 2,
-    marginTop: 10,
-  },
-  footer: {
-    flexDirection: "row-reverse",
-    justifyContent: "space-between",
-    alignItems: "flex-end",
-    width: "100%",
-    paddingHorizontal: 20,
-    marginTop: 10,
-  },
-  footerBlock: {
-    alignItems: "flex-end",
-  },
-  footerLabel: {
-    fontSize: 10,
-    color: "#94a3b8",
-    fontWeight: "bold",
-    textAlign: "right",
-  },
-  footerValue: {
-    fontSize: 12,
-    color: "#1e293b",
-    fontWeight: "bold",
-    textAlign: "right",
-    marginBottom: 6,
-  },
-  bloodCircle: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: "#fff1f2",
-    border: "1.5px solid #fecdd3",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 4,
-  },
-  bloodType: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#b91c1c",
-    textAlign: "center",
-  },
-  bloodLabel: {
-    fontSize: 10,
-    color: "#991b1b",
-    backgroundColor: "#fee2e2",
-    padding: "3 8",
-    borderRadius: 10,
-    textAlign: "center",
-  },
-  signatureLine: {
-    width: 110,
-    borderBottom: "1.5px solid #cbd5e1",
-    marginBottom: 4,
-    height: 40,
-  },
-  signatureName: {
-    fontSize: 11,
-    fontWeight: "bold",
-    color: "#1e293b",
-    textAlign: "center",
-  },
-});
-
-function CertificatePDF({ donorName, centerName, serialNumber, bloodType, donatedAt }: CertificateData) {
-  return (
-    <Document title={`شهادة تبرع - ${donorName}`}>
-      <Page size="A4" orientation="landscape" style={styles.page}>
-        <View style={styles.outerBorder} />
-        <View style={styles.innerBorder} />
-
-        <View style={styles.content}>
-          {/* Header */}
-          <View style={styles.header}>
-            <Text style={styles.logo}>
-              <Text>DONNER</Text>
-              <Text style={{ color: "#dc2626" }}>.X</Text>
-            </Text>
-            <View style={styles.goldLine} />
-            <Text style={styles.title}>شهادة شكر وتقدير</Text>
-            <Text style={styles.subtitle}>Certificate of Appreciation</Text>
-          </View>
-
-          {/* Body */}
-          <View style={styles.body}>
-            <Text style={styles.bodyText}>
-              تتقدم إدارة منصة{" "}
-              <Text style={styles.bold}>DONNER.X</Text>
-              {"  "}بالتعاون مع{" "}
-              <Text style={styles.centerName}>{centerName}</Text>
-              {"\n"}
-              بعظيم الشكر وخالص الامتنان إلى المتبرع المعطاء:
-            </Text>
-
-            <View style={styles.donorBox}>
-              <Text style={styles.donorName}>{donorName}</Text>
-            </View>
-
-            <Text style={styles.detailText}>
-              لقاء عطائه الإنساني النبيل ومساهمته الفاعلة في إنقاذ الأرواح من خلال تبرعه بالدم.
-              {"\n"}
-              إن قطرات دمك هي شريان حياة للمرضى، سائلين المولى عز وجل أن يكتب أجرك ويجعلها في ميزان حسناتك!
-            </Text>
-          </View>
-
-          {/* Footer */}
-          <View style={styles.footer}>
-            {/* Serial + Date */}
-            <View style={styles.footerBlock}>
-              <Text style={styles.footerLabel}>رقم الشهادة (Serial):</Text>
-              <Text style={styles.footerValue}>{serialNumber}</Text>
-              <Text style={styles.footerLabel}>تاريخ التبرع:</Text>
-              <Text style={styles.footerValue}>{donatedAt}</Text>
-            </View>
-
-            {/* Blood Type */}
-            <View style={{ alignItems: "center" }}>
-              <View style={styles.bloodCircle}>
-                <Text style={styles.bloodType}>{bloodType.replace("_", " ")}</Text>
-              </View>
-              <Text style={styles.bloodLabel}>قطرة دم = حياة</Text>
-            </View>
-
-            {/* Signature */}
-            <View style={{ alignItems: "center" }}>
-              <Text style={styles.footerLabel}>الختم والتوقيع</Text>
-              <View style={styles.signatureLine} />
-              <Text style={styles.signatureName}>{centerName}</Text>
-            </View>
-          </View>
-        </View>
-      </Page>
-    </Document>
-  );
-}
-
-// Dynamically import PDFDownloadLink to avoid SSR issues
-const PDFDownloadLink = dynamic(
-  () => import("@react-pdf/renderer").then((mod) => mod.PDFDownloadLink),
-  {
-    ssr: false,
-    loading: () => (
-      <button disabled className="px-4 py-2 bg-slate-800 text-white font-bold rounded-lg flex items-center gap-2 text-sm opacity-50">
-        <Loader2 className="w-5 h-5 animate-spin" />
-        جاري التحضير...
-      </button>
-    ),
-  }
-);
+import { Printer, Download, FileDown } from "lucide-react";
 
 interface Props {
   donorName?: string;
@@ -302,37 +17,316 @@ export default function ClientPrintButton({
   bloodType = "",
   donatedAt = "",
 }: Props) {
-  const fileName = `Certificate_${donorName.replace(/\s+/g, "_")}_${serialNumber}.pdf`;
 
-  const doc = (
-    <CertificatePDF
-      donorName={donorName}
-      centerName={centerName}
-      serialNumber={serialNumber}
-      bloodType={bloodType}
-      donatedAt={donatedAt}
-    />
-  );
+  const openPrintWindow = () => {
+    const htmlContent = `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>شهادة تبرع - ${donorName}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    /* Instruction bar - hidden on print */
+    .instruction-bar {
+      background: #1e3a5f;
+      color: white;
+      padding: 14px 28px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      font-size: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    .instruction-bar .steps {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .step {
+      background: rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-weight: bold;
+      font-size: 13px;
+    }
+
+    .arrow { color: #90cdf4; font-size: 18px; }
+
+    .print-btn {
+      background: #dc2626;
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    .print-btn:hover { background: #b91c1c; }
+
+    /* Certificate */
+    .certificate {
+      width: 270mm;
+      min-height: 190mm;
+      background: white;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 18mm 22mm;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .border-outer {
+      position: absolute;
+      inset: 8mm;
+      border: 3px double #D4AF37;
+      opacity: 0.85;
+      pointer-events: none;
+    }
+    .border-inner {
+      position: absolute;
+      inset: 13mm;
+      border: 1px solid #D4AF37;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .watermark {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 200px;
+      font-weight: 900;
+      color: #7f1d1d;
+      opacity: 0.025;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .corner { position: absolute; font-size: 48px; opacity: 0.15; }
+    .tl { top: 16mm; right: 16mm; }
+    .br { bottom: 16mm; left: 16mm; }
+
+    .logo {
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      margin-bottom: 6px;
+    }
+    .logo .red { color: #dc2626; }
+    .logo .dark { color: #1e293b; }
+
+    .gold-line {
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(90deg, #D4AF37, #f5d07a, #D4AF37);
+      border-radius: 4px;
+      margin: 8px auto 14px;
+    }
+
+    h1 {
+      font-size: 42px;
+      font-weight: 900;
+      color: #1e293b;
+      line-height: 1.15;
+    }
+    .subtitle {
+      font-size: 16px;
+      color: #64748b;
+      margin-top: 4px;
+      margin-bottom: 16px;
+    }
+
+    .body-text {
+      font-size: 16px;
+      color: #475569;
+      line-height: 2;
+      margin-bottom: 12px;
+    }
+    .body-text strong { color: #1e293b; border-bottom: 2px solid #D4AF37; }
+
+    .donor-box {
+      background: #fff5f5;
+      border-top: 2px solid #fecdd3;
+      border-bottom: 2px solid #fecdd3;
+      border-radius: 14px;
+      padding: 10px 60px;
+      margin: 10px 40px;
+      display: inline-block;
+      position: relative;
+    }
+    .donor-name {
+      font-size: 34px;
+      font-weight: 900;
+      color: #b91c1c;
+    }
+    .medal { position: absolute; top: -14px; right: -10px; font-size: 26px; }
+    .drop  { position: absolute; bottom: -14px; left: -10px; font-size: 26px; }
+
+    .detail-text {
+      font-size: 14px;
+      color: #64748b;
+      line-height: 2;
+      margin: 10px 20px 0;
+    }
+
+    .footer {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-top: auto;
+      padding: 0 10mm;
+      padding-top: 14px;
+    }
+
+    .footer-block { text-align: right; }
+    .footer-label { font-size: 11px; color: #94a3b8; font-weight: 700; }
+    .footer-value { font-size: 13px; color: #1e293b; font-weight: 700; direction: ltr; text-align: right; margin-bottom: 8px; }
+
+    .blood-badge { text-align: center; }
+    .blood-circle {
+      width: 78px; height: 78px;
+      border-radius: 50%;
+      background: #fff1f2;
+      border: 2px solid #fecdd3;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 6px;
+      font-size: 26px; font-weight: 900; color: #b91c1c;
+    }
+    .blood-label {
+      font-size: 11px; font-weight: 700; color: #991b1b;
+      background: #fee2e2; padding: 3px 10px; border-radius: 999px;
+    }
+
+    .sig-block { text-align: center; }
+    .sig-line { width: 120px; height: 48px; border-bottom: 2px solid #cbd5e1; margin: 0 auto 4px; }
+    .sig-name { font-size: 12px; font-weight: 700; color: #1e293b; }
+
+    @media print {
+      body { background: white; padding: 0; }
+      .instruction-bar { display: none !important; }
+      .certificate { box-shadow: none; border-radius: 0; width: 100%; min-height: auto; }
+      @page { size: A4 landscape; margin: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="instruction-bar">
+    <div class="steps">
+      <span>🖨️ لحفظ كـ PDF:</span>
+      <span class="step">① اضغط "طباعة" أدناه</span>
+      <span class="arrow">←</span>
+      <span class="step">② اختر "Microsoft Print to PDF"</span>
+      <span class="arrow">←</span>
+      <span class="step">③ اضغط "Print" وحدد مكان الحفظ</span>
+    </div>
+    <button class="print-btn" onclick="window.print()">🖨️ طباعة / حفظ PDF</button>
+  </div>
+
+  <div class="certificate">
+    <div class="border-outer"></div>
+    <div class="border-inner"></div>
+    <div class="watermark">★</div>
+    <div class="corner tl">💗</div>
+    <div class="corner br">🩸</div>
+
+    <div class="logo">
+      <span class="dark">DONNER</span><span class="red">.X</span>
+    </div>
+    <div class="gold-line"></div>
+    <h1>شهادة شكر وتقدير</h1>
+    <p class="subtitle">Certificate of Appreciation</p>
+
+    <p class="body-text">
+      تتقدم إدارة منصة <strong>DONNER.X</strong> بالتعاون مع <strong>${centerName}</strong><br/>
+      بعظيم الشكر وخالص الامتنان إلى المتبرع المعطاء:
+    </p>
+
+    <div class="donor-box">
+      <span class="medal">🏅</span>
+      <div class="donor-name">${donorName}</div>
+      <span class="drop">🩸</span>
+    </div>
+
+    <p class="detail-text">
+      لقاء عطائه الإنساني النبيل ومساهمته الفاعلة في إنقاذ الأرواح من خلال تبرعه بالدم.<br/>
+      إن قطرات دمك هي شريان حياة للمرضى، سائلين المولى عز وجل أن يكتب أجرك ويجعلها في ميزان حسناتك! ❤️
+    </p>
+
+    <div class="footer">
+      <div class="footer-block">
+        <div class="footer-label">رقم الشهادة (Serial):</div>
+        <div class="footer-value">${serialNumber}</div>
+        <div class="footer-label">تاريخ التبرع:</div>
+        <div class="footer-value">${donatedAt}</div>
+      </div>
+
+      <div class="blood-badge">
+        <div class="blood-circle">${bloodType.replace("_", " ")}</div>
+        <div class="blood-label">قطرة دم = حياة 💗</div>
+      </div>
+
+      <div class="sig-block">
+        <div class="footer-label">الختم والتوقيع</div>
+        <div class="sig-line"></div>
+        <div class="sig-name">${centerName}</div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>`;
+
+    const w = window.open("", "_blank", "width=1200,height=860");
+    if (!w) {
+      alert("⚠️ يرجى السماح بالنوافذ المنبثقة في المتصفح لهذا الموقع.");
+      return;
+    }
+    w.document.write(htmlContent);
+    w.document.close();
+  };
 
   return (
     <div className="flex gap-3">
-      <PDFDownloadLink document={doc} fileName={fileName}>
-        {({ loading }) => (
-          <button
-            disabled={loading}
-            className="px-4 py-2 bg-slate-800 text-white font-bold rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2 text-sm disabled:opacity-50"
-          >
-            {loading ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <Download className="w-5 h-5" />
-            )}
-            {loading ? "جاري تحضير PDF..." : "تحميل كملف PDF"}
-          </button>
-        )}
-      </PDFDownloadLink>
+      <button
+        onClick={openPrintWindow}
+        className="px-4 py-2 bg-slate-800 text-white font-bold rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2 text-sm"
+      >
+        <FileDown className="w-5 h-5" />
+        تحميل كملف PDF
+      </button>
 
-      <button onClick={() => window.print()} className="labo-btn-primary flex items-center gap-2">
+      <button
+        onClick={() => window.print()}
+        className="labo-btn-primary flex items-center gap-2"
+      >
         <Printer className="w-5 h-5" />
         طباعة مباشرة
       </button>
