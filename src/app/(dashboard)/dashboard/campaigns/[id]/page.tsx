@@ -1,11 +1,16 @@
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 import { notFound } from "next/navigation";
 import { Megaphone, CalendarDays, MapPin, Users, Building, ArrowLeft, Clock, Info } from "lucide-react";
 import Link from "next/link";
+import RegisterCampaignButton from "@/components/dashboard/RegisterCampaignButton";
 
 export const metadata = { title: "تفاصيل الحملة" };
 
 export default async function CampaignDetailsPage({ params }: { params: { id: string } }) {
+  const session = await auth();
+  const role = session?.user ? (session.user as any).role : "DONOR";
+
   const campaign = await prisma.campaign.findUnique({
     where: { id: params.id }
   });
@@ -138,6 +143,10 @@ export default async function CampaignDetailsPage({ params }: { params: { id: st
                     {campaign.description}
                   </p>
                 </div>
+              )}
+              
+              {role === "DONOR" && campaign.status !== "COMPLETED" && (
+                <RegisterCampaignButton campaignId={campaign.id} />
               )}
             </div>
 
