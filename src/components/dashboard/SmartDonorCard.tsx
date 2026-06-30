@@ -159,25 +159,76 @@ export default function SmartDonorCard() {
   const DONATION_INTERVAL = 90; // days
   let daysRemaining = 0;
   let eligibilityLabel = "مؤهل للتبرع اليوم ✅";
-  let eligibilityColor = "text-green-400";
-  let eligibilityBg = "bg-green-400/10 border-green-400/30";
-  let statusDot = "bg-green-400";
+  let eligibilityColor = "text-emerald-400";
+  let eligibilityBg = "bg-emerald-400/10 border-emerald-400/30";
+  let statusDot = "bg-emerald-400";
+
+  const hasAppointment = donor.appointments && donor.appointments.length > 0;
 
   if (donor.eligibilityStatus === "INELIGIBLE" && donor.nextEligibleDate) {
     const diff = Math.ceil((new Date(donor.nextEligibleDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
     daysRemaining = Math.max(0, diff);
-    if (daysRemaining > 0) {
-      eligibilityLabel = `غير مؤهل مؤقتاً (${daysRemaining} يوم)`;
+    if (daysRemaining > 0 && daysRemaining <= 15) {
+      eligibilityLabel = `اقترب الموعد (${daysRemaining} يوم) 🟡`;
+      eligibilityColor = "text-orange-400";
+      eligibilityBg = "bg-orange-400/10 border-orange-400/30";
+      statusDot = "bg-orange-400";
+    } else if (daysRemaining > 15) {
+      eligibilityLabel = `غير مؤهل مؤقتاً (${daysRemaining} يوم) 🔴`;
       eligibilityColor = "text-red-400";
       eligibilityBg = "bg-red-400/10 border-red-400/30";
       statusDot = "bg-red-400";
     }
   } else if (donor.eligibilityStatus === "PENDING_CHECK") {
     eligibilityLabel = "يستحق الفحص قريباً 🟡";
-    eligibilityColor = "text-yellow-400";
-    eligibilityBg = "bg-yellow-400/10 border-yellow-400/30";
-    statusDot = "bg-yellow-400";
+    eligibilityColor = "text-orange-400";
+    eligibilityBg = "bg-orange-400/10 border-orange-400/30";
+    statusDot = "bg-orange-400";
     daysRemaining = 14;
+  }
+
+  if (hasAppointment) {
+    eligibilityLabel = "لديك موعد محجوز 🗓️";
+    eligibilityColor = "text-blue-400";
+    eligibilityBg = "bg-blue-400/10 border-blue-400/30";
+    statusDot = "bg-blue-400";
+  }
+
+  // Card Theme Logic
+  let cardTheme = {
+    bg: "linear-gradient(135deg, #064e3b 0%, #022c22 40%, #0f172a 100%)", // Green
+    blob1: "radial-gradient(circle, #34d399, transparent)",
+    blob2: "radial-gradient(circle, #10b981, transparent)",
+    iconBg: "bg-emerald-500/20 border-emerald-500/40",
+    iconColor: "text-emerald-400 fill-emerald-400",
+  };
+
+  if (hasAppointment) {
+    cardTheme = {
+      bg: "linear-gradient(135deg, #1e3a8a 0%, #172554 40%, #0f172a 100%)", // Blue
+      blob1: "radial-gradient(circle, #60a5fa, transparent)",
+      blob2: "radial-gradient(circle, #3b82f6, transparent)",
+      iconBg: "bg-blue-500/20 border-blue-500/40",
+      iconColor: "text-blue-400 fill-blue-400",
+    };
+  } else if (donor.eligibilityStatus === "INELIGIBLE" || donor.eligibilityStatus === "PENDING_CHECK") {
+    if (daysRemaining > 0 && daysRemaining <= 15) {
+      cardTheme = {
+        bg: "linear-gradient(135deg, #78350f 0%, #451a03 40%, #0f172a 100%)", // Orange
+        blob1: "radial-gradient(circle, #fbbf24, transparent)",
+        blob2: "radial-gradient(circle, #f59e0b, transparent)",
+        iconBg: "bg-orange-500/20 border-orange-500/40",
+        iconColor: "text-orange-400 fill-orange-400",
+      };
+    } else {
+      cardTheme = {
+        bg: "linear-gradient(135deg, #7f1d1d 0%, #4c0519 40%, #0f172a 100%)", // Red
+        blob1: "radial-gradient(circle, #ef4444, transparent)",
+        blob2: "radial-gradient(circle, #dc2626, transparent)",
+        iconBg: "bg-red-500/20 border-red-500/40",
+        iconColor: "text-red-400 fill-red-400",
+      };
+    }
   }
 
   // QR payload
@@ -217,21 +268,21 @@ export default function SmartDonorCard() {
 
       {/* ═══════════════ SMART CARD ═══════════════ */}
       <div
-        className="relative rounded-3xl overflow-hidden shadow-2xl cursor-pointer select-none"
+        className="relative rounded-3xl overflow-hidden shadow-2xl cursor-pointer select-none transition-all duration-500"
         style={{
-          background: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 40%, #1e0a1e 100%)",
+          background: cardTheme.bg,
           minHeight: 420,
         }}
         onClick={() => setCardFlipped(!cardFlipped)}
       >
         {/* Animated background blobs */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none transition-opacity duration-1000">
           <div className="absolute -top-20 -left-20 w-64 h-64 rounded-full opacity-20"
-            style={{ background: "radial-gradient(circle, #ef4444, transparent)" }} />
+            style={{ background: cardTheme.blob1 }} />
           <div className="absolute -bottom-10 -right-20 w-80 h-80 rounded-full opacity-15"
-            style={{ background: "radial-gradient(circle, #8b5cf6, transparent)" }} />
+            style={{ background: cardTheme.blob2 }} />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-40 opacity-5"
-            style={{ background: "radial-gradient(ellipse, #60a5fa, transparent)" }} />
+            style={{ background: "radial-gradient(ellipse, #ffffff, transparent)" }} />
         </div>
 
         {/* Holographic shimmer */}
@@ -246,8 +297,8 @@ export default function SmartDonorCard() {
           {/* Top row: Brand + Verification badge */}
           <div className="flex items-start justify-between mb-6">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-xl bg-red-600/20 border border-red-500/40 flex items-center justify-center">
-                <Droplet className="w-5 h-5 text-red-400 fill-red-400" />
+              <div className={`w-10 h-10 rounded-xl ${cardTheme.iconBg} border flex items-center justify-center transition-colors duration-500`}>
+                <Droplet className={`w-5 h-5 ${cardTheme.iconColor} transition-colors duration-500`} />
               </div>
               <div>
                 <div className="text-white font-black text-base tracking-wide">DONNER.X</div>
@@ -289,10 +340,10 @@ export default function SmartDonorCard() {
               </div>
 
               {/* Blood type pill */}
-              <div className="inline-flex items-center gap-2 bg-red-600/20 border border-red-500/40 rounded-2xl px-4 py-2 mb-3">
-                <Droplet className="w-4 h-4 text-red-400 fill-red-400" />
+              <div className={`inline-flex items-center gap-2 ${cardTheme.iconBg} border rounded-2xl px-4 py-2 mb-3 transition-colors duration-500`}>
+                <Droplet className={`w-4 h-4 ${cardTheme.iconColor} transition-colors duration-500`} />
                 <span className="text-white font-black text-3xl leading-none">{bt}</span>
-                <span className="text-red-300 text-xs font-bold">فصيلة الدم</span>
+                <span className="text-white/60 text-xs font-bold">فصيلة الدم</span>
               </div>
 
               {/* Eligibility badge */}
