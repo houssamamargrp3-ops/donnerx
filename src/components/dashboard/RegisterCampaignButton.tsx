@@ -10,11 +10,16 @@ export default function RegisterCampaignButton({ campaignId }: { campaignId: str
 
   const handleRegister = () => {
     startTransition(async () => {
-      const result = await registerForCampaign(campaignId);
-      if (result.error) {
-        alert(result.error);
-      } else {
-        setRegistered(true);
+      try {
+        const result = await registerForCampaign(campaignId);
+        if (result?.error) {
+          alert(result.error);
+        } else if (result?.success) {
+          setRegistered(true);
+        }
+      } catch (err) {
+        alert("حدث خطأ غير متوقع. يرجى المحاولة لاحقاً.");
+        console.error(err);
       }
     });
   };

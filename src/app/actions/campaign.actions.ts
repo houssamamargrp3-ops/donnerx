@@ -28,7 +28,7 @@ export async function registerForCampaign(campaignId: string) {
     await prisma.notification.create({
       data: {
         userId: userId,
-        type: "SYSTEM",
+        type: "GENERAL",
         title: "✅ تسجيل ناجح في الحملة!",
         message: `تم تسجيلك بنجاح في حملة "${campaign.name}". شكراً لمبادرتك في إنقاذ الأرواح!`,
         data: { campaignId }
