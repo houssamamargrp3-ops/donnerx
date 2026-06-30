@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Package, Droplet, AlertTriangle, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import InventoryGrid from "@/components/dashboard/InventoryGrid";
 
 export const metadata = { title: "مخزون الدم" };
 
@@ -98,50 +99,8 @@ export default async function InventoryPage() {
         </div>
       </div>
 
-      {/* Grid of Blood Types */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {stockData.map(item => (
-          <div key={item.type} className={`labo-card p-6 relative overflow-hidden transition-all hover:shadow-md ${item.status === 'EMPTY' ? 'border-red-200' : ''}`}>
-            
-            <div className={`absolute top-0 right-0 w-2 h-full ${
-              item.status === 'SAFE' ? 'bg-emerald-500' :
-              item.status === 'LOW' ? 'bg-yellow-500' :
-              item.status === 'CRITICAL' ? 'bg-orange-500' : 'bg-red-600'
-            }`} />
-
-            <div className="flex justify-between items-start mb-4">
-              <div className={`w-14 h-14 rounded-full flex items-center justify-center text-xl font-black ${
-                item.status === 'SAFE' ? 'bg-emerald-50 text-emerald-600' :
-                item.status === 'LOW' ? 'bg-yellow-50 text-yellow-600' :
-                item.status === 'CRITICAL' ? 'bg-orange-50 text-orange-600' : 'bg-red-50 text-red-600'
-              }`}>
-                {formatBloodType(item.type)}
-              </div>
-              
-              {item.status !== 'SAFE' && (
-                <div className={`text-[10px] font-bold px-2 py-1 rounded-full ${
-                  item.status === 'LOW' ? 'bg-yellow-100 text-yellow-700' :
-                  item.status === 'CRITICAL' ? 'bg-orange-100 text-orange-700' : 'bg-red-100 text-red-700'
-                }`}>
-                  {item.status === 'EMPTY' ? 'نفذت الكمية' : item.status === 'CRITICAL' ? 'حرج جداً' : 'منخفض'}
-                </div>
-              )}
-            </div>
-
-            <div className="mt-4">
-              <h3 className="text-3xl font-black text-slate-800">{item.units} <span className="text-sm font-bold text-slate-500">وحدة</span></h3>
-            </div>
-
-            {/* Action for critical */}
-            {(item.status === 'CRITICAL' || item.status === 'EMPTY') && (
-              <Link href={`/dashboard/emergency?bloodType=${item.type}`} className="mt-4 block w-full py-2 text-center text-xs font-bold bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors">
-                إنشاء نداء طوارئ
-              </Link>
-            )}
-
-          </div>
-        ))}
-      </div>
+      {/* Grid of Blood Types via Client Component for +/- actions */}
+      <InventoryGrid stockData={stockData} centerId={center.id} />
 
     </div>
   );

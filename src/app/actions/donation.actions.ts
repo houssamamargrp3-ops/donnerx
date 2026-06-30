@@ -59,6 +59,25 @@ export async function recordDonation(formData: FormData) {
         });
       }
 
+      // 4.5. Update Inventory automatically
+      await tx.bloodInventory.upsert({
+        where: {
+          centerId_bloodType: {
+            centerId,
+            bloodType,
+          },
+        },
+        update: {
+          units: { increment: 1 },
+        },
+        create: {
+          centerId,
+          bloodType,
+          units: 1,
+          minThreshold: 10,
+        },
+      });
+
       // 5. Update Donor's nextEligibleDate and totalDonations
       await tx.donor.update({
         where: { id: donorId },
@@ -74,6 +93,7 @@ export async function recordDonation(formData: FormData) {
     revalidatePath("/dashboard/donations");
     revalidatePath("/dashboard/donors");
     revalidatePath("/dashboard/appointments");
+    revalidatePath("/dashboard/inventory"); // Revalidate inventory as well
     
     return { success: true, donationId: result.donation.id };
   } catch (error: any) {
