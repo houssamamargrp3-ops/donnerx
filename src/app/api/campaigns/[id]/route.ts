@@ -2,10 +2,11 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const resolvedParams = await params;
     const campaign = await prisma.campaign.findUnique({
-      where: { id: params.id },
+      where: { id: resolvedParams.id },
       include: { center: true }
     });
 
@@ -19,18 +20,19 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await auth();
     if (!session || !session.user || ((session.user as any).role !== "CENTER_STAFF" && (session.user as any).role !== "ADMIN")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const resolvedParams = await params;
     const body = await req.json();
     const { name, description, organizer, location, city, startDate, endDate, capacity, status } = body;
 
     const campaign = await prisma.campaign.update({
-      where: { id: params.id },
+      where: { id: resolvedParams.id },
       data: {
         name,
         description,
@@ -51,15 +53,16 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await auth();
     if (!session || !session.user || ((session.user as any).role !== "CENTER_STAFF" && (session.user as any).role !== "ADMIN")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const resolvedParams = await params;
     await prisma.campaign.delete({
-      where: { id: params.id }
+      where: { id: resolvedParams.id }
     });
 
     return NextResponse.json({ success: true });

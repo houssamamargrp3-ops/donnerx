@@ -13,7 +13,7 @@ export default function CampaignsClient({ initialCampaigns, userRole }: { initia
   const isAdmin = userRole === "ADMIN" || userRole === "SUPER_ADMIN" || userRole === "CENTER_STAFF";
 
   const [formData, setFormData] = useState({
-    name: "", description: "", organizer: "", location: "", city: "", startDate: "", endDate: "", capacity: ""
+    name: "", description: "", organizer: "", location: "", city: "", startDate: "", endDate: "", capacity: "", status: "PUBLISHED"
   });
 
   const router = useRouter();
@@ -32,7 +32,7 @@ export default function CampaignsClient({ initialCampaigns, userRole }: { initia
 
   const openCreateModal = () => {
     setEditingId(null);
-    setFormData({ name: "", description: "", organizer: "", location: "", city: "", startDate: "", endDate: "", capacity: "" });
+    setFormData({ name: "", description: "", organizer: "", location: "", city: "", startDate: "", endDate: "", capacity: "", status: "PUBLISHED" });
     setIsModalOpen(true);
   };
 
@@ -46,7 +46,8 @@ export default function CampaignsClient({ initialCampaigns, userRole }: { initia
       city: camp.city || "",
       startDate: camp.startDate ? new Date(camp.startDate).toISOString().slice(0, 16) : "",
       endDate: camp.endDate ? new Date(camp.endDate).toISOString().slice(0, 16) : "",
-      capacity: camp.capacity ? String(camp.capacity) : ""
+      capacity: camp.capacity ? String(camp.capacity) : "",
+      status: camp.status || "PUBLISHED"
     });
     setIsModalOpen(true);
   };
@@ -240,9 +241,19 @@ export default function CampaignsClient({ initialCampaigns, userRole }: { initia
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1">وصف الحملة</label>
-                <textarea rows={3} className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})}></textarea>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-1">وصف الحملة</label>
+                  <textarea rows={3} className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})}></textarea>
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-1">حالة الحملة *</label>
+                  <select required className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none" value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})}>
+                    <option value="PUBLISHED">مجدولة (PUBLISHED)</option>
+                    <option value="ACTIVE">نشطة حالياً (ACTIVE)</option>
+                    <option value="COMPLETED">منتهية ومكتملة (COMPLETED)</option>
+                  </select>
+                </div>
               </div>
 
               <div className="pt-4 flex items-center justify-end gap-3 border-t border-gray-200 mt-6">
