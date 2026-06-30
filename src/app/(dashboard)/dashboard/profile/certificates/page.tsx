@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Award, ArrowLeft, Download, ShieldCheck, HeartPulse } from "lucide-react";
 import Link from "next/link";
+import BloodTypeCard from "../../../donors/[id]/BloodTypeCard";
 
 export const metadata = { title: "شهاداتي" };
 
@@ -13,6 +14,7 @@ export default async function DonorCertificatesPage() {
   const donor = await prisma.donor.findUnique({
     where: { userId: session.user.id },
     include: {
+      user: true,
       certificates: {
         include: {
           donation: {
@@ -51,6 +53,20 @@ export default async function DonorCertificatesPage() {
         <Link href="/dashboard" className="text-sm font-bold text-slate-500 hover:text-slate-800 flex items-center gap-1 transition-colors bg-white px-4 py-2 border border-slate-200 rounded-lg shadow-sm">
           العودة <ArrowLeft className="w-4 h-4" />
         </Link>
+      </div>
+
+      {/* Blood Type Card */}
+      <div className="max-w-sm">
+        <BloodTypeCard
+          donorName={donor.user?.name || "متبرع"}
+          bloodType={donor.bloodType}
+          donorId={donor.id}
+          phone={donor.phone || ""}
+          city={donor.city || ""}
+          gender={donor.gender}
+          age={donor.dateOfBirth ? Math.floor((Date.now() - new Date(donor.dateOfBirth).getTime()) / 3.15576e+10) : 0}
+          eligibilityStatus={donor.eligibilityStatus}
+        />
       </div>
 
       {certificates.length === 0 ? (
