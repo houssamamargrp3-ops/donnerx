@@ -30,8 +30,16 @@ export default async function MedicalDashboard() {
     }
   });
 
-  // Emergency requests mock (Active requests in a real scenario)
-  const activeEmergencies = 2; // Hardcoded for now until Emergency module is built
+  // Emergency requests (Real data)
+  const activeEmergenciesCount = await prisma.emergencyRequest.count({
+    where: { status: "OPEN" }
+  });
+
+  const latestEmergencies = await prisma.emergencyRequest.findMany({
+    where: { status: "OPEN" },
+    orderBy: { createdAt: "desc" },
+    take: 3
+  });
 
   // Fetch upcoming appointments
   const upcomingAppointments = await prisma.appointment.findMany({
@@ -113,7 +121,7 @@ export default async function MedicalDashboard() {
           </div>
           <div>
             <p className="text-slate-500 text-xs font-bold uppercase mb-1">طلبات طوارئ نشطة</p>
-            <h2 className="text-2xl font-black text-slate-800">{activeEmergencies}</h2>
+            <h2 className="text-2xl font-black text-slate-800">{activeEmergenciesCount}</h2>
           </div>
         </div>
       </div>
@@ -143,28 +151,23 @@ export default async function MedicalDashboard() {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td className="font-bold">مستشفى الملك فهد</td>
-                  <td><span className="font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded text-xs">O-</span></td>
-                  <td>4 أكياس</td>
-                  <td><span className="labo-badge-danger">طارئ جداً</span></td>
-                  <td>
-                    <div className="flex gap-1">
-                      <button className="labo-action-btn labo-action-view" title="عرض التفاصيل"><FileText className="w-4 h-4"/></button>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="font-bold">مستشفى التخصصي</td>
-                  <td><span className="font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded text-xs">A+</span></td>
-                  <td>2 أكياس</td>
-                  <td><span className="labo-badge-warning">طارئ</span></td>
-                  <td>
-                    <div className="flex gap-1">
-                      <button className="labo-action-btn labo-action-view"><FileText className="w-4 h-4"/></button>
-                    </div>
-                  </td>
-                </tr>
+                {latestEmergencies.length > 0 ? (
+                  latestEmergencies.map((req) => (
+                    <tr key={req.id}>
+                      <td className="font-bold">{req.hospitalName}</td>
+                      <td><span className="font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded text-xs" dir="ltr">{formatBloodType(req.bloodType)}</span></td>
+                      <td>{req.unitsNeeded} أكياس</td>
+                      <td><span className="labo-badge-danger">نشط</span></td>
+                      <td>
+                        <Link href="/dashboard/emergency" className="labo-action-btn labo-action-edit">عرض</Link>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="text-center p-4 text-slate-500">لا توجد طلبات طوارئ نشطة حالياً.</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
