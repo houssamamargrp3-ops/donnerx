@@ -33,7 +33,13 @@ export default async function CertificatePage({ params }: { params: Promise<{ id
           <ChevronRight className="w-5 h-5" />
           العودة لسجل التبرعات
         </Link>
-        <ClientPrintButton donorName={donation.donor.user?.name || "متبرع"} />
+        <ClientPrintButton 
+          donorName={donation.donor.user?.name || "متبرع"}
+          centerName={donation.center.name}
+          serialNumber={donation.certificate.serialNumber}
+          bloodType={donation.bloodType}
+          donatedAt={new Date(donation.donatedAt).toLocaleDateString('ar-SA')}
+        />
       </div>
 
       {/* The Certificate Wrapper (Printed Area) */}
