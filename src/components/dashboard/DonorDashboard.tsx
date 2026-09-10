@@ -2,41 +2,27 @@
 
 import { useEffect, useState } from "react";
 import {
-  FileText,
-  CalendarDays,
+  ClipboardList,
   Bell,
-  Clock,
-  CheckCircle,
-  Download,
-  Info,
-  Trophy,
-  Star,
   Award,
-  ShieldAlert
+  QrCode,
+  MapPin,
+  ChevronLeft
 } from "lucide-react";
 import Link from "next/link";
+import SmartDonorCard from "./SmartDonorCard";
 
 export default function DonorDashboard({ userId }: { userId: string }) {
   const [donor, setDonor] = useState<any>(null);
-  const [emergencies, setEmergencies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDonor = async () => {
       try {
-        const [resDonor, resEmerg] = await Promise.all([
-          fetch("/api/donor/me"),
-          fetch("/api/emergency?status=OPEN")
-        ]);
-
-        if (resDonor.ok) {
-          const data = await resDonor.json();
+        const res = await fetch("/api/donor/me");
+        if (res.ok) {
+          const data = await res.json();
           setDonor(data);
-        }
-        if (resEmerg.ok) {
-          const data = await resEmerg.json();
-          // Filter out completed/cancelled ones just in case
-          setEmergencies(data.filter((e: any) => e.status === "OPEN"));
         }
       } catch (e) {
         console.error(e);
@@ -50,20 +36,20 @@ export default function DonorDashboard({ userId }: { userId: string }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <span className="spinner border-t-blue-600 w-10 h-10 border-4" />
+        <span className="spinner border-t-red-600 w-10 h-10 border-4 rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!donor) {
     return (
-      <div className="bg-white rounded-md p-12 text-center max-w-2xl mx-auto border border-gray-200">
-        <h2 className="text-2xl font-bold text-slate-800 mb-3">ملفك الطبي غير مكتمل</h2>
-        <p className="text-slate-500 mb-8 max-w-sm mx-auto leading-relaxed">
-          لكي تتمكن من حجز مواعيد والتبرع بالدم، يرجى إكمال إعداد ملفك الطبي وتحديد فصيلة دمك.
+      <div className="bg-white rounded-2xl p-8 text-center max-w-md mx-auto shadow-sm">
+        <h2 className="text-xl font-bold text-slate-800 mb-2">الملف الطبي غير مكتمل</h2>
+        <p className="text-slate-500 mb-6 text-sm">
+          أهلاً بك في مجتمع أبطال التبرع. يرجى إكمال إعداد ملفك الطبي أولاً.
         </p>
         <Link href="/dashboard/setup">
-          <button className="labo-btn-primary mx-auto">
+          <button className="w-full bg-red-600 text-white font-bold py-3 rounded-xl shadow-md shadow-red-200">
             إكمال الملف الآن
           </button>
         </Link>
@@ -71,235 +57,70 @@ export default function DonorDashboard({ userId }: { userId: string }) {
     );
   }
 
+  const gridItems = [
+    { label: "سجل التبرعات", icon: <ClipboardList className="w-6 h-6 text-blue-500" />, href: "/dashboard/donations", bg: "bg-blue-50" },
+    { label: "النقاط والمكافآت", icon: <Award className="w-6 h-6 text-yellow-500" />, href: "/dashboard/gamification", bg: "bg-yellow-50" },
+    { label: "بطاقتي الرقمية", icon: <QrCode className="w-6 h-6 text-red-500" />, href: "/dashboard/qr", bg: "bg-red-50" },
+    { label: "الإشعارات", icon: <Bell className="w-6 h-6 text-purple-500" />, href: "/dashboard/notifications", bg: "bg-purple-50" },
+  ];
+
   const nextAppointment = donor.appointments?.[0];
-  const isEligible = donor.eligibilityStatus === "ELIGIBLE" || !donor.lastDonationDate;
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-md mx-auto pb-20 space-y-6 animate-fade-in-up">
       
-      {/* Welcome Header */}
-      <div className="labo-page-title mb-8">
-        <div>
-          <h1 className="text-xl font-bold text-slate-800">مرحباً، {donor.user?.name || "متبرع"}</h1>
-          <p className="text-slate-500 mt-1 text-sm">إليك الحالة الحالية لتبرعاتك ونتائجك المتاحة.</p>
-        </div>
+      {/* 1. Smart Card as Hero Section */}
+      <div className="-mx-4 md:mx-0">
+        <SmartDonorCard />
       </div>
 
-      {/* Emergency Alert Banner */}
-      {emergencies.length > 0 && (
-        <div className="bg-red-50 border-r-4 border-red-600 p-4 rounded-lg shadow-sm animate-fade-in-up">
-          <div className="flex justify-between items-start">
-            <div className="flex gap-3">
-              <div className="mt-1 bg-red-100 p-2 rounded-full text-red-600 animate-pulse">
-                <ShieldAlert className="w-6 h-6" />
+      {/* 2. 2x2 Grid Actions */}
+      <div className="grid grid-cols-2 gap-3 px-1">
+        {gridItems.map((item, idx) => (
+          <Link key={idx} href={item.href}>
+            <div className="bg-white rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] active:scale-95 transition-transform">
+              <div className={`w-12 h-12 rounded-full ${item.bg} flex items-center justify-center mb-3`}>
+                {item.icon}
               </div>
-              <div>
-                <h3 className="font-bold text-red-800 text-lg">نداءات طوارئ نشطة ({emergencies.length})</h3>
-                <p className="text-red-700 text-sm mt-1">
-                  هناك {emergencies.length} طلبات طوارئ عاجلة للدم حالياً. قد تكون أنت المنقذ!
-                </p>
-                <div className="mt-3 flex gap-2 overflow-x-auto pb-2">
-                  {emergencies.slice(0, 3).map(em => (
-                    <span key={em.id} className="bg-white border border-red-200 text-red-700 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">
-                      {em.hospitalName} ({em.city}) - فصيلة {em.bloodType.replace("_POSITIVE", "+").replace("_NEGATIVE", "-")}
-                    </span>
-                  ))}
-                </div>
-              </div>
+              <span className="text-sm font-bold text-slate-700">{item.label}</span>
             </div>
-            <Link href="/dashboard/emergency">
-              <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg text-sm transition-colors whitespace-nowrap">
-                عرض التفاصيل
-              </button>
-            </Link>
-          </div>
-        </div>
-      )}
+          </Link>
+        ))}
+      </div>
 
-      {/* History Pills */}
-      {donor.donations && donor.donations.length > 0 && (
-        <div className="flex items-center gap-3 overflow-x-auto pb-4 border-b border-gray-200">
-          <span className="text-sm font-bold text-slate-600 uppercase flex items-center gap-2">
-            <Clock className="w-4 h-4" /> سجل الزيارات:
-          </span>
-          {donor.donations.map((donation: any, index: number) => (
-            <Link key={donation.id} href={`/dashboard/donations/${donation.id}/certificate`}>
-              <button className={`px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap flex items-center gap-1 ${index === 0 ? 'bg-blue-600 text-white shadow-sm' : 'border border-blue-600 text-blue-600 bg-white hover:bg-blue-50'}`}>
-                <Award className="w-4 h-4" />
-                {index === 0 ? "شهادة أحدث تبرع" : `شهادة (${new Date(donation.donatedAt).toISOString().split('T')[0]})`}
-              </button>
-            </Link>
-          ))}
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* 3. Upcoming Campaign / Appointment */}
+      <div className="bg-white rounded-2xl p-5 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)]">
+        <h3 className="text-sm font-bold text-slate-500 mb-4 uppercase tracking-wider">حملة التبرع القادمة</h3>
         
-        {/* Left Column (Main Info) */}
-        <div className="lg:col-span-2 space-y-6">
-          
-          {/* Details */}
-          <div className="labo-card p-6">
-            <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2 mb-6">
-              <CalendarDays className="w-5 h-5 text-blue-600" />
-              تفاصيل الموعد القادم
-            </h3>
-            
-            {nextAppointment ? (
-              <div className="grid grid-cols-4 gap-4 text-right">
-                <div>
-                  <p className="text-xs text-slate-500 font-bold uppercase mb-1">رقم الموعد</p>
-                  <p className="text-sm font-bold text-slate-800">#{nextAppointment.id.slice(-4)}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-slate-500 font-bold uppercase mb-1">التاريخ</p>
-                  <p className="text-sm font-bold text-slate-800">{new Date(nextAppointment.scheduledAt).toISOString().split('T')[0]}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-slate-500 font-bold uppercase mb-1">الوقت</p>
-                  <p className="text-sm font-bold text-slate-800">{new Date(nextAppointment.scheduledAt).toLocaleTimeString('ar-SA')}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-slate-500 font-bold uppercase mb-1">الحالة</p>
-                  <span className="badge-success">محجوز</span>
-                </div>
+        {nextAppointment ? (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+                <MapPin className="w-5 h-5 text-red-600" />
               </div>
-            ) : (
-              <p className="text-sm text-slate-500">لا يوجد موعد قادم حالياً.</p>
-            )}
-          </div>
-
-          {/* Medical Results */}
-          <div className="labo-card p-6">
-            <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2 mb-6">
-              <FileText className="w-5 h-5 text-blue-600" />
-              النتائج الطبية (الأهلية)
-            </h3>
-            
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 flex items-center justify-between">
               <div>
-                <h4 className="text-lg font-bold text-slate-800 mb-1">
-                  {isEligible ? "أنت مؤهل للتبرع!" : "يرجى الانتظار لانتهاء فترة النقاهة"}
-                </h4>
-                <p className="text-sm text-slate-500">
-                  فصيلة دمك الحالية: <span className="font-bold text-red-600">{donor.bloodType.replace("_POSITIVE", "+").replace("_NEGATIVE", "-")}</span>
-                </p>
-              </div>
-              
-              <Link href="/dashboard/reports">
-                <button className="bg-emerald-500 text-white font-bold py-2 px-6 rounded-md shadow-sm hover:bg-emerald-600 transition-colors flex items-center gap-2">
-                  <FileText className="w-5 h-5" />
-                  التقرير الطبي (PDF)
-                </button>
-              </Link>
-            </div>
-          </div>
-          
-          {/* Gamification Widget */}
-          <div className="labo-card p-6 overflow-hidden relative">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-400 opacity-10 rounded-full blur-3xl -translate-y-10 translate-x-10"></div>
-            
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                <Trophy className="w-5 h-5 text-yellow-500" />
-                نظام التحفيز والنقاط
-              </h3>
-              <div className="flex items-center gap-2 bg-yellow-50 px-3 py-1 rounded-full border border-yellow-200 text-yellow-700 font-bold text-sm">
-                <Star className="w-4 h-4 fill-yellow-500 text-yellow-500" />
-                {donor.points || 0} نقطة
+                <p className="font-bold text-slate-800">{nextAppointment.center?.name || "مستشفى المدينة"}</p>
+                <p className="text-xs text-slate-500 mt-1">{new Date(nextAppointment.scheduledAt).toLocaleDateString('ar-SA')} - {new Date(nextAppointment.scheduledAt).toLocaleTimeString('ar-SA', {hour: '2-digit', minute:'2-digit'})}</p>
               </div>
             </div>
-
-            <div className="mb-6">
-              <div className="flex justify-between text-sm font-bold text-slate-600 mb-2">
-                <span>المستوى الحالي: {donor.level || 1}</span>
-                <span>المستوى القادم: {(donor.level || 1) + 1}</span>
-              </div>
-              <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-l from-yellow-400 to-orange-500 rounded-full" style={{ width: `${Math.min(((donor.totalDonations % 5) / 5) * 100, 100)}%` }}></div>
-              </div>
-              <p className="text-xs text-slate-500 mt-2 text-left">تبقى {5 - (donor.totalDonations % 5)} تبرعات للوصول للمستوى التالي</p>
-            </div>
-
-            {donor.badges && donor.badges.length > 0 && (
-              <div>
-                <h4 className="text-sm font-bold text-slate-700 mb-3">شاراتك المميزة:</h4>
-                <div className="flex flex-wrap gap-3">
-                  {donor.badges.map((b: any) => (
-                    <div key={b.id} className="flex flex-col items-center gap-1 p-2 rounded-lg bg-slate-50 border border-slate-100 w-20 text-center">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-500 flex items-center justify-center text-white shadow-sm mb-1">
-                        <Award className="w-5 h-5" />
-                      </div>
-                      <span className="text-[10px] font-bold text-slate-700">{b.badge?.name || "شارة"}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {(!donor.badges || donor.badges.length === 0) && (
-              <div className="text-center p-4 bg-slate-50 rounded-lg border border-slate-100 border-dashed">
-                <p className="text-sm text-slate-500">تبرع بالدم لتبدأ في كسب النقاط والشارات المميزة!</p>
-              </div>
-            )}
-          </div>
-          
-        </div>
-
-        {/* Right Column (Sidebar-like info) */}
-        <div className="space-y-6">
-          
-          {/* Official Reports */}
-          <div className="labo-card p-6">
-            <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2 mb-4">
-              <Download className="w-5 h-5 text-blue-600" />
-              التقارير الرسمية
-            </h3>
-            <Link href="/dashboard/reports">
-              <div className="flex items-center gap-3 p-3 border border-gray-200 rounded-md bg-white hover:bg-gray-50 cursor-pointer transition-colors">
-                <FileText className="w-5 h-5 text-red-500" />
-                <span className="text-sm text-slate-700 font-medium">عرض وطباعة التقارير</span>
-              </div>
+            <Link href={`/dashboard/appointments/${nextAppointment.id}`}>
+              <button className="bg-red-50 text-red-600 px-4 py-2 rounded-lg text-xs font-bold hover:bg-red-100">
+                التفاصيل
+              </button>
             </Link>
           </div>
-
-          {/* Notifications */}
-          <div className="labo-card p-6">
-            <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2 mb-4">
-              <Bell className="w-5 h-5 text-yellow-500" />
-              الإشعارات والتنبيهات
-            </h3>
-            
-            <div className="space-y-3">
-              {donor.user?.notifications?.length > 0 ? (
-                donor.user.notifications.map((notif: any) => (
-                  <div key={notif.id} className="bg-blue-50 border border-blue-100 rounded-md p-3 flex gap-3">
-                    <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-xs text-blue-800 font-bold mb-1">{new Date(notif.createdAt).toLocaleString('ar-SA')}</p>
-                      <p className="text-sm text-blue-900 font-bold">{notif.title}</p>
-                      <p className="text-sm text-blue-800">{notif.message}</p>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <>
-                  <div className="bg-emerald-50 border border-emerald-100 rounded-md p-3 flex gap-3">
-                    <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-xs text-emerald-800 font-bold mb-1">نصيحة عملية</p>
-                      <p className="text-sm text-emerald-900">أنت بصحة جيدة! حافظ على شرب كمية كافية من الماء بانتظام.</p>
-                    </div>
-                  </div>
-                  <p className="text-sm text-slate-500 text-center py-4">لا توجد إشعارات جديدة.</p>
-                </>
-              )}
-            </div>
+        ) : (
+          <div className="text-center py-4">
+            <p className="text-sm text-slate-500 mb-3">لا يوجد لديك موعد قادم. هل ترغب في إنقاذ حياة اليوم؟</p>
+            <Link href="/dashboard/appointments/new">
+              <button className="bg-red-600 text-white px-6 py-2 rounded-xl text-sm font-bold w-full shadow-md shadow-red-200">
+                سجل الآن
+              </button>
+            </Link>
           </div>
-
-        </div>
-
+        )}
       </div>
+
     </div>
   );
 }

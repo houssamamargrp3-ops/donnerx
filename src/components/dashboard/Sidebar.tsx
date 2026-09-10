@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 
 import { useState } from "react";
+import MobileBottomNav from "./MobileBottomNav";
 
 export default function DashboardSidebar({ role }: { role: string }) {
   const pathname = usePathname();
@@ -75,13 +76,17 @@ export default function DashboardSidebar({ role }: { role: string }) {
         />
       )}
 
-      {/* Mobile Toggle Button */}
-      <button 
-        onClick={() => setIsOpen(!isOpen)}
-        className="lg:hidden fixed bottom-6 right-6 z-50 bg-red-600 text-white p-4 rounded-full shadow-2xl hover:bg-red-700 transition-transform active:scale-95 flex items-center justify-center print:hidden"
-      >
-        <LayoutDashboard className="w-6 h-6" />
-      </button>
+      {/* Mobile Toggle Button / Bottom Nav */}
+      {role === "DONOR" ? (
+        <MobileBottomNav role={role} onOpenMenu={() => setIsOpen(!isOpen)} />
+      ) : (
+        <button 
+          onClick={() => setIsOpen(!isOpen)}
+          className="lg:hidden fixed bottom-6 right-6 z-50 bg-red-600 text-white p-4 rounded-full shadow-2xl hover:bg-red-700 transition-transform active:scale-95 flex items-center justify-center print:hidden"
+        >
+          <LayoutDashboard className="w-6 h-6" />
+        </button>
+      )}
 
       {/* Sidebar */}
       <aside className={`labo-sidebar print:hidden transition-transform duration-300 z-50 ${isOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}`}>

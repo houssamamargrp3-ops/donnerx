@@ -17,6 +17,14 @@ export const metadata: Metadata = {
     description: "منصة وطنية متكاملة لإدارة التبرع بالدم",
     siteName: "DONNER.X",
   },
+  manifest: "/manifest.json",
+};
+
+export const viewport = {
+  themeColor: "#dc2626",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({
