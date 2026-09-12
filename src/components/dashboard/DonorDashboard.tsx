@@ -18,14 +18,29 @@ export default function DonorDashboard({ userId }: { userId: string }) {
 
   useEffect(() => {
     const fetchDonor = async () => {
+      // 1. Instant offline cache check
+      try {
+        const cached = localStorage.getItem("donner_offline_donor");
+        if (cached) {
+          setDonor(JSON.parse(cached));
+          setLoading(false);
+        }
+      } catch (_) {}
+
+      // 2. Fetch fresh data from network
       try {
         const res = await fetch("/api/donor/me");
         if (res.ok) {
           const data = await res.json();
-          setDonor(data);
+          if (data && data.id) {
+            setDonor(data);
+            try {
+              localStorage.setItem("donner_offline_donor", JSON.stringify(data));
+            } catch (_) {}
+          }
         }
       } catch (e) {
-        console.error(e);
+        console.log("Offline mode: Using cached donor dashboard data.");
       } finally {
         setLoading(false);
       }

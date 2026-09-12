@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import PwaManager from "@/components/PwaManager";
 
 export const metadata: Metadata = {
   title: {
@@ -42,7 +43,10 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <PwaManager />
+        {children}
+      </body>
     </html>
   );
 }

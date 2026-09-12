@@ -72,24 +72,42 @@ interface DonationsClientViewProps {
 
 export default function DonationsClientView({
   role,
-  donations,
+  donations: initialDonations,
   donorName,
   donorBloodType,
 }: DonationsClientViewProps) {
   const isDonor = role === "DONOR";
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBloodType, setSelectedBloodType] = useState("ALL");
+  const [donationsList, setDonationsList] = useState<DonationItem[]>(initialDonations || []);
+
+  // Offline caching for donations
+  useEffect(() => {
+    if (initialDonations && initialDonations.length > 0) {
+      setDonationsList(initialDonations);
+      try {
+        localStorage.setItem("donner_offline_donations", JSON.stringify(initialDonations));
+      } catch (_) {}
+    } else {
+      try {
+        const cached = localStorage.getItem("donner_offline_donations");
+        if (cached) {
+          setDonationsList(JSON.parse(cached));
+        }
+      } catch (_) {}
+    }
+  }, [initialDonations]);
 
   // Summary calculations
-  const totalCount = donations.length;
-  const totalVolumeMl = donations.reduce((sum, d) => sum + (d.volumeMl || 450), 0);
+  const totalCount = donationsList.length;
+  const totalVolumeMl = donationsList.reduce((sum, d) => sum + (d.volumeMl || 450), 0);
   const totalVolumeLiters = (totalVolumeMl / 1000).toFixed(2);
   const livesSaved = totalCount * 3;
-  const certificatesCount = donations.filter((d) => d.certificate).length;
+  const certificatesCount = donationsList.filter((d) => d.certificate).length;
 
   // Filtered donations
   const filteredDonations = useMemo(() => {
-    return donations.filter((item) => {
+    return donationsList.filter((item) => {
       const btLabel = BLOOD_TYPE_LABEL[item.bloodType] || item.bloodType;
       const donorNameStr = item.donor?.user?.name || "";
       const centerNameStr = item.center.name || "";

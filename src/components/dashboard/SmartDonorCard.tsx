@@ -33,9 +33,29 @@ export default function SmartDonorCard() {
 
   useEffect(() => {
     (async () => {
+      // 1. Check offline cached data immediately for instant display
+      try {
+        const cached = localStorage.getItem("donner_offline_donor");
+        if (cached) {
+          setDonor(JSON.parse(cached));
+          setLoading(false);
+        }
+      } catch (_) {}
+
+      // 2. Fetch fresh data from network
       try {
         const res = await fetch("/api/donor/me");
-        if (res.ok) setDonor(await res.json());
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.id) {
+            setDonor(data);
+            try {
+              localStorage.setItem("donner_offline_donor", JSON.stringify(data));
+            } catch (_) {}
+          }
+        }
+      } catch (err) {
+        console.log("Offline mode: Using cached donor card data.");
       } finally {
         setLoading(false);
       }
