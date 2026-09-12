@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import SmartDonorCard from "./SmartDonorCard";
-import PwaInstallPrompt from "./PwaInstallPrompt";
 
 export default function DonorDashboard({ userId }: { userId: string }) {
   const [donor, setDonor] = useState<any>(null);
@@ -70,9 +69,6 @@ export default function DonorDashboard({ userId }: { userId: string }) {
   return (
     <div className="max-w-md mx-auto pb-20 space-y-6 animate-fade-in-up">
       
-      {/* Install App Prompt */}
-      <PwaInstallPrompt />
-
       {/* 1. Smart Card as Hero Section */}
       <div className="-mx-4 md:mx-0">
         <SmartDonorCard />

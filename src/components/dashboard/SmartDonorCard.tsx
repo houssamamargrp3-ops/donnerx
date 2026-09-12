@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import {
   Droplet, Award, Heart, RefreshCw, Zap,
-  Activity, User, Copy, Check, CreditCard
+  Activity, User, Copy, Check, CreditCard, Gift, Sparkles, ChevronLeft
 } from "lucide-react";
 import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
@@ -103,16 +103,18 @@ export default function SmartDonorCard() {
     ts: Math.floor(qrRefreshed / 300000),
   });
 
-  // Donor tier
+  // Donor tier (4 donations/year reaches Gold and unlocks rewards)
   const tiers = [
     { min: 0,  label: "متبرع جديد", icon: "🌱" },
     { min: 1,  label: "برونزي",     icon: "🥉" },
-    { min: 3,  label: "فضي",        icon: "🥈" },
-    { min: 7,  label: "ذهبي",       icon: "🥇" },
-    { min: 15, label: "بلاتيني",    icon: "💎" },
-    { min: 30, label: "أسطوري",     icon: "👑" },
+    { min: 2,  label: "فضي",        icon: "🥈" },
+    { min: 4,  label: "ذهبي",       icon: "🥇" },
+    { min: 10, label: "بلاتيني",    icon: "💎" },
+    { min: 20, label: "أسطوري",     icon: "👑" },
   ];
   const tier = [...tiers].reverse().find(t => totalDonations >= t.min) || tiers[0];
+  const nextTier = tiers.find(t => t.min > totalDonations);
+  const remainingForGold = Math.max(0, 4 - totalDonations);
 
   return (
     <div className="max-w-sm mx-auto space-y-4">
@@ -306,17 +308,80 @@ export default function SmartDonorCard() {
         ))}
       </div>
 
-      {/* ─── Tier badge ─── */}
-      <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex items-center gap-3">
-        <div className="text-2xl">{tier.icon}</div>
-        <div>
-          <div className="text-sm font-black text-slate-800 flex items-center gap-1.5">
-            <Award className="w-4 h-4 text-amber-500" /> {tier.label}
-          </div>
-          <div className="text-slate-400 text-[10px] font-bold">
-            {totalDonations} تبرع · {donor.points || 0} نقطة
+      {/* ─── Annual Goal & Rewards Challenge ─── */}
+      <div className="bg-gradient-to-br from-amber-50 via-yellow-50/50 to-orange-50 rounded-2xl p-4 border border-amber-200/80 shadow-sm space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-sm">
+              <Gift className="w-4 h-4" />
+            </div>
+            <div>
+              <h4 className="text-xs font-black text-amber-950 flex items-center gap-1">
+                تحدي البطل الذهبي 🥇
+                <span className="text-[9px] bg-amber-200/70 text-amber-900 px-1.5 py-0.5 rounded-full font-bold">جوائز حصرية</span>
+              </h4>
+              <p className="text-[10px] text-amber-800/80 font-medium">
+                تبرع 4 مرات في العام، وصل للمستوى الذهبي واحصل على جوائز وتقدير شرفي!
+              </p>
+            </div>
           </div>
         </div>
+
+        {/* Progress Bar towards 4 donations */}
+        <div className="space-y-1 pt-1">
+          <div className="flex items-center justify-between text-[10px] font-bold">
+            <span className="text-amber-900">
+              {remainingForGold === 0
+                ? "🎉 رائع! حققت المستوى الذهبي هذا العام"
+                : `متبقي ${remainingForGold} تبرع${remainingForGold > 2 ? "ات" : ""} للوصول للذهبي`}
+            </span>
+            <span className="text-amber-700 font-mono">{Math.min(totalDonations, 4)} / 4</span>
+          </div>
+          <div className="w-full bg-amber-200/60 rounded-full h-2 overflow-hidden">
+            <div
+              className="bg-gradient-to-r from-amber-500 to-yellow-400 h-full rounded-full transition-all duration-500"
+              style={{ width: `${Math.min(100, (totalDonations / 4) * 100)}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Rewards pill list */}
+        <div className="grid grid-cols-3 gap-1.5 pt-1 text-center">
+          <div className="bg-white/80 rounded-xl p-1.5 border border-amber-200/50">
+            <div className="text-xs">🎖️</div>
+            <div className="text-[9px] font-bold text-amber-900 mt-0.5">شهادة شرفية</div>
+          </div>
+          <div className="bg-white/80 rounded-xl p-1.5 border border-amber-200/50">
+            <div className="text-xs">⭐</div>
+            <div className="text-[9px] font-bold text-amber-900 mt-0.5">أولوية ومكافآت</div>
+          </div>
+          <div className="bg-white/80 rounded-xl p-1.5 border border-amber-200/50">
+            <div className="text-xs">🎁</div>
+            <div className="text-[9px] font-bold text-amber-900 mt-0.5">درع التميز</div>
+          </div>
+        </div>
+      </div>
+
+      {/* ─── Current Tier badge ─── */}
+      <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="text-2xl">{tier.icon}</div>
+          <div>
+            <div className="text-sm font-black text-slate-800 flex items-center gap-1.5">
+              <Award className="w-4 h-4 text-amber-500" /> رتبتك الحالية: {tier.label}
+            </div>
+            <div className="text-slate-400 text-[10px] font-bold">
+              {totalDonations} تبرع مسجل · {donor.points || 0} نقطة
+            </div>
+          </div>
+        </div>
+        <Link
+          href="/dashboard/gamification"
+          className="text-[11px] font-bold text-red-600 hover:text-red-700 flex items-center gap-0.5"
+        >
+          <span>المكافآت</span>
+          <ChevronLeft className="w-3.5 h-3.5" />
+        </Link>
       </div>
 
     </div>

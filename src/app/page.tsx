@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Droplets, ArrowLeft, Shield, Heart, Activity, Users } from "lucide-react";
+import { Droplets, ArrowLeft, Shield, Heart, Activity, Users, Download } from "lucide-react";
 
 export default function HomePage() {
   return (
@@ -29,7 +29,7 @@ export default function HomePage() {
       </div>
 
       {/* Navbar */}
-      <nav className="relative z-10 flex items-center justify-between px-8 py-5 border-b border-white/5">
+      <nav className="relative z-10 flex items-center justify-between px-6 md:px-8 py-5 border-b border-white/5">
         <div className="flex items-center gap-3">
           <div
             className="w-10 h-10 rounded-xl flex items-center justify-center"
@@ -40,13 +40,22 @@ export default function HomePage() {
           <span className="text-xl font-black gradient-text tracking-wider">DONNER.X</span>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          <a
+            href="/donnerx.apk"
+            download="DONNER.X.apk"
+            className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-semibold border border-white/10 transition-all"
+            title="تحميل تطبيق أندرويد المستقل"
+          >
+            <Download className="w-4 h-4 text-red-400" />
+            <span>تحميل التطبيق (APK)</span>
+          </a>
           <Link href="/login"
-            className="px-5 py-2 rounded-lg text-slate-300 hover:text-white text-sm font-medium transition-colors">
+            className="px-4 md:px-5 py-2 rounded-lg text-slate-300 hover:text-white text-sm font-medium transition-colors">
             تسجيل الدخول
           </Link>
           <Link href="/register"
-            className="px-5 py-2 rounded-lg text-white text-sm font-semibold transition-all hover:shadow-lg"
+            className="px-4 md:px-5 py-2 rounded-lg text-white text-sm font-semibold transition-all hover:shadow-lg"
             style={{ background: "linear-gradient(135deg, #dc2626, #991b1b)", boxShadow: "0 4px 15px rgba(220,38,38,0.3)" }}>
             ابدأ الآن
           </Link>
@@ -73,9 +82,28 @@ export default function HomePage() {
           <span className="gradient-text">تُنقذ حياة</span>
         </h1>
 
-        <p className="text-lg text-slate-400 max-w-2xl mb-10 leading-relaxed">
+        <p className="text-lg text-slate-400 max-w-2xl mb-8 leading-relaxed">
           منصة متكاملة تربط المتبرعين بالدم بمراكز نقل الدم والمستشفيات في الوقت الفعلي.
         </p>
+
+        <div className="flex flex-wrap items-center justify-center gap-4 mb-4">
+          <Link
+            href="/register?role=donor"
+            className="px-8 py-3.5 rounded-xl text-white font-bold text-base shadow-xl hover:shadow-red-600/30 transition-all flex items-center gap-2"
+            style={{ background: "linear-gradient(135deg, #dc2626, #991b1b)" }}
+          >
+            <Heart className="w-5 h-5" />
+            <span>تبرع الآن</span>
+          </Link>
+          <a
+            href="/donnerx.apk"
+            download="DONNER.X.apk"
+            className="px-6 py-3.5 rounded-xl text-slate-200 hover:text-white font-bold text-sm bg-white/10 hover:bg-white/15 border border-white/15 backdrop-blur-sm transition-all flex items-center gap-2"
+          >
+            <Download className="w-4 h-4 text-red-400" />
+            <span>تحميل التطبيق للاندرويد (APK)</span>
+          </a>
+        </div>
       </section>
 
       {/* Portals Section */}
