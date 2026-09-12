@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import {
-  Shield, Droplet, Star, Award, Heart, CheckCircle2,
-  Clock, QrCode, Download, Share2, RefreshCw, Zap,
-  Activity, Calendar, User
+  Shield, Droplet, Award, Heart, QrCode, Download, RefreshCw, Zap,
+  Activity, Calendar, User, Copy, Check, Sparkles, CreditCard,
+  Wifi, RotateCw, CheckCircle2
 } from "lucide-react";
 import Link from "next/link";
+import { QRCodeSVG } from "qrcode.react";
 
 const BLOOD_TYPE_LABEL: Record<string, string> = {
   A_POSITIVE: "A+", A_NEGATIVE: "A-",
@@ -15,69 +16,96 @@ const BLOOD_TYPE_LABEL: Record<string, string> = {
   O_POSITIVE: "O+", O_NEGATIVE: "O-",
 };
 
-function CircularProgress({ days, total }: { days: number; total: number }) {
-  const pct = total === 0 ? 100 : Math.min(100, Math.max(0, ((total - days) / total) * 100));
-  const radius = 52;
-  const circ = 2 * Math.PI * radius;
-  const strokeDash = (pct / 100) * circ;
+// Card Color Themes inspired by Wise & RedotPay
+const CARD_THEMES = {
+  wise: {
+    id: "wise",
+    name: "Wise Neon",
+    gradient: "from-emerald-950 via-slate-900 to-teal-950",
+    border: "border-emerald-500/40",
+    glow: "shadow-emerald-900/30",
+    accent: "text-emerald-400",
+    accentBg: "bg-emerald-500/20",
+    pillBg: "bg-emerald-400 text-slate-950 font-black",
+    chip: "#fbbf24",
+  },
+  redot: {
+    id: "redot",
+    name: "Redot Ruby",
+    gradient: "from-zinc-950 via-slate-900 to-red-950",
+    border: "border-red-500/40",
+    glow: "shadow-red-950/40",
+    accent: "text-red-400",
+    accentBg: "bg-red-500/20",
+    pillBg: "bg-red-600 text-white font-black",
+    chip: "#e2e8f0",
+  },
+  obsidian: {
+    id: "obsidian",
+    name: "Obsidian Gold",
+    gradient: "from-zinc-950 via-stone-900 to-zinc-950",
+    border: "border-amber-500/40",
+    glow: "shadow-amber-950/30",
+    accent: "text-amber-400",
+    accentBg: "bg-amber-500/20",
+    pillBg: "bg-amber-400 text-zinc-950 font-black",
+    chip: "#f59e0b",
+  },
+  sapphire: {
+    id: "sapphire",
+    name: "Cyber Sapphire",
+    gradient: "from-slate-950 via-blue-950 to-indigo-950",
+    border: "border-blue-500/40",
+    glow: "shadow-blue-950/40",
+    accent: "text-cyan-400",
+    accentBg: "bg-cyan-500/20",
+    pillBg: "bg-cyan-400 text-slate-950 font-black",
+    chip: "#60a5fa",
+  },
+};
+
+function FormatCardNumber({ id }: { id: string }) {
+  const cleanId = (id || "0000000000000000").replace(/[^a-zA-Z0-9]/g, "").padEnd(16, "0").toUpperCase();
+  const chunk1 = cleanId.slice(0, 4);
+  const chunk2 = "••••";
+  const chunk3 = "••••";
+  const chunk4 = cleanId.slice(-4);
 
   return (
-    <div className="relative inline-flex items-center justify-center">
-      <svg width={128} height={128} className="-rotate-90">
-        <circle cx={64} cy={64} r={radius} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth={8} />
-        <circle
-          cx={64} cy={64} r={radius} fill="none"
-          stroke={days <= 0 ? "#22c55e" : days <= 30 ? "#f59e0b" : "#ef4444"}
-          strokeWidth={8} strokeLinecap="round"
-          strokeDasharray={`${strokeDash} ${circ}`}
-          style={{ transition: "stroke-dasharray 1.5s ease" }}
-        />
-      </svg>
-      <div className="absolute text-center">
-        {days <= 0 ? (
-          <div className="text-green-400 text-xs font-bold">جاهز<br />✅</div>
-        ) : (
-          <>
-            <div className="text-white font-black text-2xl leading-none">{days}</div>
-            <div className="text-white/60 text-[9px] font-bold mt-0.5">يوم</div>
-          </>
-        )}
+    <div className="font-mono text-base sm:text-lg md:text-xl font-extrabold tracking-widest text-white/95 drop-shadow flex items-center gap-2 sm:gap-3 dir-ltr select-none">
+      <span>{chunk1}</span>
+      <span>{chunk2}</span>
+      <span>{chunk3}</span>
+      <span>{chunk4}</span>
+    </div>
+  );
+}
+
+function EMVChip({ color = "#fbbf24" }: { color?: string }) {
+  return (
+    <div className="relative w-9 h-6 sm:w-10 sm:h-7 rounded-md bg-gradient-to-br from-amber-200 via-yellow-400 to-amber-600 p-[1px] shadow-sm overflow-hidden flex-shrink-0">
+      <div className="w-full h-full bg-gradient-to-br from-yellow-300 to-amber-500 rounded-[5px] relative flex flex-col justify-between p-[2px]">
+        <div className="w-full h-[1px] bg-amber-800/40 mt-1.5" />
+        <div className="w-full h-[1px] bg-amber-800/40 mb-1.5" />
+        <div className="absolute top-0 bottom-0 left-1/3 w-[1px] bg-amber-800/40" />
+        <div className="absolute top-0 bottom-0 right-1/3 w-[1px] bg-amber-800/40" />
+        <div className="absolute inset-1 rounded-sm border border-amber-700/30" />
       </div>
     </div>
   );
 }
 
-function QRDisplay({ data }: { data: string }) {
-  const [qrUrl, setQrUrl] = useState("");
-
-  useEffect(() => {
-    // Use QR Server API to generate QR code
-    const encoded = encodeURIComponent(data);
-    setQrUrl(`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encoded}&bgcolor=1e293b&color=ffffff&margin=8`);
-  }, [data]);
-
+function ContactlessIcon() {
   return (
-    <div className="relative">
-      {qrUrl ? (
-        <img
-          src={qrUrl}
-          alt="QR Code"
-          width={120}
-          height={120}
-          className="rounded-xl border border-white/10"
-          style={{ imageRendering: "pixelated" }}
-        />
-      ) : (
-        <div className="w-[120px] h-[120px] rounded-xl bg-white/5 flex items-center justify-center border border-white/10">
-          <QrCode className="w-8 h-8 text-white/30 animate-pulse" />
-        </div>
-      )}
-      <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-green-400 rounded-full border-2 border-slate-900 animate-pulse" title="QR حي وديناميكي" />
-    </div>
+    <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white/70 rotate-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+      <path strokeLinecap="round" d="M8.5 14.5a5 5 0 0 1 0-5" />
+      <path strokeLinecap="round" d="M11.5 17.5a9 9 0 0 1 0-11" />
+      <path strokeLinecap="round" d="M14.5 20.5a13 13 0 0 1 0-17" />
+    </svg>
   );
 }
 
-function Badge({ count }: { count: number }) {
+function TierBadge({ count }: { count: number }) {
   const tiers = [
     { min: 0,  max: 1,  label: "متبرع جديد",   icon: "🌱", color: "from-slate-500 to-slate-700",  text: "text-slate-200" },
     { min: 1,  max: 3,  label: "برونزي",        icon: "🥉", color: "from-amber-700 to-amber-900",  text: "text-amber-200" },
@@ -90,11 +118,11 @@ function Badge({ count }: { count: number }) {
   const next = tiers[tiers.indexOf(tier) + 1];
 
   return (
-    <div className={`bg-gradient-to-br ${tier.color} rounded-2xl p-4 text-center shadow-lg`}>
+    <div className={`bg-gradient-to-br ${tier.color} rounded-2xl p-4 text-center shadow-md border border-white/10`}>
       <div className="text-3xl mb-1">{tier.icon}</div>
       <div className={`font-black text-sm ${tier.text}`}>{tier.label}</div>
       {next && (
-        <div className="mt-2 text-[10px] text-white/50">
+        <div className="mt-2 text-[10px] text-white/70 font-medium">
           التالي: {next.icon} {next.label} ({next.min - count} تبرع)
         </div>
       )}
@@ -107,6 +135,8 @@ export default function SmartDonorCard() {
   const [loading, setLoading] = useState(true);
   const [qrRefreshed, setQrRefreshed] = useState(Date.now());
   const [cardFlipped, setCardFlipped] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [themeKey, setThemeKey] = useState<keyof typeof CARD_THEMES>("wise");
 
   const fetchDonor = async () => {
     try {
@@ -119,19 +149,29 @@ export default function SmartDonorCard() {
 
   useEffect(() => {
     fetchDonor();
-    // Auto-refresh QR every 5 minutes
     const interval = setInterval(() => setQrRefreshed(Date.now()), 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
-  const refreshQR = () => setQrRefreshed(Date.now());
+  const refreshQR = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setQrRefreshed(Date.now());
+  };
+
+  const copyId = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!donor?.id) return;
+    navigator.clipboard.writeText(donor.id);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[600px]">
+      <div className="flex items-center justify-center min-h-[360px]">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-red-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-slate-500 font-medium">جاري تحميل البطاقة الذكية...</p>
+          <div className="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-slate-500 text-sm font-medium">جاري تحميل بطاقة الدفع الرقمية...</p>
         </div>
       </div>
     );
@@ -139,96 +179,41 @@ export default function SmartDonorCard() {
 
   if (!donor) {
     return (
-      <div className="max-w-lg mx-auto mt-10 text-center labo-card p-12">
-        <User className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-        <h2 className="text-xl font-bold text-slate-800 mb-2">الملف الطبي غير مكتمل</h2>
-        <p className="text-slate-500 mb-6">يرجى إكمال إعداد ملفك الطبي أولاً.</p>
-        <Link href="/dashboard/setup" className="labo-btn-primary inline-block">إكمال الملف</Link>
+      <div className="max-w-md mx-auto mt-6 text-center labo-card p-8 rounded-2xl shadow-sm">
+        <User className="w-14 h-14 text-slate-400 mx-auto mb-3" />
+        <h2 className="text-lg font-bold text-slate-800 mb-1">الملف الطبي غير مكتمل</h2>
+        <p className="text-slate-500 text-xs mb-5">يرجى إكمال إعداد ملفك الطبي لإصدار بطاقتك الصحية الرقمية.</p>
+        <Link href="/dashboard/setup" className="labo-btn-primary inline-block text-xs">إكمال الملف</Link>
       </div>
     );
   }
 
-  const bt = BLOOD_TYPE_LABEL[donor.bloodType] || donor.bloodType;
+  const bt = BLOOD_TYPE_LABEL[donor.bloodType] || donor.bloodType || "O+";
   const totalDonations = donor.totalDonations || 0;
   const livesImpacted = totalDonations * 3;
-  const yearsAsDonor = donor.createdAt
-    ? Math.max(0, Math.floor((Date.now() - new Date(donor.createdAt).getTime()) / (365.25 * 24 * 60 * 60 * 1000)))
-    : 0;
+  const currentTheme = CARD_THEMES[themeKey] || CARD_THEMES.wise;
 
   // Eligibility countdown
-  const DONATION_INTERVAL = 90; // days
   let daysRemaining = 0;
-  let eligibilityLabel = "مؤهل للتبرع اليوم ✅";
-  let eligibilityColor = "text-emerald-400";
-  let eligibilityBg = "bg-emerald-400/10 border-emerald-400/30";
-  let statusDot = "bg-emerald-400";
-
+  let eligibilityLabel = "مؤهل للتبرع ✅";
+  let eligibilityPillBg = "bg-emerald-500/20 text-emerald-300 border-emerald-500/40";
   const hasAppointment = donor.appointments && donor.appointments.length > 0;
 
   if (donor.eligibilityStatus === "INELIGIBLE" && donor.nextEligibleDate) {
     const diff = Math.ceil((new Date(donor.nextEligibleDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
     daysRemaining = Math.max(0, diff);
-    if (daysRemaining > 0 && daysRemaining <= 15) {
-      eligibilityLabel = `اقترب الموعد (${daysRemaining} يوم) 🟡`;
-      eligibilityColor = "text-orange-400";
-      eligibilityBg = "bg-orange-400/10 border-orange-400/30";
-      statusDot = "bg-orange-400";
-    } else if (daysRemaining > 15) {
-      eligibilityLabel = `غير مؤهل مؤقتاً (${daysRemaining} يوم) 🔴`;
-      eligibilityColor = "text-red-400";
-      eligibilityBg = "bg-red-400/10 border-red-400/30";
-      statusDot = "bg-red-400";
+    if (daysRemaining > 0) {
+      eligibilityLabel = `غير مؤهل (${daysRemaining}d)`;
+      eligibilityPillBg = "bg-red-500/20 text-red-300 border-red-500/40";
     }
   } else if (donor.eligibilityStatus === "PENDING_CHECK") {
-    eligibilityLabel = "يستحق الفحص قريباً 🟡";
-    eligibilityColor = "text-orange-400";
-    eligibilityBg = "bg-orange-400/10 border-orange-400/30";
-    statusDot = "bg-orange-400";
-    daysRemaining = 14;
+    eligibilityLabel = "فحص متبقي 🟡";
+    eligibilityPillBg = "bg-amber-500/20 text-amber-300 border-amber-500/40";
   }
 
   if (hasAppointment) {
-    eligibilityLabel = "لديك موعد محجوز 🗓️";
-    eligibilityColor = "text-blue-400";
-    eligibilityBg = "bg-blue-400/10 border-blue-400/30";
-    statusDot = "bg-blue-400";
-  }
-
-  // Card Theme Logic
-  let cardTheme = {
-    bg: "linear-gradient(135deg, #064e3b 0%, #022c22 40%, #0f172a 100%)", // Green
-    blob1: "radial-gradient(circle, #34d399, transparent)",
-    blob2: "radial-gradient(circle, #10b981, transparent)",
-    iconBg: "bg-emerald-500/20 border-emerald-500/40",
-    iconColor: "text-emerald-400 fill-emerald-400",
-  };
-
-  if (hasAppointment) {
-    cardTheme = {
-      bg: "linear-gradient(135deg, #1e3a8a 0%, #172554 40%, #0f172a 100%)", // Blue
-      blob1: "radial-gradient(circle, #60a5fa, transparent)",
-      blob2: "radial-gradient(circle, #3b82f6, transparent)",
-      iconBg: "bg-blue-500/20 border-blue-500/40",
-      iconColor: "text-blue-400 fill-blue-400",
-    };
-  } else if (donor.eligibilityStatus === "INELIGIBLE" || donor.eligibilityStatus === "PENDING_CHECK") {
-    if (daysRemaining > 0 && daysRemaining <= 15) {
-      cardTheme = {
-        bg: "linear-gradient(135deg, #78350f 0%, #451a03 40%, #0f172a 100%)", // Orange
-        blob1: "radial-gradient(circle, #fbbf24, transparent)",
-        blob2: "radial-gradient(circle, #f59e0b, transparent)",
-        iconBg: "bg-orange-500/20 border-orange-500/40",
-        iconColor: "text-orange-400 fill-orange-400",
-      };
-    } else {
-      cardTheme = {
-        bg: "linear-gradient(135deg, #7f1d1d 0%, #4c0519 40%, #0f172a 100%)", // Red
-        blob1: "radial-gradient(circle, #ef4444, transparent)",
-        blob2: "radial-gradient(circle, #dc2626, transparent)",
-        iconBg: "bg-red-500/20 border-red-500/40",
-        iconColor: "text-red-400 fill-red-400",
-      };
-    }
+    eligibilityLabel = "موعد محجوز 🗓️";
+    eligibilityPillBg = "bg-blue-500/20 text-blue-300 border-blue-500/40";
   }
 
   // QR payload
@@ -240,252 +225,242 @@ export default function SmartDonorCard() {
     lastDonation: donor.lastDonationDate
       ? new Date(donor.lastDonationDate).toISOString().split("T")[0]
       : null,
-    ts: Math.floor(qrRefreshed / (5 * 60 * 1000)), // changes every 5 min
+    ts: Math.floor(qrRefreshed / (5 * 60 * 1000)),
   });
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="max-w-md mx-auto space-y-5">
 
-      {/* Page Header */}
-      <div className="labo-page-title">
+      {/* Title Header */}
+      <div className="flex items-center justify-between px-1">
         <div>
-          <h1 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-            <Shield className="w-6 h-6 text-red-600" />
-            البطاقة الصحية الذكية
+          <h1 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+            <CreditCard className="w-5 h-5 text-red-600" />
+            البطاقة الصحية الرقمية
           </h1>
-          <p className="text-slate-500 text-sm mt-1">هويتك الرسمية كمتبرع بالدم — محمية ومشفرة</p>
+          <p className="text-slate-500 text-xs">بطاقة تبرع بتصميم RedotPay / Wise الحديث</p>
         </div>
-        <div className="flex gap-2">
-          <button
-            onClick={refreshQR}
-            className="labo-action-btn labo-action-edit flex items-center gap-1 px-3 py-2 text-xs"
-            title="تحديث رمز QR"
-          >
-            <RefreshCw className="w-3.5 h-3.5" /> تحديث QR
-          </button>
-        </div>
+        <button
+          onClick={() => setCardFlipped(!cardFlipped)}
+          className="flex items-center gap-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded-xl text-xs font-bold shadow-sm transition-all active:scale-95 cursor-pointer"
+        >
+          <RotateCw className={`w-3.5 h-3.5 text-red-600 transition-transform duration-500 ${cardFlipped ? "rotate-180" : ""}`} />
+          {cardFlipped ? "الوجه الأمامي" : "تقليب البطاقة"}
+        </button>
       </div>
 
-      {/* ═══════════════ SMART CARD ═══════════════ */}
-      <div
-        className="relative rounded-3xl overflow-hidden shadow-2xl cursor-pointer select-none transition-all duration-500"
-        style={{
-          background: cardTheme.bg,
-          minHeight: 420,
-        }}
-        onClick={() => setCardFlipped(!cardFlipped)}
-      >
-        {/* Animated background blobs */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none transition-opacity duration-1000">
-          <div className="absolute -top-20 -left-20 w-64 h-64 rounded-full opacity-20"
-            style={{ background: cardTheme.blob1 }} />
-          <div className="absolute -bottom-10 -right-20 w-80 h-80 rounded-full opacity-15"
-            style={{ background: cardTheme.blob2 }} />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-40 opacity-5"
-            style={{ background: "radial-gradient(ellipse, #ffffff, transparent)" }} />
-        </div>
-
-        {/* Holographic shimmer */}
-        <div className="absolute inset-0 opacity-5"
+      {/* ═══════════════ Wise / RedotPay Payment Card Container ═══════════════ */}
+      <div className="perspective-1000 w-full">
+        <div
+          onClick={() => setCardFlipped(!cardFlipped)}
+          className={`relative w-full aspect-[1.586/1] rounded-[22px] transition-all duration-700 cursor-pointer select-none shadow-xl ${currentTheme.glow} ${currentTheme.border} border`}
           style={{
-            backgroundImage: "repeating-linear-gradient(45deg, white 0px, transparent 1px, transparent 8px, white 9px)",
-          }} />
+            transformStyle: "preserve-3d",
+            transform: cardFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
+          }}
+        >
 
-        {/* Card content */}
-        <div className="relative z-10 p-6 md:p-8">
+          {/* ----------------- FRONT SIDE (Credit Card View) ----------------- */}
+          <div
+            className={`absolute inset-0 w-full h-full rounded-[22px] bg-gradient-to-br ${currentTheme.gradient} p-5 flex flex-col justify-between overflow-hidden`}
+            style={{
+              backfaceVisibility: "hidden",
+            }}
+          >
+            {/* Glossy Metallic Pattern Overlay */}
+            <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white via-transparent to-transparent" />
+            <div
+              className="absolute -top-24 -left-24 w-60 h-60 rounded-full opacity-15 pointer-events-none"
+              style={{ background: "radial-gradient(circle, #ffffff 0%, transparent 70%)" }}
+            />
 
-          {/* Top row: Brand + Verification badge */}
-          <div className="flex items-start justify-between mb-6">
-            <div className="flex items-center gap-2">
-              <div className={`w-10 h-10 rounded-xl ${cardTheme.iconBg} border flex items-center justify-center transition-colors duration-500`}>
-                <Droplet className={`w-5 h-5 ${cardTheme.iconColor} transition-colors duration-500`} />
-              </div>
-              <div>
-                <div className="text-white font-black text-base tracking-wide">DONNER.X</div>
-                <div className="text-white/40 text-[9px] font-bold tracking-widest uppercase">Blood Donor Network</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-full px-3 py-1.5">
-              <Shield className="w-3 h-3 text-blue-400" />
-              <span className="text-[10px] font-bold text-blue-300">هوية موثقة</span>
-            </div>
-          </div>
-
-          {/* Middle: Profile + Blood type + Countdown */}
-          <div className="flex items-start gap-6 mb-6">
-
-            {/* Avatar + info */}
-            <div className="flex-1">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="relative">
-                  {donor.user?.image ? (
-                    <img src={donor.user.image} alt="avatar"
-                      className="w-16 h-16 rounded-2xl object-cover border-2 border-white/20" />
-                  ) : (
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-red-600 to-purple-700 border-2 border-white/20 flex items-center justify-center">
-                      <span className="text-white font-black text-2xl">
-                        {(donor.user?.name || "؟")[0]}
-                      </span>
-                    </div>
-                  )}
-                  {/* Status dot */}
-                  <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-slate-900 ${statusDot} animate-pulse`} />
+            {/* TOP ROW: Brand + Contactless + Blood Group Pill */}
+            <div className="relative z-10 flex items-center justify-between">
+              {/* Left Brand */}
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-inner">
+                  <Droplet className="w-4 h-4 text-red-500 fill-red-500" />
                 </div>
                 <div>
-                  <h2 className="text-white font-black text-xl leading-tight">{donor.user?.name || "متبرع"}</h2>
-                  <div className="text-white/50 text-xs mt-1 font-mono">
-                    ID: {donor.id?.slice(-12).toUpperCase()}
-                  </div>
+                  <div className="text-white font-black text-sm tracking-wider">DONNER.X</div>
+                  <div className="text-white/50 text-[8px] font-bold tracking-widest uppercase dir-ltr">SMART HEALTH PASS</div>
                 </div>
               </div>
 
-              {/* Blood type pill */}
-              <div className={`inline-flex items-center gap-2 ${cardTheme.iconBg} border rounded-2xl px-4 py-2 mb-3 transition-colors duration-500`}>
-                <Droplet className={`w-4 h-4 ${cardTheme.iconColor} transition-colors duration-500`} />
-                <span className="text-white font-black text-3xl leading-none">{bt}</span>
-                <span className="text-white/60 text-xs font-bold">فصيلة الدم</span>
-              </div>
-
-              {/* Eligibility badge */}
-              <div className={`inline-flex items-center gap-2 ${eligibilityBg} border rounded-xl px-3 py-1.5`}>
-                <div className={`w-2 h-2 rounded-full ${statusDot}`} />
-                <span className={`text-xs font-bold ${eligibilityColor}`}>{eligibilityLabel}</span>
-              </div>
-            </div>
-
-            {/* Countdown circle */}
-            <div className="text-center">
-              <CircularProgress days={daysRemaining} total={DONATION_INTERVAL} />
-              <div className="text-white/50 text-[9px] font-bold mt-1 uppercase tracking-wider">
-                {daysRemaining <= 0 ? "جاهز للتبرع" : "الوقت المتبقي"}
-              </div>
-            </div>
-          </div>
-
-          {/* Stats row */}
-          <div className="grid grid-cols-3 gap-3 mb-6">
-            <div className="bg-white/5 border border-white/8 rounded-2xl p-3 text-center">
-              <div className="text-white font-black text-2xl">{totalDonations}</div>
-              <div className="text-white/50 text-[10px] font-bold mt-1 flex items-center justify-center gap-1">
-                <Activity className="w-3 h-3" /> تبرعات
-              </div>
-            </div>
-            <div className="bg-white/5 border border-white/8 rounded-2xl p-3 text-center">
-              <div className="text-red-400 font-black text-2xl">{livesImpacted}</div>
-              <div className="text-white/50 text-[10px] font-bold mt-1 flex items-center justify-center gap-1">
-                <Heart className="w-3 h-3" /> حياة أنقذت
-              </div>
-            </div>
-            <div className="bg-white/5 border border-white/8 rounded-2xl p-3 text-center">
-              <div className="text-white font-black text-2xl">{yearsAsDonor > 0 ? yearsAsDonor : "<1"}</div>
-              <div className="text-white/50 text-[10px] font-bold mt-1 flex items-center justify-center gap-1">
-                <Calendar className="w-3 h-3" /> سنة متبرع
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom row: QR + Last donation */}
-          <div className="flex items-end justify-between pt-4 border-t border-white/10">
-            <div className="space-y-1">
-              {donor.lastDonationDate && (
-                <div>
-                  <div className="text-white/40 text-[10px] font-bold uppercase tracking-wider">آخر تبرع</div>
-                  <div className="text-white/80 text-sm font-bold">
-                    {new Date(donor.lastDonationDate).toLocaleDateString("ar-SA")}
-                  </div>
+              {/* Center Wireless Symbol & Right Blood Group Badge */}
+              <div className="flex items-center gap-2 sm:gap-3">
+                <ContactlessIcon />
+                <div className={`${currentTheme.pillBg} px-2.5 sm:px-3 py-1 rounded-xl shadow-md flex items-center gap-1`}>
+                  <Droplet className="w-3.5 h-3.5 fill-current" />
+                  <span className="text-xs sm:text-sm font-black dir-ltr">{bt}</span>
                 </div>
-              )}
+              </div>
+            </div>
+
+            {/* MIDDLE ROW: EMV Microchip + Card Number */}
+            <div className="relative z-10 my-auto pt-1">
+              <div className="flex items-center justify-between mb-2 sm:mb-3">
+                <EMVChip color={currentTheme.chip} />
+                <div className={`px-2.5 py-0.5 sm:py-1 rounded-lg border text-[10px] font-bold ${eligibilityPillBg}`}>
+                  {eligibilityLabel}
+                </div>
+              </div>
+
+              {/* Formatted Card Number */}
+              <div className="flex items-center justify-between">
+                <FormatCardNumber id={donor.id} />
+                <button
+                  onClick={copyId}
+                  className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/80 transition-colors cursor-pointer"
+                  title="نسخ معرف البطاقة"
+                >
+                  {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            {/* BOTTOM ROW: Holder Name + Expiry/Eligibility Date */}
+            <div className="relative z-10 flex items-end justify-between border-t border-white/10 pt-2.5 mt-1">
               <div>
-                <div className="text-white/40 text-[10px] font-bold uppercase tracking-wider">النقاط</div>
-                <div className="text-yellow-400 text-sm font-black flex items-center gap-1">
-                  <Zap className="w-3 h-3" /> {donor.points || 0} نقطة
+                <div className="text-white/40 text-[8px] font-bold tracking-widest uppercase">CARD HOLDER / المتبرع</div>
+                <div className="text-white font-black text-xs sm:text-sm tracking-wide truncate max-w-[180px] sm:max-w-[200px]">
+                  {donor.user?.name || "متبرع كريم"}
+                </div>
+              </div>
+
+              <div className="text-left dir-ltr">
+                <div className="text-white/40 text-[8px] font-bold tracking-widest uppercase text-right">POINTS / النقاط</div>
+                <div className="text-amber-400 font-extrabold text-xs flex items-center gap-1 justify-end">
+                  <Zap className="w-3 h-3 fill-amber-400" />
+                  <span>{donor.points || 0} PTS</span>
                 </div>
               </div>
             </div>
 
-            <div className="flex flex-col items-center gap-2">
-              <QRDisplay data={qrPayload} />
-              <div className="text-white/30 text-[9px] font-bold text-center">
-                يتجدد تلقائياً كل 5 دقائق
+            {/* Tap hint */}
+            <div className="absolute bottom-1 left-1/2 -translate-x-1/2 text-white/25 text-[8px] font-bold tracking-wider pointer-events-none">
+              TAP TO FLIP 🔄
+            </div>
+          </div>
+
+          {/* ----------------- BACK SIDE (QR Code Scanner View) ----------------- */}
+          <div
+            className={`absolute inset-0 w-full h-full rounded-[22px] bg-gradient-to-br ${currentTheme.gradient} flex flex-col justify-between overflow-hidden`}
+            style={{
+              backfaceVisibility: "hidden",
+              transform: "rotateY(180deg)",
+            }}
+          >
+            {/* Magnetic Stripe */}
+            <div className="w-full h-9 sm:h-10 bg-slate-950 mt-3 sm:mt-4 border-y border-white/10" />
+
+            {/* Signature Bar & Security Details */}
+            <div className="px-4 sm:px-5 py-2 flex items-center justify-between">
+              {/* Signature Line */}
+              <div className="flex-1 mr-3 sm:mr-4">
+                <div className="w-full h-7 bg-white/90 rounded text-[9px] font-mono text-slate-800 flex items-center px-3 italic font-bold tracking-wider select-none border border-slate-300">
+                  {donor.user?.name || "AUTHORIZED SIGNATURE"}
+                </div>
+                <div className="text-white/40 text-[7px] font-bold mt-0.5 uppercase">توقيع المتبرع المعتمد</div>
+              </div>
+
+              {/* QR Code Container */}
+              <div className="relative bg-white p-1.5 sm:p-2 rounded-xl shadow-lg border border-slate-200 flex-shrink-0">
+                <QRCodeSVG
+                  value={qrPayload}
+                  size={68}
+                  level="M"
+                  includeMargin={false}
+                />
+                <button
+                  onClick={refreshQR}
+                  className="absolute -top-2 -right-2 bg-slate-900 text-white p-1 rounded-full border border-white/30 shadow hover:scale-110 transition-transform cursor-pointer"
+                  title="تحديث رمز QR"
+                >
+                  <RefreshCw className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+
+            {/* Bottom Info Bar */}
+            <div className="px-4 sm:px-5 pb-3 sm:pb-4 flex items-center justify-between text-white/70 text-[9px]">
+              <div>
+                <span className="text-white/40 font-bold block">رمز المتبرع</span>
+                <span className="font-mono font-bold text-white text-xs">{donor.id?.slice(-8).toUpperCase()}</span>
+              </div>
+              <div className="text-center">
+                <span className="text-white/40 font-bold block">فصيلة الدم</span>
+                <span className="font-black text-red-400 text-xs">{bt}</span>
+              </div>
+              <div className="text-left dir-ltr">
+                <span className="text-white/40 font-bold block text-right">SECURED BY</span>
+                <span className="font-bold text-white text-[10px]">DONNER.X VERIFIED</span>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Click hint */}
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 text-white/20 text-[9px] font-bold">
-          اضغط لعرض التفاصيل
         </div>
       </div>
 
-      {/* ═══════ Achievement + Lives Impact ═══════ */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-        {/* Badge */}
-        <div className="labo-card p-6">
-          <h3 className="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
-            <Award className="w-5 h-5 text-yellow-500" /> مستوى المتبرع
-          </h3>
-          <Badge count={totalDonations} />
-
-          <div className="mt-4 grid grid-cols-4 gap-2">
-            {[
-              { icon: "🌱", label: "بداية", earned: totalDonations >= 1 },
-              { icon: "🥉", label: "برونزي", earned: totalDonations >= 3 },
-              { icon: "🥈", label: "فضي", earned: totalDonations >= 7 },
-              { icon: "🥇", label: "ذهبي", earned: totalDonations >= 15 },
-            ].map(b => (
-              <div key={b.label} className={`text-center p-2 rounded-xl ${b.earned ? "bg-yellow-50 border border-yellow-200" : "bg-slate-50 border border-slate-200 opacity-40"}`}>
-                <div className="text-xl">{b.icon}</div>
-                <div className="text-[9px] font-bold text-slate-600 mt-1">{b.label}</div>
-              </div>
-            ))}
-          </div>
+      {/* ═══════════════ Theme Selector & Actions ═══════════════ */}
+      <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
+            <Sparkles className="w-4 h-4 text-amber-500" />
+            اختر نمط ولون البطاقة (RedotPay / Wise):
+          </span>
         </div>
 
-        {/* Lives Impact */}
-        <div className="labo-card p-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 opacity-5"
-            style={{ background: "radial-gradient(circle, #ef4444, transparent)" }} />
-          <h3 className="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
-            <Heart className="w-5 h-5 text-red-500 fill-red-500" /> الأثر الإنساني
-          </h3>
-          <div className="text-center py-4">
-            <div className="text-6xl font-black text-red-600 mb-2">{livesImpacted}</div>
-            <div className="text-slate-600 font-bold">حياة أنقذتها 🎖️</div>
-            <p className="text-slate-400 text-xs mt-3 leading-relaxed">
-              كل كيس دم يتبرع به الإنسان يمكن أن ينقذ ما يصل إلى 3 أشخاص مختلفين.<br />
-              لقد أجريت <strong>{totalDonations}</strong> عملية تبرع. أنت بطل حقيقي! ❤️
-            </p>
-          </div>
-          {totalDonations === 0 && (
-            <div className="mt-2 text-center">
-              <Link href="/dashboard/appointments/new" className="labo-btn-danger text-sm inline-block">
-                ابدأ رحلتك الآن
-              </Link>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Security features banner */}
-      <div className="labo-card p-4">
-        <div className="flex items-center flex-wrap gap-4 justify-center">
-          {[
-            { icon: "🔐", label: "هوية مشفرة" },
-            { icon: "🔄", label: "QR ديناميكي" },
-            { icon: "✅", label: "بيانات معتمدة" },
-            { icon: "🛡️", label: "قراءة فقط" },
-            { icon: "📡", label: "تحديث فوري" },
-          ].map(f => (
-            <div key={f.label} className="flex items-center gap-1.5 text-slate-500">
-              <span className="text-sm">{f.icon}</span>
-              <span className="text-xs font-bold">{f.label}</span>
-            </div>
+        {/* Theme Pills */}
+        <div className="grid grid-cols-4 gap-2">
+          {Object.values(CARD_THEMES).map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setThemeKey(t.id as keyof typeof CARD_THEMES)}
+              className={`py-2 px-2 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1 cursor-pointer ${
+                themeKey === t.id
+                  ? "bg-slate-900 text-white border-slate-900 shadow-sm"
+                  : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+              }`}
+            >
+              <div className={`w-2.5 h-2.5 rounded-full ${t.pillBg}`} />
+              <span className="truncate">{t.name.split(" ")[0]}</span>
+            </button>
           ))}
         </div>
+      </div>
+
+      {/* ═══════════════ Stats Summary Widgets ═══════════════ */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="bg-white rounded-2xl p-3.5 text-center shadow-sm border border-slate-200">
+          <div className="text-slate-800 font-black text-2xl">{totalDonations}</div>
+          <div className="text-slate-500 text-[10px] font-bold mt-1 flex items-center justify-center gap-1">
+            <Activity className="w-3.5 h-3.5 text-blue-500" /> تبرعات
+          </div>
+        </div>
+        <div className="bg-white rounded-2xl p-3.5 text-center shadow-sm border border-slate-200">
+          <div className="text-red-600 font-black text-2xl">{livesImpacted}</div>
+          <div className="text-slate-500 text-[10px] font-bold mt-1 flex items-center justify-center gap-1">
+            <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500" /> حياة أنقذت
+          </div>
+        </div>
+        <div className="bg-white rounded-2xl p-3.5 text-center shadow-sm border border-slate-200">
+          <div className="text-amber-500 font-black text-2xl">{donor.points || 0}</div>
+          <div className="text-slate-500 text-[10px] font-bold mt-1 flex items-center justify-center gap-1">
+            <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500" /> نقطة
+          </div>
+        </div>
+      </div>
+
+      {/* ═══════════════ Donor Tier Progress ═══════════════ */}
+      <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-4">
+        <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+          <Award className="w-4 h-4 text-yellow-500" /> رتبة المتبرع والمكافآت
+        </h3>
+        <TierBadge count={totalDonations} />
       </div>
 
     </div>
   );
 }
+
