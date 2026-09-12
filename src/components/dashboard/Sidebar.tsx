@@ -50,10 +50,11 @@ export default function DashboardSidebar({ role }: { role: string }) {
     {
       title: "قسم المتبرع",
       items: [
+        { label: "سجل التبرعات", href: "/dashboard/donations", icon: <FileText className="w-5 h-5" />, roles: ["DONOR"] },
         { label: "البطاقة الذكية (QR)", href: "/dashboard/qr", icon: <QrCode className="w-5 h-5 text-red-500" />, roles: ["DONOR"] },
-        { label: "سجلاتي الطبية", href: "/dashboard/profile", icon: <FileText className="w-5 h-5" />, roles: ["DONOR"] },
+        { label: "سجلاتي الطبية", href: "/dashboard/profile", icon: <Activity className="w-5 h-5" />, roles: ["DONOR"] },
         { label: "شهاداتي", href: "/dashboard/profile/certificates", icon: <Award className="w-5 h-5" />, roles: ["DONOR"] },
-        { label: "المكافآت", href: "/dashboard/gamification", icon: <Award className="w-5 h-5" />, roles: ["DONOR"] },
+        { label: "المكافآت", href: "/dashboard/gamification", icon: <Award className="w-5 h-5 text-amber-500" />, roles: ["DONOR"] },
         { label: "حملات التبرع", href: "/dashboard/campaigns", icon: <Megaphone className="w-5 h-5" />, roles: ["DONOR"] },
       ]
     },
