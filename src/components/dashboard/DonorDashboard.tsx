@@ -12,6 +12,7 @@ import {
 import Link from "next/link";
 import SmartDonorCard from "./SmartDonorCard";
 import DonationHealthGuide from "./DonationHealthGuide";
+import LiveGPSLocation from "./LiveGPSLocation";
 
 export default function DonorDashboard({ userId }: { userId: string }) {
   const [donor, setDonor] = useState<any>(null);
@@ -85,6 +86,9 @@ export default function DonorDashboard({ userId }: { userId: string }) {
   return (
     <div className="max-w-md mx-auto pb-20 space-y-6 animate-fade-in-up">
       
+      {/* 0. Live GPS Geolocation Auto-Detection */}
+      <LiveGPSLocation />
+
       {/* 1. Smart Card as Hero Section */}
       <div className="-mx-4 md:mx-0">
         <SmartDonorCard />
