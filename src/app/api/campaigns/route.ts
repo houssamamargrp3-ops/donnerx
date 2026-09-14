@@ -43,7 +43,7 @@ export async function POST(req: Request) {
       }
     });
 
-    // Notify eligible donors in the same city (or fallback to all eligible donors if none in exact city)
+    // Notify eligible donors (primary city, current location, secondary cities, or nationwide opt-in)
     const cleanCity = city?.trim() || "";
     let localDonors = await prisma.donor.findMany({
       where: {
@@ -51,6 +51,9 @@ export async function POST(req: Request) {
         ...(cleanCity !== "" ? {
           OR: [
             { city: { contains: cleanCity, mode: 'insensitive' } },
+            { currentCity: { contains: cleanCity, mode: 'insensitive' } },
+            { secondaryCities: { has: cleanCity } },
+            { notifyNationwide: true },
             { city: null },
             { city: "" }
           ]

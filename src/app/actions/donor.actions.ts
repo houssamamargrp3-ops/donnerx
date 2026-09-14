@@ -146,3 +146,34 @@ export async function deleteDonor(donorId: string) {
     return { error: "حدث خطأ أثناء حذف المتبرع." };
   }
 }
+
+export async function updateDonorLocation(formData: FormData) {
+  try {
+    const userId = formData.get("userId") as string;
+    const city = (formData.get("city") as string)?.trim();
+    const currentCity = (formData.get("currentCity") as string)?.trim() || null;
+    const secondaryCitiesStr = (formData.get("secondaryCities") as string)?.trim() || "";
+    const notifyNationwide = formData.get("notifyNationwide") === "true";
+
+    const secondaryCities = secondaryCitiesStr
+      .split(",")
+      .map((c) => c.trim())
+      .filter(Boolean);
+
+    await prisma.donor.update({
+      where: { userId },
+      data: {
+        city,
+        currentCity,
+        secondaryCities,
+        notifyNationwide,
+      },
+    });
+
+    revalidatePath("/dashboard/profile");
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (error: any) {
+    return { error: "حدث خطأ أثناء تحديث النطاق الجغرافي." };
+  }
+}

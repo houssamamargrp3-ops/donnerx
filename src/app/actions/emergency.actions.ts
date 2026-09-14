@@ -30,7 +30,7 @@ export async function createEmergencyRequest(formData: FormData) {
       }
     });
 
-    // 2. Find eligible donors in the same city (or universal donor O-)
+    // 2. Find eligible donors matching primary city, current location, secondary cities, or nationwide opt-in
     const cleanCity = city?.trim() || "";
     let matchingDonors = await prisma.donor.findMany({
       where: {
@@ -43,6 +43,9 @@ export async function createEmergencyRequest(formData: FormData) {
           ? {
               OR: [
                 { city: { contains: cleanCity, mode: "insensitive" } },
+                { currentCity: { contains: cleanCity, mode: "insensitive" } },
+                { secondaryCities: { has: cleanCity } },
+                { notifyNationwide: true },
                 { city: null },
                 { city: "" },
               ],
@@ -51,7 +54,7 @@ export async function createEmergencyRequest(formData: FormData) {
       },
     });
 
-    // Fallback: If still no local matches, notify all eligible donors with matching blood type nationwide
+    // Fallback: If still no matches, notify all eligible donors with matching blood type nationwide
     if (matchingDonors.length === 0) {
       matchingDonors = await prisma.donor.findMany({
         where: {

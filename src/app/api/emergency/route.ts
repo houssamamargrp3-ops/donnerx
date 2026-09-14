@@ -32,7 +32,7 @@ export async function POST(req: Request) {
       }
     });
 
-    // 2. Find eligible donors (Matching city fuzzy or fallback nationwide)
+    // 2. Find eligible donors (Matching primary city, current location, secondary cities, or nationwide opt-in)
     const cleanCity = city?.trim() || "";
     let donorsToNotify = await prisma.donor.findMany({
       where: {
@@ -44,6 +44,9 @@ export async function POST(req: Request) {
         ...(cleanCity !== "" ? {
           OR: [
             { city: { contains: cleanCity, mode: 'insensitive' } },
+            { currentCity: { contains: cleanCity, mode: 'insensitive' } },
+            { secondaryCities: { has: cleanCity } },
+            { notifyNationwide: true },
             { city: null },
             { city: "" }
           ]

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { FileText, User, Activity, AlertCircle, CheckCircle2, Calendar, Droplet, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import DonorLocationSettingsCard from "@/components/dashboard/DonorLocationSettingsCard";
 
 export const metadata = { title: "السجل الطبي" };
 
@@ -151,6 +152,14 @@ export default async function MedicalRecordPage() {
               تعديل البيانات الأساسية <ArrowLeft className="w-4 h-4" />
             </Link>
           </div>
+
+          <DonorLocationSettingsCard
+            userId={session.user.id}
+            initialCity={donor.city}
+            initialCurrentCity={donor.currentCity}
+            initialSecondaryCities={donor.secondaryCities}
+            initialNotifyNationwide={donor.notifyNationwide}
+          />
         </div>
 
       </div>

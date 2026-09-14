@@ -131,6 +131,9 @@ model Donor {
   phone               String
   address             String?
   city                String?
+  secondaryCities     String[]          @default([])
+  currentCity         String?
+  notifyNationwide    Boolean           @default(true)
   latitude            Float?
   longitude           Float?
   chronicDiseases     String[]
