@@ -30,30 +30,48 @@ export async function createEmergencyRequest(formData: FormData) {
       }
     });
 
-    // 2. Find eligible donors in the same city with the exact blood type
-    // This is the core synchronization!
-    const matchingDonors = await prisma.donor.findMany({
+    // 2. Find eligible donors in the same city (or universal donor O-)
+    const cleanCity = city?.trim() || "";
+    let matchingDonors = await prisma.donor.findMany({
       where: {
-        bloodType: bloodType,
+        OR: [
+          { bloodType: bloodType },
+          { bloodType: "O_NEGATIVE" }, // O- is universal donor
+        ],
         eligibilityStatus: "ELIGIBLE",
-        city: {
-          contains: city,
-          mode: "insensitive"
-        }
-      }
+        ...(cleanCity !== ""
+          ? {
+              OR: [
+                { city: { contains: cleanCity, mode: "insensitive" } },
+                { city: null },
+                { city: "" },
+              ],
+            }
+          : {}),
+      },
     });
+
+    // Fallback: If still no local matches, notify all eligible donors with matching blood type nationwide
+    if (matchingDonors.length === 0) {
+      matchingDonors = await prisma.donor.findMany({
+        where: {
+          OR: [{ bloodType: bloodType }, { bloodType: "O_NEGATIVE" }],
+          eligibilityStatus: "ELIGIBLE",
+        },
+      });
+    }
 
     // 3. Send them all an EMERGENCY notification
     if (matchingDonors.length > 0) {
-      const notifications = matchingDonors.map(donor => ({
+      const notifications = matchingDonors.map((donor) => ({
         userId: donor.userId,
         title: "🚨 نداء طوارئ عاجل!",
-        message: `${hospitalName} في ${city} بحاجة ماسة لفصيلة دمك (${bloodType.replace("_POSITIVE", "+").replace("_NEGATIVE", "-")}). المتبرع ينقذ حياة!`,
-        type: "EMERGENCY_REQUEST" as any
+        message: `${hospitalName} في ${cleanCity || "المنطقة"} بحاجة ماسة لفصيلة دمك (${bloodType.replace("_POSITIVE", "+").replace("_NEGATIVE", "-")}). حضورك ينقذ حياة!`,
+        type: "EMERGENCY_REQUEST" as any,
       }));
 
       await prisma.notification.createMany({
-        data: notifications
+        data: notifications,
       });
     }
 

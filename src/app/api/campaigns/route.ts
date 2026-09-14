@@ -43,20 +43,35 @@ export async function POST(req: Request) {
       }
     });
 
-    // Notify all eligible donors in the same city about the campaign
-    const localDonors = await prisma.donor.findMany({
+    // Notify eligible donors in the same city (or fallback to all eligible donors if none in exact city)
+    const cleanCity = city?.trim() || "";
+    let localDonors = await prisma.donor.findMany({
       where: {
-        city: { equals: city, mode: 'insensitive' },
-        eligibilityStatus: "ELIGIBLE"
+        eligibilityStatus: "ELIGIBLE",
+        ...(cleanCity !== "" ? {
+          OR: [
+            { city: { contains: cleanCity, mode: 'insensitive' } },
+            { city: null },
+            { city: "" }
+          ]
+        } : {})
       }
     });
+
+    if (localDonors.length === 0) {
+      localDonors = await prisma.donor.findMany({
+        where: {
+          eligibilityStatus: "ELIGIBLE"
+        }
+      });
+    }
 
     if (localDonors.length > 0) {
       const notifications = localDonors.map(donor => ({
         userId: donor.userId,
         type: "CAMPAIGN_INVITE" as NotificationType,
-        title: "📢 حملة تبرع جديدة في مدينتك!",
-        message: `تم إطلاق حملة "${name}" في ${location}. شاركنا في إنقاذ الأرواح!`,
+        title: "📢 حملة تبرع جديدة قريبة منك!",
+        message: `تم إطلاق حملة "${name}" في ${location} (${cleanCity}). شاركنا في إنقاذ الأرواح!`,
         data: { campaignId: campaign.id }
       }));
 

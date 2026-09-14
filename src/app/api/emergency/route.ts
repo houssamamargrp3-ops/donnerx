@@ -32,24 +32,38 @@ export async function POST(req: Request) {
       }
     });
 
-    // 2. Find eligible donors
-    // Rules: Exact match OR O- (Universal Donor). Must be in same city.
-    // Must be ELIGIBLE.
-    const donorsToNotify = await prisma.donor.findMany({
+    // 2. Find eligible donors (Matching city fuzzy or fallback nationwide)
+    const cleanCity = city?.trim() || "";
+    let donorsToNotify = await prisma.donor.findMany({
       where: {
-        AND: [
-          { city: { equals: city, mode: 'insensitive' } },
-          { eligibilityStatus: "ELIGIBLE" },
-          {
-            OR: [
-              { bloodType: bloodType as BloodType },
-              { bloodType: "O_NEGATIVE" }
-            ]
-          }
-        ]
+        eligibilityStatus: "ELIGIBLE",
+        OR: [
+          { bloodType: bloodType as BloodType },
+          { bloodType: "O_NEGATIVE" }
+        ],
+        ...(cleanCity !== "" ? {
+          OR: [
+            { city: { contains: cleanCity, mode: 'insensitive' } },
+            { city: null },
+            { city: "" }
+          ]
+        } : {})
       },
       include: { user: true }
     });
+
+    if (donorsToNotify.length === 0) {
+      donorsToNotify = await prisma.donor.findMany({
+        where: {
+          eligibilityStatus: "ELIGIBLE",
+          OR: [
+            { bloodType: bloodType as BloodType },
+            { bloodType: "O_NEGATIVE" }
+          ]
+        },
+        include: { user: true }
+      });
+    }
 
     // 3. Create Notifications for these donors
     if (donorsToNotify.length > 0) {
@@ -57,7 +71,7 @@ export async function POST(req: Request) {
         userId: donor.userId,
         type: "EMERGENCY_REQUEST" as NotificationType,
         title: "🚨 نداء طوارئ عاجل!",
-        message: `مستشفى ${hospitalName} في ${city} بحاجة ماسة لمتبرعين بفصيلة ${bloodType.replace("_POSITIVE", "+").replace("_NEGATIVE", "-")}. الرجاء التوجه للمستشفى أو الحجز فوراً.`,
+        message: `مستشفى ${hospitalName} في ${cleanCity || "المنطقة"} بحاجة ماسة لمتبرعين بفصيلة ${bloodType.replace("_POSITIVE", "+").replace("_NEGATIVE", "-")}. الرجاء التوجه للمستشفى أو الحجز فوراً.`,
         data: { requestId: request.id }
       }));
 
