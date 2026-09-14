@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import SmartDonorCard from "./SmartDonorCard";
+import DonationHealthGuide from "./DonationHealthGuide";
 
 export default function DonorDashboard({ userId }: { userId: string }) {
   const [donor, setDonor] = useState<any>(null);
@@ -135,6 +136,9 @@ export default function DonorDashboard({ userId }: { userId: string }) {
           </div>
         )}
       </div>
+
+      {/* 4. Donation Health & Eligibility Guide (Always Visible to Educate Donors) */}
+      <DonationHealthGuide />
 
     </div>
   );

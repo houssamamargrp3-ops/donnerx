@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import AppointmentForm from "./AppointmentForm";
 import { CalendarDays, AlertTriangle } from "lucide-react";
+import DonationHealthGuide from "@/components/dashboard/DonationHealthGuide";
 
 export const metadata = {
   title: "حجز موعد تبرع",
@@ -98,6 +99,8 @@ export default async function NewAppointmentPage() {
       <div className="labo-card p-6 md:p-8">
         <AppointmentForm centers={centers} donorId={donor.id} />
       </div>
+
+      <DonationHealthGuide />
     </div>
   );
 }

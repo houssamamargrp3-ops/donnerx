@@ -192,13 +192,22 @@ export default function DonationsClientView({
               <span>حجز موعد تبرع جديد</span>
             </Link>
           ) : (
-            <Link
-              href="/dashboard/appointments"
-              className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs md:text-sm px-4 py-2.5 rounded-xl shadow-sm transition-all flex items-center gap-2"
-            >
-              <Calendar className="w-4 h-4" />
-              <span>مواعيد المراكز</span>
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link
+                href="/dashboard/donations/new"
+                className="bg-red-600 hover:bg-red-700 text-white font-bold text-xs md:text-sm px-4 py-2.5 rounded-xl shadow-md shadow-red-200 transition-all flex items-center gap-2"
+              >
+                <Droplet className="w-4 h-4" />
+                <span>تسجيل تبرع جديد</span>
+              </Link>
+              <Link
+                href="/dashboard/appointments"
+                className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs md:text-sm px-4 py-2.5 rounded-xl shadow-sm transition-all flex items-center gap-2"
+              >
+                <Calendar className="w-4 h-4" />
+                <span>مواعيد المراكز</span>
+              </Link>
+            </div>
           )}
         </div>
       </div>

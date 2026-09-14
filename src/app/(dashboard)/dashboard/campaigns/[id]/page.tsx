@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Megaphone, CalendarDays, MapPin, Users, Building, ArrowLeft, Clock, Info } from "lucide-react";
 import Link from "next/link";
 import RegisterCampaignButton from "@/components/dashboard/RegisterCampaignButton";
+import DonationHealthGuide from "@/components/dashboard/DonationHealthGuide";
 
 export const metadata = { title: "تفاصيل الحملة" };
 
@@ -154,6 +155,8 @@ export default async function CampaignDetailsPage({ params }: { params: Promise<
           </div>
         </div>
       </div>
+
+      <DonationHealthGuide />
     </div>
   );
 }

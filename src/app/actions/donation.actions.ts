@@ -5,20 +5,26 @@ import { revalidatePath } from "next/cache";
 
 export async function recordDonation(formData: FormData) {
   try {
-    const appointmentId = formData.get("appointmentId") as string;
-    const centerId = formData.get("centerId") as string;
-    const donorId = formData.get("donorId") as string;
-    const volumeMl = parseInt(formData.get("volumeMl") as string, 10);
+    const rawAppointmentId = formData.get("appointmentId") as string;
+    const appointmentId = rawAppointmentId && rawAppointmentId.trim() !== "" ? rawAppointmentId.trim() : null;
+    const centerId = (formData.get("centerId") as string)?.trim();
+    const donorId = (formData.get("donorId") as string)?.trim();
+    const volumeMl = parseInt(formData.get("volumeMl") as string, 10) || 450;
     const bloodType = formData.get("bloodType") as any; // From form (enum)
-    const notes = formData.get("notes") as string;
-    const staffId = formData.get("staffId") as string;
+    const notes = (formData.get("notes") as string)?.trim() || null;
+    const staffId = (formData.get("staffId") as string)?.trim() || null;
     
     // Custom Next Eligible Date (default is 3 months from now, but can be overridden)
     const nextEligibleDateStr = formData.get("nextEligibleDate") as string;
-    const nextEligibleDate = new Date(nextEligibleDateStr);
+    let nextEligibleDate = new Date();
+    if (nextEligibleDateStr) {
+      nextEligibleDate = new Date(nextEligibleDateStr);
+    } else {
+      nextEligibleDate.setMonth(nextEligibleDate.getMonth() + 3);
+    }
 
     if (!centerId || !donorId || !volumeMl || !bloodType) {
-      return { error: "يرجى تعبئة جميع الحقول الإلزامية." };
+      return { error: "يرجى تعبئة جميع الحقول الإلزامية (المتبرع، المركز، الفصيلة، الكمية)." };
     }
 
     // Wrap in a transaction
@@ -28,8 +34,8 @@ export async function recordDonation(formData: FormData) {
         data: {
           donorId,
           centerId,
-          appointmentId,
-          staffId,
+          appointmentId: appointmentId || undefined,
+          staffId: staffId || undefined,
           bloodType,
           volumeMl,
           notes,
@@ -51,11 +57,13 @@ export async function recordDonation(formData: FormData) {
         }
       });
 
-      // 4. Update Appointment Status to COMPLETED
+      // 4. Update Appointment Status to COMPLETED if linked
       if (appointmentId) {
         await tx.appointment.update({
           where: { id: appointmentId },
           data: { status: "COMPLETED" },
+        }).catch((err) => {
+          console.warn("Non-fatal: could not update appointment status", err);
         });
       }
 
@@ -78,14 +86,30 @@ export async function recordDonation(formData: FormData) {
         },
       });
 
-      // 5. Update Donor's nextEligibleDate and totalDonations
-      await tx.donor.update({
+      // 5. Update Donor's points, totalDonations, status and nextEligibleDate
+      const updatedDonor = await tx.donor.update({
         where: { id: donorId },
         data: { 
           nextEligibleDate,
+          lastDonationDate: new Date(),
+          eligibilityStatus: "INELIGIBLE",
+          eligibilityReason: "لقد تبرعت حديثاً بالدم. موعدك القادم متاح بعد 3 أشهر.",
+          points: { increment: 100 },
           totalDonations: { increment: 1 } 
         },
       });
+
+      // 6. Create in-app Notification for the Donor
+      if (updatedDonor.userId) {
+        await tx.notification.create({
+          data: {
+            userId: updatedDonor.userId,
+            type: "DONATION_RECORDED",
+            title: "🎉 شكراً لك! تم توثيق تبرعك بالدم بنجاح",
+            message: `تم تسجيل تبرعك بنجاح وحصلت على +100 نقطة. شهادة الشكر والتقدير برقم (${serialNumber}) جاهزة الآن في سجل التبرعات.`,
+          }
+        }).catch(() => {});
+      }
 
       return { donation, certificate };
     });
@@ -93,11 +117,12 @@ export async function recordDonation(formData: FormData) {
     revalidatePath("/dashboard/donations");
     revalidatePath("/dashboard/donors");
     revalidatePath("/dashboard/appointments");
-    revalidatePath("/dashboard/inventory"); // Revalidate inventory as well
+    revalidatePath("/dashboard/inventory");
+    revalidatePath("/dashboard");
     
     return { success: true, donationId: result.donation.id };
   } catch (error: any) {
     console.error("Error recording donation:", error);
-    return { error: "حدث خطأ أثناء حفظ التبرع. قد يكون التبرع مسجلاً بالفعل لهذا الموعد." };
+    return { error: `حدث خطأ أثناء حفظ التبرع: ${error.message || "تأكد من صحة البيانات المدخلة."}` };
   }
 }
