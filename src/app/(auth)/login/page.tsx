@@ -31,6 +31,11 @@ function LoginForm() {
     setError(null);
 
     try {
+      try {
+        localStorage.removeItem("donner_offline_donor");
+        localStorage.removeItem("donner_offline_profile");
+      } catch (_) {}
+
       const result = await signIn("credentials", {
         email: data.email,
         password: data.password,
@@ -42,8 +47,7 @@ function LoginForm() {
         return;
       }
 
-      router.push("/dashboard");
-      router.refresh();
+      window.location.href = "/dashboard";
     } catch {
       setError("حدث خطأ، يرجى المحاولة لاحقاً");
     } finally {

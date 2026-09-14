@@ -111,9 +111,8 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           
           {/* Donor Portal */}
-          <Link
-            href="/register?role=donor"
-            className="group relative overflow-hidden rounded-3xl p-8 md:p-12 transition-all hover:-translate-y-2 hover:shadow-2xl cursor-pointer"
+          <div
+            className="group relative overflow-hidden rounded-3xl p-8 md:p-12 transition-all hover:shadow-2xl"
             style={{
               background: "linear-gradient(145deg, rgba(220,38,38,0.1), rgba(153,27,27,0.05))",
               border: "1px solid rgba(220,38,38,0.2)",
@@ -122,26 +121,35 @@ export default function HomePage() {
           >
             <div className="absolute top-0 right-0 w-64 h-64 bg-red-600/20 rounded-full blur-3xl -mr-20 -mt-20 group-hover:bg-red-500/30 transition-all" />
             <div className="relative z-10 flex flex-col items-center text-center h-full">
-              <div className="w-24 h-24 rounded-2xl flex items-center justify-center mb-6"
+              <div className="w-20 h-20 rounded-2xl flex items-center justify-center mb-5"
                 style={{ background: "linear-gradient(135deg, #dc2626, #991b1b)", boxShadow: "0 10px 25px rgba(220,38,38,0.4)" }}
               >
-                <Heart className="w-12 h-12 text-white" />
+                <Heart className="w-10 h-10 text-white" />
               </div>
-              <h2 className="text-3xl font-black text-white mb-4 group-hover:text-red-400 transition-colors">بوابة المتبرعين</h2>
-              <p className="text-slate-400 text-lg mb-8 leading-relaxed max-w-sm">
-                سجل كمتبرع جديد أو قم بتسجيل الدخول لحجز مواعيد التبرع ومتابعة نقاطك وسجلك الطبي.
+              <h2 className="text-2xl md:text-3xl font-black text-white mb-3">بوابة المتبرعين</h2>
+              <p className="text-slate-400 text-sm md:text-base mb-6 leading-relaxed max-w-sm">
+                حجز مواعيد التبرع بالدم، متابعة النقاط والأوسمة، وعرض بطاقة المتبرع الرقمية الذكية.
               </p>
-              <div className="mt-auto flex items-center gap-3 text-red-400 font-bold text-lg group-hover:gap-5 transition-all">
-                <span>إنشاء حساب متبرع</span>
-                <ArrowLeft className="w-5 h-5" />
+              <div className="w-full mt-auto grid grid-cols-2 gap-3 pt-2">
+                <Link
+                  href="/login?type=donor"
+                  className="w-full py-3 px-4 rounded-xl text-center font-bold text-sm text-white bg-red-600 hover:bg-red-700 transition-all shadow-md shadow-red-600/30"
+                >
+                  تسجيل الدخول
+                </Link>
+                <Link
+                  href="/register?role=donor"
+                  className="w-full py-3 px-4 rounded-xl text-center font-bold text-sm text-red-200 bg-white/10 hover:bg-white/20 border border-red-400/30 transition-all"
+                >
+                  حساب جديد
+                </Link>
               </div>
             </div>
-          </Link>
+          </div>
 
-          {/* Medical Portal */}
-          <Link
-            href="/register?role=center"
-            className="group relative overflow-hidden rounded-3xl p-8 md:p-12 transition-all hover:-translate-y-2 hover:shadow-2xl cursor-pointer"
+          {/* Medical & Admin Portal */}
+          <div
+            className="group relative overflow-hidden rounded-3xl p-8 md:p-12 transition-all hover:shadow-2xl"
             style={{
               background: "linear-gradient(145deg, rgba(59,130,246,0.1), rgba(29,78,216,0.05))",
               border: "1px solid rgba(59,130,246,0.2)",
@@ -150,21 +158,31 @@ export default function HomePage() {
           >
             <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl -mr-20 -mt-20 group-hover:bg-blue-500/30 transition-all" />
             <div className="relative z-10 flex flex-col items-center text-center h-full">
-              <div className="w-24 h-24 rounded-2xl flex items-center justify-center mb-6"
+              <div className="w-20 h-20 rounded-2xl flex items-center justify-center mb-5"
                 style={{ background: "linear-gradient(135deg, #3b82f6, #1d4ed8)", boxShadow: "0 10px 25px rgba(59,130,246,0.4)" }}
               >
-                <Activity className="w-12 h-12 text-white" />
+                <Activity className="w-10 h-10 text-white" />
               </div>
-              <h2 className="text-3xl font-black text-white mb-4 group-hover:text-blue-400 transition-colors">بوابة المراكز والمستشفيات</h2>
-              <p className="text-slate-400 text-lg mb-8 leading-relaxed max-w-sm">
-                الوصول الخاص بالمراكز الطبية والمستشفيات لإدارة المخزون وطلب الدم واستقبال المتبرعين.
+              <h2 className="text-2xl md:text-3xl font-black text-white mb-3">بوابة الإدارة والمراكز الطبية</h2>
+              <p className="text-slate-400 text-sm md:text-base mb-6 leading-relaxed max-w-sm">
+                الوصول الخاص بالمدراء والمراكز الطبية لإدارة المخزون وطلبات الطوارئ وسجلات التبرع والتقارير.
               </p>
-              <div className="mt-auto flex items-center gap-3 text-blue-400 font-bold text-lg group-hover:gap-5 transition-all">
-                <span>إنشاء حساب مركز طبي</span>
-                <ArrowLeft className="w-5 h-5" />
+              <div className="w-full mt-auto grid grid-cols-2 gap-3 pt-2">
+                <Link
+                  href="/login?type=medical"
+                  className="w-full py-3 px-4 rounded-xl text-center font-bold text-sm text-white bg-blue-600 hover:bg-blue-700 transition-all shadow-md shadow-blue-600/30"
+                >
+                  دخول المدير / الكادر
+                </Link>
+                <Link
+                  href="/register?role=center"
+                  className="w-full py-3 px-4 rounded-xl text-center font-bold text-sm text-blue-200 bg-white/10 hover:bg-white/20 border border-blue-400/30 transition-all"
+                >
+                  حساب مركز طبي
+                </Link>
               </div>
             </div>
-          </Link>
+          </div>
 
         </div>
       </section>

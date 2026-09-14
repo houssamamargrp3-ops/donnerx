@@ -39,7 +39,13 @@ export default function DashboardHeader({ user }: { user: any }) {
 
         {/* Proportional, Sleek Logout Button */}
         <button 
-          onClick={() => signOut({ callbackUrl: "/" })}
+          onClick={async () => {
+            try {
+              localStorage.removeItem("donner_offline_donor");
+              localStorage.removeItem("donner_offline_profile");
+            } catch (_) {}
+            await signOut({ callbackUrl: "/login" });
+          }}
           className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-xl text-slate-600 hover:text-red-600 bg-slate-50 hover:bg-red-50 border border-slate-200 hover:border-red-200 text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-2xs"
           title="تسجيل الخروج"
         >
