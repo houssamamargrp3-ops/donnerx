@@ -35,11 +35,27 @@ export default async function DonorDetailsPage({ params }: { params: Promise<{ i
 
   const age = donor.dateOfBirth ? Math.floor((new Date().getTime() - new Date(donor.dateOfBirth).getTime()) / 3.15576e+10) : 0;
 
-  const getEligibilityBadge = (status: string) => {
-    switch (status) {
-      case "ELIGIBLE": return <span className="labo-badge-success flex items-center gap-1 w-fit"><ShieldCheck className="w-4 h-4" /> مؤهل للتبرع</span>;
-      case "PENDING_CHECK": return <span className="labo-badge-warning flex items-center gap-1 w-fit"><CalendarDays className="w-4 h-4" /> قيد الفحص</span>;
-      case "INELIGIBLE": return <span className="labo-badge-danger flex items-center gap-1 w-fit"><HeartPulse className="w-4 h-4" /> غير مؤهل</span>;
+  const getEligibilityBadge = (donorData: typeof donor) => {
+    const now = new Date();
+    const isRecentlyDonated =
+      donorData.lastDonationDate &&
+      donorData.nextEligibleDate &&
+      new Date(donorData.nextEligibleDate) > now;
+
+    if (isRecentlyDonated) {
+      const nextDateStr = new Date(donorData.nextEligibleDate!).toLocaleDateString("ar-SA");
+      return (
+        <span className="bg-blue-50 text-blue-700 border border-blue-200 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 w-fit">
+          <HeartPulse className="w-4 h-4 text-blue-600" />
+          تبرع مكتمل حديثاً (فترة راحة حتى {nextDateStr})
+        </span>
+      );
+    }
+
+    switch (donorData.eligibilityStatus) {
+      case "ELIGIBLE": return <span className="labo-badge-success flex items-center gap-1 w-fit"><ShieldCheck className="w-4 h-4" /> مؤهل للتبرع الآن</span>;
+      case "PENDING_CHECK": return <span className="labo-badge-warning flex items-center gap-1 w-fit"><CalendarDays className="w-4 h-4" /> قيد الفحص الطبي</span>;
+      case "INELIGIBLE": return <span className="labo-badge-danger flex items-center gap-1 w-fit"><HeartPulse className="w-4 h-4" /> غير مؤهل طبياً {donorData.eligibilityReason ? `(${donorData.eligibilityReason})` : ""}</span>;
       default: return null;
     }
   };
@@ -137,7 +153,7 @@ export default async function DonorDetailsPage({ params }: { params: Promise<{ i
             <div className="space-y-4">
               <div className="flex justify-between items-center py-2 border-b border-slate-100">
                 <span className="text-sm font-bold text-slate-500">حالة الأهلية</span>
-                {getEligibilityBadge(donor.eligibilityStatus)}
+                {getEligibilityBadge(donor)}
               </div>
               {donor.nextEligibleDate && (
                 <div className="flex justify-between items-center py-2 border-b border-slate-100">
