@@ -173,3 +173,58 @@ self.addEventListener('fetch', (event) => {
     })
   );
 });
+
+// ─────────────────────────────────────────────────────────────
+// 5. Duolingo-Style Web Push Notifications & Vibration System
+// ─────────────────────────────────────────────────────────────
+self.addEventListener('push', (event) => {
+  let data = {
+    title: 'DONNER.X 🩸',
+    message: 'لديك إشعار طوارئ/تذكير جديد على هاتف!',
+    url: '/dashboard/notifications',
+  };
+
+  try {
+    if (event.data) {
+      data = event.data.json();
+    }
+  } catch (_) {}
+
+  const options = {
+    body: data.message || data.body || 'انقر لتصفح التفاصيل وإنقاذ حياة!',
+    icon: '/icon-192x192.png',
+    badge: '/icon-192x192.png',
+    vibrate: [200, 100, 200, 100, 200, 100, 300], // Distinct mobile pulse pattern
+    tag: data.tag || 'donner-alert',
+    renotify: true,
+    requireInteraction: true,
+    data: {
+      url: data.url || '/dashboard/notifications',
+    },
+    actions: [
+      { action: 'open', title: 'فتح التفاصيل 📱' },
+      { action: 'close', title: 'إغلاق' },
+    ],
+  };
+
+  event.waitUntil(self.registration.showNotification(data.title, options));
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  if (event.action === 'close') return;
+
+  const urlToOpen = event.notification.data?.url || '/dashboard/notifications';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+      for (let client of windowClients) {
+        if (client.url.includes('/dashboard') && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) return clients.openWindow(urlToOpen);
+    })
+  );
+});

@@ -13,6 +13,7 @@ import Link from "next/link";
 import SmartDonorCard from "./SmartDonorCard";
 import DonationHealthGuide from "./DonationHealthGuide";
 import LiveGPSLocation from "./LiveGPSLocation";
+import PushNotificationPrompt from "./PushNotificationPrompt";
 
 export default function DonorDashboard({ userId }: { userId: string }) {
   const [donor, setDonor] = useState<any>(null);
@@ -88,6 +89,9 @@ export default function DonorDashboard({ userId }: { userId: string }) {
       
       {/* 0. Live GPS Geolocation Auto-Detection */}
       <LiveGPSLocation />
+
+      {/* Duolingo Style Push & SMS Alert Activator */}
+      <PushNotificationPrompt />
 
       {/* 1. Smart Card as Hero Section */}
       <div className="-mx-4 md:mx-0">

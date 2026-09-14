@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
+import { sendSMS } from "@/lib/sms";
 
 export async function createEmergencyRequest(formData: FormData) {
   try {
@@ -64,14 +65,23 @@ export async function createEmergencyRequest(formData: FormData) {
       });
     }
 
-    // 3. Send them all an EMERGENCY notification
+    // 3. Send them all an EMERGENCY notification & SMS alert
     if (matchingDonors.length > 0) {
-      const notifications = matchingDonors.map((donor) => ({
-        userId: donor.userId,
-        title: "🚨 نداء طوارئ عاجل!",
-        message: `${hospitalName} في ${cleanCity || "المنطقة"} بحاجة ماسة لفصيلة دمك (${bloodType.replace("_POSITIVE", "+").replace("_NEGATIVE", "-")}). حضورك ينقذ حياة!`,
-        type: "EMERGENCY_REQUEST" as any,
-      }));
+      const smsMessage = `[DONNER.X 🚨] نداء طوارئ عاجل! مستشفى ${hospitalName} في ${cleanCity || "المنطقة"} بحاجة ماسة لفصيلة دمك (${bloodType.replace("_POSITIVE", "+").replace("_NEGATIVE", "-")}). حضورك ينقذ حياة!`;
+
+      const notifications = matchingDonors.map((donor) => {
+        // Dispatch SMS if donor phone is available
+        if (donor.phone) {
+          sendSMS({ to: donor.phone, message: smsMessage, type: "EMERGENCY" }).catch(() => {});
+        }
+
+        return {
+          userId: donor.userId,
+          title: "🚨 نداء طوارئ عاجل!",
+          message: `${hospitalName} في ${cleanCity || "المنطقة"} بحاجة ماسة لفصيلة دمك (${bloodType.replace("_POSITIVE", "+").replace("_NEGATIVE", "-")}). حضورك ينقذ حياة!`,
+          type: "EMERGENCY_REQUEST" as any,
+        };
+      });
 
       await prisma.notification.createMany({
         data: notifications,
