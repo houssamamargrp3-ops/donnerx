@@ -4,6 +4,9 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import DonationsClientView from "./DonationsClientView";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
 export const metadata = { title: "سجل وأرشيف التبرعات | DONNER.X" };
 
 export default async function DonationsPage() {
@@ -14,7 +17,7 @@ export default async function DonationsPage() {
   const role = user.role || "DONOR";
   const isDonor = role === "DONOR";
 
-  let donations: any[] = [];
+  let rawDonations: any[] = [];
   let donorProfile: any = null;
 
   if (isDonor) {
@@ -41,10 +44,11 @@ export default async function DonationsPage() {
       );
     }
 
-    // Fetch this donor's donations archive
-    donations = await prisma.donation.findMany({
+    // Fetch this donor's donations archive including donor user info
+    rawDonations = await prisma.donation.findMany({
       where: { donorId: donorProfile.id },
       include: {
+        donor: { include: { user: true } },
         center: true,
         certificate: true,
       },
@@ -52,7 +56,7 @@ export default async function DonationsPage() {
     });
   } else {
     // Admin / Staff: fetch all donations
-    donations = await prisma.donation.findMany({
+    rawDonations = await prisma.donation.findMany({
       include: {
         donor: { include: { user: true } },
         center: true,
@@ -61,6 +65,9 @@ export default async function DonationsPage() {
       orderBy: { donatedAt: "desc" },
     });
   }
+
+  // Deep clone / serialize dates safely for Next.js Client Components
+  const donations = JSON.parse(JSON.stringify(rawDonations));
 
   return (
     <DonationsClientView
@@ -71,4 +78,3 @@ export default async function DonationsPage() {
     />
   );
 }
-
