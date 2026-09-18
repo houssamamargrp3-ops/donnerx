@@ -1,8 +1,8 @@
 // HayatLink Service Worker for Offline PWA Mode
-const CACHE_NAME = 'hayatlink-v2';
-const STATIC_CACHE = 'hayatlink-static-v2';
-const API_CACHE = 'hayatlink-api-v2';
-const PAGES_CACHE = 'hayatlink-pages-v2';
+const CACHE_NAME = 'hayatlink-v3';
+const STATIC_CACHE = 'hayatlink-static-v3';
+const API_CACHE = 'hayatlink-api-v3';
+const PAGES_CACHE = 'hayatlink-pages-v3';
 
 // Core assets to pre-cache immediately on install (Public assets ONLY to prevent 302 redirect failures)
 const PRECACHE_ASSETS = [

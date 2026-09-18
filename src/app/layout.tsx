@@ -18,15 +18,15 @@ export const metadata: Metadata = {
     description: "منصة حياة لينك المتكاملة لإدارة التبرع بالدم",
     siteName: "HayatLink",
   },
-  manifest: "/manifest.json?v=3",
+  manifest: "/manifest.json?v=10",
   icons: {
     icon: [
-      { url: "/icon-192x192.png?v=3", sizes: "192x192", type: "image/png" },
-      { url: "/icon-512x512.png?v=3", sizes: "512x512", type: "image/png" },
-      { url: "/logo.png?v=3" },
+      { url: "/icon-192x192.png?v=10", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512x512.png?v=10", sizes: "512x512", type: "image/png" },
+      { url: "/logo.png?v=10" },
     ],
-    shortcut: "/logo.png?v=3",
-    apple: "/icon-192x192.png?v=3",
+    shortcut: "/logo.png?v=10",
+    apple: "/icon-192x192.png?v=10",
   },
 };
 
@@ -45,8 +45,8 @@ export default function RootLayout({
   return (
     <html lang="ar" dir="rtl">
       <head>
-        <link rel="icon" href="/logo.png?v=3" type="image/png" />
-        <link rel="apple-touch-icon" href="/icon-192x192.png?v=3" />
+        <link rel="icon" href="/logo.png?v=10" type="image/png" />
+        <link rel="apple-touch-icon" href="/icon-192x192.png?v=10" />
         <meta name="apple-mobile-web-app-title" content="HayatLink" />
         <meta name="application-name" content="HayatLink" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
