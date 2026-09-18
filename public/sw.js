@@ -1,18 +1,12 @@
 // HayatLink Service Worker for Offline PWA Mode
-const CACHE_NAME = 'hayatlink-v1';
-const STATIC_CACHE = 'hayatlink-static-v1';
-const API_CACHE = 'hayatlink-api-v1';
-const PAGES_CACHE = 'hayatlink-pages-v1';
+const CACHE_NAME = 'hayatlink-v2';
+const STATIC_CACHE = 'hayatlink-static-v2';
+const API_CACHE = 'hayatlink-api-v2';
+const PAGES_CACHE = 'hayatlink-pages-v2';
 
-// Core assets to pre-cache immediately on install
+// Core assets to pre-cache immediately on install (Public assets ONLY to prevent 302 redirect failures)
 const PRECACHE_ASSETS = [
   '/',
-  '/dashboard',
-  '/dashboard/qr',
-  '/dashboard/donations',
-  '/dashboard/gamification',
-  '/dashboard/profile',
-  '/dashboard/profile/certificates',
   '/manifest.json',
   '/icon-192x192.png',
   '/icon-512x512.png',
@@ -48,8 +42,8 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Ignore non-GET requests and browser extensions
-  if (request.method !== 'GET' || url.protocol.startsWith('chrome-extension')) {
+  // Bypass SW completely for non-GET, extension requests, and APK file downloads
+  if (request.method !== 'GET' || url.protocol.startsWith('chrome-extension') || url.pathname.endsWith('.apk')) {
     return;
   }
 

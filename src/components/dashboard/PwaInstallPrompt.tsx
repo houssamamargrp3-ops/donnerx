@@ -53,7 +53,7 @@ export default function PwaInstallPrompt() {
       </div>
       <div className="flex items-center gap-2">
         <a
-          href="/donnerx.apk"
+          href="/hayatlink.apk"
           download="HayatLink.apk"
           className="bg-white text-red-700 px-4 py-2 rounded-xl text-xs md:text-sm font-bold shadow-sm hover:bg-red-50 transition-colors flex items-center gap-1"
         >
