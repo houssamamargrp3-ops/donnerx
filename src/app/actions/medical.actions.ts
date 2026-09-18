@@ -97,10 +97,27 @@ export async function registerDonation(appointmentId: string) {
         }
       });
 
+      // 2.5. Generate Certificate Serial Number & Create Certificate
+      const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+      const randomPart = Math.floor(1000 + Math.random() * 9000);
+      const serialNumber = `DX-${datePart}-${randomPart}`;
+
+      await tx.certificate.create({
+        data: {
+          donorId: appointment.donorId,
+          donationId: donation.id,
+          serialNumber,
+        },
+      });
+
       return donation;
     });
 
     revalidatePath("/dashboard");
+    revalidatePath("/dashboard/donations");
+    revalidatePath("/dashboard/donors");
+    revalidatePath("/dashboard/appointments");
+    revalidatePath("/dashboard/profile/certificates");
     return { success: true, message: "تم تسجيل التبرع وصرف النقاط بنجاح!" };
 
   } catch (error: any) {

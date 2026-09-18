@@ -1,6 +1,50 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
+
+export async function GET(request: Request) {
+  try {
+    const session = await auth();
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const user = session.user as any;
+    const role = user.role || "DONOR";
+
+    let donations = [];
+    if (role === "DONOR") {
+      const donor = await prisma.donor.findFirst({
+        where: { OR: [{ userId: user.id }, { user: { email: user.email } }] },
+      });
+      if (!donor) return NextResponse.json([]);
+      donations = await prisma.donation.findMany({
+        where: { donorId: donor.id },
+        include: {
+          donor: { include: { user: true } },
+          center: true,
+          certificate: true,
+        },
+        orderBy: { donatedAt: "desc" },
+      });
+    } else {
+      donations = await prisma.donation.findMany({
+        include: {
+          donor: { include: { user: true } },
+          center: true,
+          certificate: true,
+        },
+        orderBy: { donatedAt: "desc" },
+      });
+    }
+
+    return NextResponse.json(donations);
+  } catch (error: any) {
+    console.error("Error fetching donations:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}
 
 export async function POST(request: Request) {
   try {
@@ -22,6 +66,7 @@ export async function POST(request: Request) {
         data: {
           donorId,
           centerId,
+          appointmentId: appointmentId || undefined,
           bloodType,
           volumeMl: volume,
           notes: `Hemoglobin: ${hemoglobin}, BP: ${bloodPressure}`,
@@ -32,6 +77,19 @@ export async function POST(request: Request) {
       await tx.appointment.update({
         where: { id: appointmentId },
         data: { status: "COMPLETED" }
+      });
+
+      // 2.5 Generate Certificate Serial Number & Create Certificate
+      const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+      const randomPart = Math.floor(1000 + Math.random() * 9000);
+      const serialNumber = `DX-${datePart}-${randomPart}`;
+
+      await tx.certificate.create({
+        data: {
+          donorId,
+          donationId: donation.id,
+          serialNumber,
+        },
       });
 
       // 3. Update Donor Details (add points, increment total, set next eligible date)
@@ -83,6 +141,12 @@ export async function POST(request: Request) {
 
       return donation;
     });
+
+    revalidatePath("/dashboard/donations");
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/donors");
+    revalidatePath("/dashboard/appointments");
+    revalidatePath("/dashboard/inventory");
 
     return NextResponse.json({ success: true, donation: result });
   } catch (error: any) {

@@ -22,9 +22,14 @@ export default async function DonationsPage() {
 
   try {
     if (isDonor) {
-      // Find the donor profile
-      donorProfile = await prisma.donor.findUnique({
-        where: { userId: user.id },
+      // Find the donor profile (by userId or user email fallback)
+      donorProfile = await prisma.donor.findFirst({
+        where: {
+          OR: [
+            { userId: user.id },
+            { user: { email: user.email } },
+          ],
+        },
         include: { user: true },
       });
 

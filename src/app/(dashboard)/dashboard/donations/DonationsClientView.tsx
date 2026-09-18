@@ -83,7 +83,7 @@ export default function DonationsClientView({
 
   // Offline caching for donations
   useEffect(() => {
-    if (initialDonations && initialDonations.length > 0) {
+    if (Array.isArray(initialDonations)) {
       setDonationsList(initialDonations);
       try {
         localStorage.setItem("hayatlink_offline_donations", JSON.stringify(initialDonations));
@@ -92,7 +92,10 @@ export default function DonationsClientView({
       try {
         const cached = localStorage.getItem("hayatlink_offline_donations");
         if (cached) {
-          setDonationsList(JSON.parse(cached));
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed)) {
+            setDonationsList(parsed);
+          }
         }
       } catch (_) {}
     }
