@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="animator" name="fragment_close_enter">false</item>
+    <item type="animator" name="fragment_close_exit">false</item>
+    <item type="animator" name="fragment_fade_enter">false</item>
+    <item type="animator" name="fragment_fade_exit">false</item>
+    <item type="animator" name="fragment_open_enter">false</item>
+    <item type="animator" name="fragment_open_exit">false</item>
+</resources>
