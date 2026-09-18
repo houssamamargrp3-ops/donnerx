@@ -179,7 +179,7 @@ self.addEventListener('fetch', (event) => {
 // ─────────────────────────────────────────────────────────────
 self.addEventListener('push', (event) => {
   let data = {
-    title: 'DONNER.X 🩸',
+    title: 'HayatLink - حياة لينك 🩸',
     message: 'لديك إشعار طوارئ/تذكير جديد على هاتف!',
     url: '/dashboard/notifications',
   };

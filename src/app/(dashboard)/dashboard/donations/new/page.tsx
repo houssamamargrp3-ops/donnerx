@@ -5,7 +5,7 @@ import RecordDonationForm from "./RecordDonationForm";
 import { Droplet, Calendar, User, Building2, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-export const metadata = { title: "تسجيل عملية تبرع جديدة | DONNER.X" };
+export const metadata = { title: "تسجيل عملية تبرع جديدة | HayatLink" };
 
 export default async function NewDonationPage({
   searchParams,

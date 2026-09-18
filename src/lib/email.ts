@@ -16,7 +16,7 @@ export async function sendVerificationEmail(email: string, name: string, token: 
   await transporter.sendMail({
     from: process.env.EMAIL_FROM,
     to: email,
-    subject: "تأكيد البريد الإلكتروني — DONNER.X",
+    subject: "تأكيد البريد الإلكتروني — HayatLink",
     html: `
       <!DOCTYPE html>
       <html dir="rtl" lang="ar">
@@ -36,12 +36,12 @@ export async function sendVerificationEmail(email: string, name: string, token: 
       <body>
         <div class="container">
           <div class="header">
-            <h1>🩸 DONNER.X</h1>
-            <p style="color: rgba(255,255,255,0.8); margin: 8px 0 0;">منصة التبرع بالدم الوطنية</p>
+            <h1>🩸 HayatLink</h1>
+            <p style="color: rgba(255,255,255,0.8); margin: 8px 0 0;">حياة لينك — نصل العطاء بالحياة</p>
           </div>
           <div class="body">
             <h2 style="color: #f1f5f9;">مرحباً ${name} 👋</h2>
-            <p>شكراً لتسجيلك في منصة DONNER.X. كل تبرع بالدم ينقذ حياة!</p>
+            <p>شكراً لتسجيلك في منصة HayatLink. كل تبرع بالدم ينقذ حياة!</p>
             <p>اضغط على الزر أدناه لتأكيد بريدك الإلكتروني وتفعيل حسابك:</p>
             <div style="text-align: center; margin: 30px 0;">
               <a href="${verifyUrl}" class="btn">✅ تأكيد البريد الإلكتروني</a>
@@ -51,7 +51,7 @@ export async function sendVerificationEmail(email: string, name: string, token: 
             <p>هذا الرابط صالح لمدة <strong>24 ساعة</strong>.</p>
           </div>
           <div class="footer">
-            <p>© ${new Date().getFullYear()} DONNER.X — جميع الحقوق محفوظة</p>
+            <p>© ${new Date().getFullYear()} HayatLink — جميع الحقوق محفوظة</p>
             <p>إذا لم تقم بإنشاء هذا الحساب، يمكنك تجاهل هذا البريد.</p>
           </div>
         </div>
@@ -67,7 +67,7 @@ export async function sendPasswordResetEmail(email: string, name: string, token:
   await transporter.sendMail({
     from: process.env.EMAIL_FROM,
     to: email,
-    subject: "إعادة تعيين كلمة المرور — DONNER.X",
+    subject: "إعادة تعيين كلمة المرور — HayatLink",
     html: `
       <!DOCTYPE html>
       <html dir="rtl" lang="ar">
@@ -87,7 +87,8 @@ export async function sendPasswordResetEmail(email: string, name: string, token:
       <body>
         <div class="container">
           <div class="header">
-            <h1>🩸 DONNER.X</h1>
+            <h1>🩸 HayatLink</h1>
+            <p style="color: rgba(255,255,255,0.8); margin: 8px 0 0;">حياة لينك — نصل العطاء بالحياة</p>
           </div>
           <div class="body">
             <h2 style="color: #f1f5f9;">إعادة تعيين كلمة المرور</h2>
@@ -100,7 +101,7 @@ export async function sendPasswordResetEmail(email: string, name: string, token:
             <p>إذا لم تطلب إعادة تعيين كلمة المرور، يمكنك تجاهل هذا البريد.</p>
           </div>
           <div class="footer">
-            <p>© ${new Date().getFullYear()} DONNER.X — جميع الحقوق محفوظة</p>
+            <p>© ${new Date().getFullYear()} HayatLink — جميع الحقوق محفوظة</p>
           </div>
         </div>
       </body>

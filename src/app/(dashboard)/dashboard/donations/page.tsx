@@ -7,7 +7,7 @@ import DonationsClientView from "./DonationsClientView";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 export const fetchCache = "force-no-store";
-export const metadata = { title: "سجل وأرشيف التبرعات | DONNER.X" };
+export const metadata = { title: "سجل وأرشيف التبرعات | HayatLink" };
 
 export default async function DonationsPage() {
   const session = await auth();

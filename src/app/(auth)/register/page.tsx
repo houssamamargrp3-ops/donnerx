@@ -135,19 +135,14 @@ function RegisterForm() {
       <div className="w-full max-w-lg animate-fade-in-up">
         {/* Logo */}
         <div className="text-center mb-6">
-          <div
-            className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-3"
-            style={{
-              background: portalType === "donor" ? "linear-gradient(135deg, #dc2626, #991b1b)" : "linear-gradient(135deg, #3b82f6, #1d4ed8)",
-              boxShadow: portalType === "donor" ? "0 0 30px rgba(220,38,38,0.35)" : "0 0 30px rgba(59,130,246,0.35)",
-            }}
-          >
-            <Droplets className="w-8 h-8 text-white" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-3 bg-black border border-slate-800 shadow-xl overflow-hidden hover:scale-105 transition-transform">
+            <img src="/logo.png" alt="HayatLink" className="w-full h-full object-cover" />
           </div>
-          <h1 className="text-3xl font-black gradient-text tracking-widest">
-            {portalType === "donor" ? "بوابة المتبرعين" : "البوابة الطبية"}
+          <h1 className="text-2xl font-black tracking-tight">
+            <span className="text-[#059669]">Hayat</span>
+            <span className="text-[#dc2626]">Link</span>
           </h1>
-          <p className="text-slate-400 text-sm mt-1">إنشاء حساب جديد</p>
+          <p className="text-slate-500 text-sm mt-1 font-medium">إنشاء حساب جديد — نصل العطاء بالحياة</p>
         </div>
 
         <div className="bg-white rounded-lg shadow-xl border border-slate-200 p-8 relative">

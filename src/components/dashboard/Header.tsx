@@ -10,15 +10,15 @@ export default function DashboardHeader({ user }: { user: any }) {
       
       {/* Brand & Logo */}
       <Link href="/dashboard" className="flex items-center gap-2.5 group">
-        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-red-500 to-red-700 shadow-sm shadow-red-200 flex items-center justify-center transition-transform group-hover:scale-105">
-          <Droplet className="w-5 h-5 sm:w-5.5 sm:h-5.5 text-white fill-white" />
+        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden shadow-sm flex items-center justify-center transition-transform group-hover:scale-105 bg-black border border-slate-800">
+          <img src="/logo.png" alt="HayatLink" className="w-full h-full object-cover" />
         </div>
         <div className="flex flex-col">
           <div className="flex items-center text-lg sm:text-xl font-black text-slate-900 leading-none tracking-tight">
-            <span>DONNER</span>
-            <span className="text-red-600">.X</span>
+            <span className="text-[#059669]">Hayat</span>
+            <span className="text-[#dc2626]">Link</span>
           </div>
-          <span className="text-[10px] text-slate-400 font-bold mt-0.5">لوحة التحكم</span>
+          <span className="text-[10px] text-slate-400 font-bold mt-0.5">نصل العطاء بالحياة</span>
         </div>
       </Link>
 

@@ -40,7 +40,7 @@ export async function sendSMS({ to, message, type = "EMERGENCY" }: SMSOptions) {
         body: JSON.stringify({
           recipient: cleanPhone,
           body: message,
-          sender: process.env.SMS_SENDER_ID || "DONNER.X",
+          sender: process.env.SMS_SENDER_ID || "HayatLink",
         }),
       });
 

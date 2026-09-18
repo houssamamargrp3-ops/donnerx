@@ -184,7 +184,7 @@ export default function BloodTypeCard({
       <div class="card front">
         <div class="front-content">
           <div class="front-header">
-            <div class="brand">DONNER<span>.X</span></div>
+            <div class="brand">Hayat<span>Link</span></div>
             <div class="card-title">BLOOD DONOR<br/>IDENTITY CARD</div>
           </div>
           <div class="blood-center">
@@ -217,10 +217,10 @@ export default function BloodTypeCard({
           ${phone ? `<div class="info-row"><div class="info-label">رقم الهاتف للطوارئ</div><div class="info-value" style="direction:ltr">${phone}</div></div>` : ""}
           <div class="info-row">
             <div class="info-label">المنصة</div>
-            <div class="info-value">DONNER.X — منصة التبرع بالدم</div>
+            <div class="info-value">HayatLink — حياة لينك</div>
           </div>
           <div class="back-brand">
-            <div class="back-brand-text">DONNER.X</div>
+            <div class="back-brand-text">HayatLink</div>
             <div class="emergency-text">🚨 في حالة الطوارئ — زمرة دمي: ${bt}</div>
           </div>
         </div>
@@ -258,7 +258,7 @@ export default function BloodTypeCard({
         {/* Header */}
         <div className="flex justify-between items-start">
           <div className="text-white font-black text-base tracking-tight">
-            DONNER<span style={{ opacity: 0.7 }}>.X</span>
+            Hayat<span style={{ opacity: 0.85 }}>Link</span>
           </div>
           <div className="text-right text-[9px] font-bold text-white/60 tracking-widest uppercase">
             Blood Donor<br />Identity Card

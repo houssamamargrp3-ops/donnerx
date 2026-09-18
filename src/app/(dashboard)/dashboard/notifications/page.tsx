@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { Bell, CheckCircle2, AlertTriangle, Megaphone, Heart, Calendar } from "lucide-react";
 import PushNotificationPrompt from "@/components/dashboard/PushNotificationPrompt";
 
-export const metadata = { title: "مركز الإشعارات والإنذارات | DONNER.X" };
+export const metadata = { title: "مركز الإشعارات والإنذارات | HayatLink" };
 
 export default async function NotificationsPage() {
   const session = await auth();

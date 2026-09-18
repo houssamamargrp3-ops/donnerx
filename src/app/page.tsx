@@ -32,12 +32,18 @@ export default function HomePage() {
       <nav className="relative z-10 flex items-center justify-between px-6 md:px-8 py-5 border-b border-white/5">
         <div className="flex items-center gap-3">
           <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center"
-            style={{ background: "linear-gradient(135deg, #dc2626, #991b1b)", boxShadow: "0 0 20px rgba(220,38,38,0.35)" }}
+            className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center bg-black border border-white/10"
+            style={{ boxShadow: "0 0 20px rgba(220,38,38,0.35)" }}
           >
-            <Droplets className="w-5 h-5 text-white" />
+            <img src="/logo.png" alt="HayatLink" className="w-full h-full object-cover" />
           </div>
-          <span className="text-xl font-black gradient-text tracking-wider">DONNER.X</span>
+          <div className="flex flex-col">
+            <span className="text-xl font-black tracking-wider text-white">
+              <span className="text-emerald-400">Hayat</span>
+              <span className="text-red-500">Link</span>
+            </span>
+            <span className="text-[10px] text-slate-400 font-bold -mt-1">نصل العطاء بالحياة</span>
+          </div>
         </div>
 
         <div className="flex items-center gap-3">
@@ -189,7 +195,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="relative z-10 border-t border-white/5 py-8 text-center text-slate-600 text-sm">
-        <p>© {new Date().getFullYear()} DONNER.X — منصة التبرع بالدم الوطنية 🩸</p>
+        <p>© {new Date().getFullYear()} HayatLink (حياة لينك) — نصل العطاء بالحياة 🩸</p>
       </footer>
     </div>
   );

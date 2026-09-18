@@ -87,20 +87,15 @@ function LoginForm() {
         <div className="w-full max-w-md animate-scale-in">
           {/* Logo */}
           <div className="text-center mb-8">
-            <div
-              className={`inline-flex items-center justify-center w-20 h-20 rounded-full mb-4 animate-pulse-red`}
-              style={{
-                background: portalType === "donor" ? "linear-gradient(135deg, #dc2626, #991b1b)" : "linear-gradient(135deg, #3b82f6, #1d4ed8)",
-                boxShadow: portalType === "donor" ? "0 0 40px rgba(220,38,38,0.4)" : "0 0 40px rgba(59,130,246,0.4)",
-              }}
-            >
-              {portalType === "donor" ? <Heart className="w-10 h-10 text-white" /> : <Activity className="w-10 h-10 text-white" />}
+            <div className="inline-flex items-center justify-center w-24 h-24 rounded-2xl mb-4 bg-black border border-slate-800 shadow-xl overflow-hidden hover:scale-105 transition-transform">
+              <img src="/logo.png" alt="HayatLink" className="w-full h-full object-cover" />
             </div>
-            <h1 className="text-4xl font-black gradient-text tracking-widest">
-              {portalType === "donor" ? "بوابة المتبرعين" : "البوابة الطبية"}
+            <h1 className="text-3xl font-black tracking-tight">
+              <span className="text-[#059669]">Hayat</span>
+              <span className="text-[#dc2626]">Link</span>
             </h1>
-            <p className="text-slate-400 mt-2 text-sm">
-              {portalType === "donor" ? "سجل دخولك كمتبرع بالدم" : "دخول المراكز والمستشفيات"}
+            <p className="text-slate-500 mt-1 text-sm font-medium">
+              {portalType === "donor" ? "بوابة المتبرعين بالدم — نصل العطاء بالحياة" : "البوابة الطبية وإدارة المراكز"}
             </p>
           </div>
 

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { QrCode } from "lucide-react";
 import SmartDonorCard from "@/components/dashboard/SmartDonorCard";
 
-export const metadata = { title: "البطاقة الصحية الذكية | DONNER.X" };
+export const metadata = { title: "البطاقة الصحية الذكية | HayatLink" };
 
 export default async function QRPage() {
   const session = await auth();

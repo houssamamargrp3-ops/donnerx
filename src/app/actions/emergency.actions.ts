@@ -67,7 +67,7 @@ export async function createEmergencyRequest(formData: FormData) {
 
     // 3. Send them all an EMERGENCY notification & SMS alert
     if (matchingDonors.length > 0) {
-      const smsMessage = `[DONNER.X 🚨] نداء طوارئ عاجل! مستشفى ${hospitalName} في ${cleanCity || "المنطقة"} بحاجة ماسة لفصيلة دمك (${bloodType.replace("_POSITIVE", "+").replace("_NEGATIVE", "-")}). حضورك ينقذ حياة!`;
+      const smsMessage = `[HayatLink 🚨] نداء طوارئ عاجل! مستشفى ${hospitalName} في ${cleanCity || "المنطقة"} بحاجة ماسة لفصيلة دمك (${bloodType.replace("_POSITIVE", "+").replace("_NEGATIVE", "-")}). حضورك ينقذ حياة!`;
 
       const notifications = matchingDonors.map((donor) => {
         // Dispatch SMS if donor phone is available

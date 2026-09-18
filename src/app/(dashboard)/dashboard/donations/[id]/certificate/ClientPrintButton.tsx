@@ -258,14 +258,14 @@ export default function ClientPrintButton({
     <div class="corner br">🩸</div>
 
     <div class="logo">
-      <span class="dark">DONNER</span><span class="red">.X</span>
+      <span style="color:#059669">Hayat</span><span class="red">Link</span>
     </div>
     <div class="gold-line"></div>
     <h1>شهادة شكر وتقدير</h1>
     <p class="subtitle">Certificate of Appreciation</p>
 
     <p class="body-text">
-      تتقدم إدارة منصة <strong>DONNER.X</strong> بالتعاون مع <strong>${centerName}</strong><br/>
+      تتقدم إدارة منصة <strong>HayatLink (حياة لينك)</strong> بالتعاون مع <strong>${centerName}</strong><br/>
       بعظيم الشكر وخالص الامتنان إلى المتبرع المعطاء:
     </p>
 

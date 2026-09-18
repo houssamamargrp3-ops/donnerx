@@ -174,7 +174,7 @@ export default function SmartDonorCard() {
                   <Droplet className="w-4 h-4" style={{ color: theme.accent, fill: theme.accent }} />
                 </div>
                 <div>
-                  <div className="text-white font-black text-xs tracking-widest" style={{ letterSpacing: 3 }}>DONNER.X</div>
+                  <div className="text-white font-black text-xs tracking-widest" style={{ letterSpacing: 2 }}>HAYATLINK</div>
                   <div className="text-white/40 text-[7px] font-bold tracking-wider">HEALTH PASS</div>
                 </div>
               </div>

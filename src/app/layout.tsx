@@ -4,19 +4,19 @@ import PwaManager from "@/components/PwaManager";
 
 export const metadata: Metadata = {
   title: {
-    default: "DONNER.X — منصة التبرع بالدم الوطنية",
-    template: "%s | DONNER.X",
+    default: "HayatLink — حياة لينك | نصل العطاء بالحياة",
+    template: "%s | HayatLink",
   },
   description:
-    "منصة وطنية متكاملة لإدارة التبرع بالدم. سجّل الآن وساهم في إنقاذ الأرواح.",
-  keywords: ["تبرع بالدم", "بنك الدم", "DONNER.X", "إنقاذ الأرواح"],
-  authors: [{ name: "DONNER.X Team" }],
+    "منصة حياة لينك (HayatLink) لإدارة التبرع بالدم. نصل العطاء بالحياة ونساهم في إنقاذ الأرواح.",
+  keywords: ["تبرع بالدم", "بنك الدم", "HayatLink", "حياة لينك", "إنقاذ الأرواح"],
+  authors: [{ name: "HayatLink Team" }],
   openGraph: {
     type: "website",
     locale: "ar_SA",
-    title: "DONNER.X — منصة التبرع بالدم الوطنية",
-    description: "منصة وطنية متكاملة لإدارة التبرع بالدم",
-    siteName: "DONNER.X",
+    title: "HayatLink — حياة لينك | نصل العطاء بالحياة",
+    description: "منصة حياة لينك المتكاملة لإدارة التبرع بالدم",
+    siteName: "HayatLink",
   },
   manifest: "/manifest.json",
 };

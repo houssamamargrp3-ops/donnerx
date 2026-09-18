@@ -72,10 +72,13 @@ export default async function CertificatePage({ params }: { params: Promise<{ id
             </div>
             
             {/* Typographic Logo */}
-            <div className="mb-2">
+            <div className="mb-2 flex items-center justify-center gap-2">
+              <div className="w-10 h-10 rounded-xl overflow-hidden bg-black flex items-center justify-center">
+                <img src="/logo.png" alt="HayatLink" className="w-full h-full object-cover" />
+              </div>
               <div className="text-3xl font-black tracking-tighter" dir="ltr">
-                <span className="text-slate-800">DONNER</span>
-                <span className="text-red-600">.X</span>
+                <span className="text-[#059669]">Hayat</span>
+                <span className="text-red-600">Link</span>
               </div>
             </div>
             
@@ -89,7 +92,7 @@ export default async function CertificatePage({ params }: { params: Promise<{ id
           {/* Body */}
           <div className="w-full max-w-3xl flex-1 flex flex-col justify-center my-6">
             <p className="text-xl text-slate-700 leading-relaxed font-medium mb-6">
-              تتقدم إدارة منصة <span className="font-bold text-red-700" dir="ltr">DONNER.X</span> بالتعاون مع <strong className="text-slate-900 border-b-2 border-[#D4AF37]">{donation.center.name}</strong> 
+              تتقدم إدارة منصة <span className="font-bold text-emerald-700">حياة لينك (HayatLink)</span> بالتعاون مع <strong className="text-slate-900 border-b-2 border-[#D4AF37]">{donation.center.name}</strong> 
               <br/>بعظيم الشكر وخالص الامتنان إلى المتبرع المعطاء:
             </p>
             

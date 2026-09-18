@@ -1,7 +1,7 @@
 {
-  "name": "DONNER.X",
-  "short_name": "DONNER.X",
-  "description": "منصة ذكية وتطبيق لاستقطاب المتبرعين بالدم",
+  "name": "HayatLink - حياة لينك",
+  "short_name": "HayatLink",
+  "description": "منصة وتطبيق حياة لينك لاستقطاب المتبرعين بالدم - نصل العطاء بالحياة",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#ffffff",

@@ -144,11 +144,13 @@ export default function ResetPasswordPage() {
     <div className="auth-bg min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
       <div className="w-full max-w-md animate-fade-in-up">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4"
-            style={{ background: "linear-gradient(135deg, #dc2626, #991b1b)", boxShadow: "0 0 30px rgba(220,38,38,0.35)" }}>
-            <Droplets className="w-8 h-8 text-white" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-3 bg-black border border-slate-800 shadow-xl overflow-hidden">
+            <img src="/logo.png" alt="HayatLink" className="w-full h-full object-cover" />
           </div>
-          <h1 className="text-3xl font-black gradient-text tracking-widest">DONNER.X</h1>
+          <h1 className="text-2xl font-black tracking-tight">
+            <span className="text-[#059669]">Hayat</span>
+            <span className="text-[#dc2626]">Link</span>
+          </h1>
         </div>
         <Suspense fallback={<div className="glass-card p-8 text-center text-slate-400">تحميل...</div>}>
           <ResetPasswordForm />
