@@ -136,7 +136,7 @@
     invoke-virtual {v1, v0}, Landroid/webkit/WebSettings;->setDatabaseEnabled(Z)V
 
     .line 48
-    const/4 v2, -0x1
+    const/4 v2, 0x2
 
     invoke-virtual {v1, v2}, Landroid/webkit/WebSettings;->setCacheMode(I)V
 
