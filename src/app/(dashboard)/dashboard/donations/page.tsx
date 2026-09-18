@@ -10,17 +10,17 @@ export const fetchCache = "force-no-store";
 export const metadata = { title: "سجل وأرشيف التبرعات | HayatLink" };
 
 export default async function DonationsPage() {
+  const session = await auth();
+  if (!session?.user) redirect("/login");
+
+  const user = session.user as any;
+  const role = user.role || "DONOR";
+  const isDonor = role === "DONOR";
+
+  let rawDonations: any[] = [];
+  let donorProfile: any = null;
+
   try {
-    const session = await auth();
-    if (!session?.user) redirect("/login");
-
-    const user = session.user as any;
-    const role = user.role || "DONOR";
-    const isDonor = role === "DONOR";
-
-    let rawDonations: any[] = [];
-    let donorProfile: any = null;
-
     if (isDonor) {
       // Find the donor profile
       donorProfile = await prisma.donor.findUnique({
@@ -66,25 +66,19 @@ export default async function DonationsPage() {
         orderBy: { donatedAt: "desc" },
       });
     }
-
-    // Deep clone / serialize dates safely for Next.js Client Components
-    const donations = JSON.parse(JSON.stringify(rawDonations));
-
-    return (
-      <DonationsClientView
-        role={role}
-        donations={donations}
-        donorName={donorProfile?.user?.name || user.name}
-        donorBloodType={donorProfile?.bloodType}
-      />
-    );
   } catch (error) {
-    console.error("DonationsPage error:", error);
-    return (
-      <DonationsClientView
-        role="DONOR"
-        donations={[]}
-      />
-    );
+    console.error("DonationsPage DB Error:", error);
   }
+
+  // Deep clone / serialize dates safely for Next.js Client Components
+  const donations = JSON.parse(JSON.stringify(rawDonations));
+
+  return (
+    <DonationsClientView
+      role={role}
+      donations={donations}
+      donorName={donorProfile?.user?.name || user.name}
+      donorBloodType={donorProfile?.bloodType}
+    />
+  );
 }
