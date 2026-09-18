@@ -19,6 +19,15 @@ export const metadata: Metadata = {
     siteName: "HayatLink",
   },
   manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/icon-192x192.png?v=2", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512x512.png?v=2", sizes: "512x512", type: "image/png" },
+      { url: "/logo.png?v=2" },
+    ],
+    shortcut: "/logo.png?v=2",
+    apple: "/icon-192x192.png?v=2",
+  },
 };
 
 export const viewport = {
@@ -36,6 +45,8 @@ export default function RootLayout({
   return (
     <html lang="ar" dir="rtl">
       <head>
+        <link rel="icon" href="/logo.png?v=2" type="image/png" />
+        <link rel="apple-touch-icon" href="/icon-192x192.png?v=2" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link

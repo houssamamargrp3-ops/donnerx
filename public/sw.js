@@ -1,8 +1,8 @@
-// DONNER.X Advanced Service Worker for Offline PWA Mode
-const CACHE_NAME = 'donner-v3';
-const STATIC_CACHE = 'donner-static-v3';
-const API_CACHE = 'donner-api-v3';
-const PAGES_CACHE = 'donner-pages-v3';
+// HayatLink Service Worker for Offline PWA Mode
+const CACHE_NAME = 'hayatlink-v1';
+const STATIC_CACHE = 'hayatlink-static-v1';
+const API_CACHE = 'hayatlink-api-v1';
+const PAGES_CACHE = 'hayatlink-pages-v1';
 
 // Core assets to pre-cache immediately on install
 const PRECACHE_ASSETS = [
