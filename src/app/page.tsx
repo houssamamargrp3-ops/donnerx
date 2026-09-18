@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Droplets, ArrowLeft, Shield, Heart, Activity, Users } from "lucide-react";
-import DownloadApkButton from "@/components/DownloadApkButton";
 
 export default function HomePage() {
   return (
@@ -92,7 +91,13 @@ export default function HomePage() {
             <Heart className="w-5 h-5" />
             <span>تبرع الآن</span>
           </Link>
-          <DownloadApkButton />
+          <Link
+            href="/login"
+            className="px-6 py-3.5 rounded-xl text-slate-200 hover:text-white font-bold text-sm bg-white/10 hover:bg-white/15 border border-white/15 backdrop-blur-sm transition-all flex items-center gap-2"
+          >
+            <span>تسجيل الدخول</span>
+            <ArrowLeft className="w-4 h-4 text-slate-300" />
+          </Link>
         </div>
       </section>
 
