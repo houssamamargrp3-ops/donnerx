@@ -107,11 +107,12 @@ export default function DonationsClientView({
 
   // Filtered donations
   const filteredDonations = useMemo(() => {
-    return donationsList.filter((item) => {
-      const btLabel = BLOOD_TYPE_LABEL[item.bloodType] || item.bloodType;
+    return (donationsList || []).filter((item) => {
+      if (!item) return false;
+      const btLabel = BLOOD_TYPE_LABEL[item.bloodType] || item.bloodType || "";
       const donorNameStr = item.donor?.user?.name || "";
-      const centerNameStr = item.center.name || "";
-      const cityStr = item.center.city || "";
+      const centerNameStr = item.center?.name || "";
+      const cityStr = item.center?.city || "";
       const serialStr = item.certificate?.serialNumber || "";
 
       const matchesSearch =
@@ -127,37 +128,43 @@ export default function DonationsClientView({
 
       return matchesSearch && matchesBt;
     });
-  }, [donations, searchTerm, selectedBloodType]);
+  }, [donationsList, searchTerm, selectedBloodType]);
 
   // Helper for human-friendly date
   const formatDonationDate = (dateVal: string | Date) => {
-    const d = new Date(dateVal);
-    const dateStr = d.toLocaleDateString("ar-SA", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      weekday: "long",
-    });
-    const timeStr = d.toLocaleTimeString("ar-SA", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    try {
+      const d = dateVal ? new Date(dateVal) : new Date();
+      if (isNaN(d.getTime())) {
+        return { dateStr: "تاريخ غير محدد", timeStr: "--:--", timeAgo: "" };
+      }
+      const dateStr = d.toLocaleDateString("ar-SA", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        weekday: "long",
+      });
+      const timeStr = d.toLocaleTimeString("ar-SA", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
 
-    // Time elapsed
-    const diffDays = Math.floor((Date.now() - d.getTime()) / (1000 * 60 * 60 * 24));
-    let timeAgo = "";
-    if (diffDays === 0) timeAgo = "اليوم";
-    else if (diffDays === 1) timeAgo = "أمس";
-    else if (diffDays < 30) timeAgo = `منذ ${diffDays} يوم`;
-    else if (diffDays < 365) {
-      const months = Math.floor(diffDays / 30);
-      timeAgo = `منذ ${months} شهر${months > 2 ? "اً" : ""}`;
-    } else {
-      const years = Math.floor(diffDays / 365);
-      timeAgo = `منذ ${years} سنة`;
+      const diffDays = Math.floor((Date.now() - d.getTime()) / (1000 * 60 * 60 * 24));
+      let timeAgo = "";
+      if (diffDays <= 0) timeAgo = "اليوم";
+      else if (diffDays === 1) timeAgo = "أمس";
+      else if (diffDays < 30) timeAgo = `منذ ${diffDays} يوم`;
+      else if (diffDays < 365) {
+        const months = Math.floor(diffDays / 30);
+        timeAgo = `منذ ${months} شهر${months > 2 ? "اً" : ""}`;
+      } else {
+        const years = Math.floor(diffDays / 365);
+        timeAgo = `منذ ${years} سنة`;
+      }
+
+      return { dateStr, timeStr, timeAgo };
+    } catch {
+      return { dateStr: "تاريخ غير محدد", timeStr: "--:--", timeAgo: "" };
     }
-
-    return { dateStr, timeStr, timeAgo };
   };
 
   return (
@@ -353,7 +360,7 @@ export default function DonationsClientView({
                       </span>
 
                       <span className="text-slate-400 text-xs font-semibold mr-auto">
-                        عملية رقم: <span className="font-mono text-slate-600 font-bold">#{donation.id.slice(-6).toUpperCase()}</span>
+                        عملية رقم: <span className="font-mono text-slate-600 font-bold">#{(donation.id || "000000").slice(-6).toUpperCase()}</span>
                       </span>
                     </div>
 
@@ -365,15 +372,15 @@ export default function DonationsClientView({
                           <span>أين تبرع (المركز الطبي والمكان):</span>
                         </div>
                         <div className="font-black text-slate-800 text-sm md:text-base">
-                          {donation.center.name}
+                          {donation.center?.name || "المركز الطبي الرئيسي"}
                         </div>
                         <div className="text-xs text-slate-500 flex items-center gap-1 mt-1">
                           <MapPin className="w-3 h-3 text-slate-400 flex-shrink-0" />
                           <span>
-                            {donation.center.address}, {donation.center.city}
+                            {donation.center?.address || "المركز الرئيسي"}{donation.center?.city ? `, ${donation.center.city}` : ""}
                           </span>
                         </div>
-                        {donation.center.phone && (
+                        {donation.center?.phone && (
                           <div className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
                             <Phone className="w-3 h-3 text-slate-400 flex-shrink-0" />
                             <span dir="ltr">{donation.center.phone}</span>
