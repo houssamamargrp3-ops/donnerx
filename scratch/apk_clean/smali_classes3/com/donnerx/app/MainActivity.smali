@@ -4,7 +4,7 @@
 
 
 # static fields
-.field private static final APP_URL:Ljava/lang/String; = "https://pskoc8occwcsggc8k8cs0g48.194.34.232.105.sslip.io/dashboard"
+.field private static final APP_URL:Ljava/lang/String; = "https://pskoc8occwcsggc8k8cs0g48.194.34.232.105.sslip.io"
 
 
 # instance fields
