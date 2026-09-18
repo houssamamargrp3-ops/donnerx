@@ -86,11 +86,11 @@ export default function DonationsClientView({
     if (initialDonations && initialDonations.length > 0) {
       setDonationsList(initialDonations);
       try {
-        localStorage.setItem("donner_offline_donations", JSON.stringify(initialDonations));
+        localStorage.setItem("hayatlink_offline_donations", JSON.stringify(initialDonations));
       } catch (_) {}
     } else {
       try {
-        const cached = localStorage.getItem("donner_offline_donations");
+        const cached = localStorage.getItem("hayatlink_offline_donations");
         if (cached) {
           setDonationsList(JSON.parse(cached));
         }

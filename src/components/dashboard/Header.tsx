@@ -41,8 +41,9 @@ export default function DashboardHeader({ user }: { user: any }) {
         <button 
           onClick={async () => {
             try {
-              localStorage.removeItem("donner_offline_donor");
-              localStorage.removeItem("donner_offline_profile");
+              localStorage.removeItem("hayatlink_offline_donor");
+              localStorage.removeItem("hayatlink_offline_profile");
+              localStorage.removeItem("hayatlink_offline_donations");
             } catch (_) {}
             await signOut({ callbackUrl: "/login" });
           }}

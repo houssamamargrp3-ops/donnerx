@@ -23,7 +23,7 @@ export default function DonorDashboard({ userId }: { userId: string }) {
     const fetchDonor = async () => {
       // 1. Instant offline cache check
       try {
-        const cached = localStorage.getItem("donner_offline_donor");
+        const cached = localStorage.getItem("hayatlink_offline_donor");
         if (cached) {
           setDonor(JSON.parse(cached));
           setLoading(false);
@@ -38,7 +38,7 @@ export default function DonorDashboard({ userId }: { userId: string }) {
           if (data && data.id) {
             setDonor(data);
             try {
-              localStorage.setItem("donner_offline_donor", JSON.stringify(data));
+              localStorage.setItem("hayatlink_offline_donor", JSON.stringify(data));
             } catch (_) {}
           }
         }

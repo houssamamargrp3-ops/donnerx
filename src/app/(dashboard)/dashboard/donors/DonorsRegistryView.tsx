@@ -47,7 +47,7 @@ interface DonorsRegistryViewProps {
 }
 
 export default function DonorsRegistryView({ donors }: DonorsRegistryViewProps) {
-  const [activeTab, setActiveTab] = useState<"actual" | "pending" | "all">("actual");
+  const [activeTab, setActiveTab] = useState<"actual" | "pending" | "all">("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBloodType, setSelectedBloodType] = useState("ALL");
 

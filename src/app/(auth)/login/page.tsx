@@ -32,8 +32,9 @@ function LoginForm() {
 
     try {
       try {
-        localStorage.removeItem("donner_offline_donor");
-        localStorage.removeItem("donner_offline_profile");
+        localStorage.removeItem("hayatlink_offline_donor");
+        localStorage.removeItem("hayatlink_offline_profile");
+        localStorage.removeItem("hayatlink_offline_donations");
       } catch (_) {}
 
       const result = await signIn("credentials", {

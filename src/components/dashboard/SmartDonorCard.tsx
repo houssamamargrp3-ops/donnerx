@@ -35,7 +35,7 @@ export default function SmartDonorCard() {
     (async () => {
       // 1. Check offline cached data immediately for instant display
       try {
-        const cached = localStorage.getItem("donner_offline_donor");
+        const cached = localStorage.getItem("hayatlink_offline_donor");
         if (cached) {
           setDonor(JSON.parse(cached));
           setLoading(false);
@@ -50,7 +50,7 @@ export default function SmartDonorCard() {
           if (data && data.id) {
             setDonor(data);
             try {
-              localStorage.setItem("donner_offline_donor", JSON.stringify(data));
+              localStorage.setItem("hayatlink_offline_donor", JSON.stringify(data));
             } catch (_) {}
           }
         }
