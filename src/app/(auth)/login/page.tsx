@@ -226,7 +226,7 @@ function LoginForm() {
           </div>
 
           <p className="text-center text-slate-500 text-xs mt-6">
-            © {new Date().getFullYear()} DONNER.X — {portalType === "donor" ? "كل تبرع ينقذ حياة 🩸" : "شريكك في إنقاذ الأرواح 🏥"}
+            © {new Date().getFullYear()} HayatLink — {portalType === "donor" ? "كل تبرع ينقذ حياة 🩸" : "شريكك في إنقاذ الأرواح 🏥"}
           </p>
         </div>
       </div>

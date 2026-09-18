@@ -365,10 +365,10 @@ export default function BloodTypeCard({
           </div>` : ""}
           <div class="info-row">
             <div class="info-label">المنصة</div>
-            <div class="info-value">DONNER.X — منصة التبرع بالدم</div>
+            <div class="info-value">HayatLink — منصة التبرع بالدم</div>
           </div>
           <div class="back-brand">
-            <div class="back-brand-text">DONNER.X</div>
+            <div class="back-brand-text">HayatLink</div>
             <div class="emergency-text">🚨 في حالة الطوارئ — زمرة دمي: ${bt}</div>
           </div>
         </div>

@@ -123,7 +123,7 @@ self.addEventListener('fetch', (event) => {
             <head>
               <meta charset="utf-8"/>
               <meta name="viewport" content="width=device-width, initial-scale=1"/>
-              <title>وضع عدم الاتصال | DONNER.X</title>
+              <title>وضع عدم الاتصال | HayatLink</title>
               <style>
                 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: white; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; text-align: center; }
                 .card { background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 36px 24px; max-width: 380px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }

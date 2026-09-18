@@ -21,14 +21,14 @@ export default function PwaManager() {
               if (installing) {
                 installing.onstatechange = () => {
                   if (installing.state === "installed" && navigator.serviceWorker.controller) {
-                    console.log("DONNER.X PWA: New content available for offline use.");
+                    console.log("HayatLink PWA: New content available for offline use.");
                   }
                 };
               }
             };
           })
           .catch((err) => {
-            console.error("DONNER.X PWA: Service Worker registration failed:", err);
+            console.error("HayatLink PWA: Service Worker registration failed:", err);
           });
       });
     }
