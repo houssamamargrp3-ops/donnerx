@@ -1,0 +1,55 @@
+﻿import { NextResponse } from "next/server";
+
+export async function GET() {
+  const manifest = {
+    name: "HayatLink - حياة لينك",
+    short_name: "HayatLink",
+    description: "منصة وتطبيق حياة لينك لاستقطاب المتبرعين بالدم - نصل العطاء بالحياة",
+    id: "/?app=hayatlink_v2",
+    start_url: "/?utm_source=pwa_hayatlink",
+    scope: "/",
+    display: "standalone",
+    background_color: "#ffffff",
+    theme_color: "#dc2626",
+    orientation: "portrait-primary",
+    icons: [
+      {
+        src: "/icon-192x192.png",
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "any"
+      },
+      {
+        src: "/icon-192x192.png",
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "maskable"
+      },
+      {
+        src: "/icon-512x512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "any"
+      },
+      {
+        src: "/icon-512x512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable"
+      },
+      {
+        src: "/logo.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "any"
+      }
+    ]
+  };
+
+  return NextResponse.json(manifest, {
+    headers: {
+      "Content-Type": "application/manifest+json; charset=utf-8",
+      "Cache-Control": "public, max-age=0, must-revalidate",
+    },
+  });
+}
