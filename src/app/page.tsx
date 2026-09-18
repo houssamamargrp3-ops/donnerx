@@ -46,9 +46,7 @@ export default function HomePage() {
             <span className="text-[10px] text-slate-400 font-bold -mt-1">نصل العطاء بالحياة</span>
           </div>
         </div>
-
         <div className="flex items-center gap-3">
-          <DownloadApkButton variant="primary" label="تحميل التطبيق (APK)" />
           <Link href="/login"
             className="px-4 md:px-5 py-2 rounded-lg text-slate-300 hover:text-white text-sm font-medium transition-colors">
             تسجيل الدخول
