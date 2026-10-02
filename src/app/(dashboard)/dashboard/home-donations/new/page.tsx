@@ -69,19 +69,68 @@ export default function NewHomeDonationPage() {
     setScheduledDate(tomorrow.toISOString().slice(0, 10));
   }, []);
 
+  const [gpsLoading, setGpsLoading] = useState(false);
+  const [gpsSuccessMsg, setGpsSuccessMsg] = useState("");
+
   const handleDetectGPS = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          setLatitude(pos.coords.latitude);
-          setLongitude(pos.coords.longitude);
-          alert("تم تحديد موقعك الجغرافي (GPS) بنجاح 📍");
-        },
-        () => {
-          alert("تعذر تحديد الموقع تلقائيًا. يرجى كتابة العنوان يدويًا.");
-        }
-      );
+    if (!navigator.geolocation) {
+      alert("خاصية تحديد الموقع غير مدعومة في متصفحك. يرجى كتابة العنوان يدويًا.");
+      return;
     }
+
+    setGpsLoading(true);
+    setGpsSuccessMsg("");
+
+    const options = {
+      enableHighAccuracy: false, // Use false first for rapid mobile response
+      timeout: 10000,
+      maximumAge: 30000,
+    };
+
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+
+        setLatitude(lat);
+        setLongitude(lng);
+
+        // Reverse Geocode via OpenStreetMap Nominatim to auto-fill address, district, and city
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ar`
+          );
+          if (res.ok) {
+            const data = await res.json();
+            const addr = data.address || {};
+
+            const detectedCity = addr.city || addr.town || addr.state || addr.governorate || "الرياض";
+            const detectedDistrict = addr.suburb || addr.neighbourhood || addr.quarter || addr.residential || addr.district || "";
+            const detectedStreet = addr.road || addr.pedestrian || addr.building || addr.amenity || "";
+
+            if (detectedCity) setCity(detectedCity);
+            if (detectedDistrict) setDistrict(detectedDistrict);
+            if (detectedStreet || data.display_name) {
+              setAddress(detectedStreet ? `${detectedStreet} - ${detectedDistrict}` : data.display_name);
+            }
+
+            setGpsSuccessMsg(`تم تحديد موقعك (${detectedCity} ${detectedDistrict ? `- ${detectedDistrict}` : ""}) وتعبئة العنوان تلقائياً 📍`);
+          } else {
+            setGpsSuccessMsg("تم تحديد إحداثيات موقعك (GPS) بنجاح 📍");
+          }
+        } catch (_) {
+          setGpsSuccessMsg("تم تحديد إحداثيات موقعك (GPS) بنجاح 📍");
+        } finally {
+          setGpsLoading(false);
+        }
+      },
+      (err) => {
+        setGpsLoading(false);
+        console.warn("GPS detection error:", err);
+        alert("تعذر الوصول للموقع الجغرافي آليًا. يرجى كتابة اسم الحي والعنوان التفصيلي يدويًا.");
+      },
+      options
+    );
   };
 
   const handleSubmit = async () => {
@@ -265,13 +314,30 @@ export default function NewHomeDonationPage() {
               />
             </div>
 
+            {gpsSuccessMsg && (
+              <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-3 rounded-xl text-xs font-bold flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                <span>{gpsSuccessMsg}</span>
+              </div>
+            )}
+
             <button
               type="button"
+              disabled={gpsLoading}
               onClick={handleDetectGPS}
-              className="w-full bg-blue-50 text-blue-700 border border-blue-200 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 hover:bg-blue-100 transition-all"
+              className="w-full bg-blue-50 text-blue-700 border border-blue-200 font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 hover:bg-blue-100 transition-all disabled:opacity-50"
             >
-              <MapPin className="w-4 h-4 text-blue-600" />
-              <span>تحديد الموقع عبر الخريطة والـ GPS تلقائياً {latitude ? "✓ (تم التحديد)" : ""}</span>
+              {gpsLoading ? (
+                <>
+                  <span className="spinner border-t-blue-600 w-4 h-4 border-2 rounded-full animate-spin" />
+                  <span>جاري تحديد عنوانك وموقعك بواسطة الـ GPS... 🛰️</span>
+                </>
+              ) : (
+                <>
+                  <MapPin className="w-4 h-4 text-blue-600" />
+                  <span>تحديد عنوانك وموقعك عبر الـ GPS تلقائياً {latitude ? "✓ (تم التحديد)" : ""}</span>
+                </>
+              )}
             </button>
           </div>
 
