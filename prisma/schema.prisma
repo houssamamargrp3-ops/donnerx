@@ -155,6 +155,7 @@ model Donor {
   badges              DonorBadge[]
   qrCodes             QRCode[]
   certificates        Certificate[]
+  homeDonations       HomeDonationRequest[]
 
   @@map("donors")
 }
@@ -249,6 +250,7 @@ model Donation {
   donorId          String
   centerId         String
   appointmentId    String?   @unique
+  homeRequestId    String?   @unique
   staffId          String?
   bloodType        BloodType
   volumeMl         Int
@@ -257,9 +259,10 @@ model Donation {
   notes            String?
   createdAt        DateTime  @default(now())
 
-  donor       Donor        @relation(fields: [donorId], references: [id], onDelete: Cascade)
-  center      BloodCenter  @relation(fields: [centerId], references: [id])
-  appointment Appointment? @relation(fields: [appointmentId], references: [id])
+  donor       Donor                @relation(fields: [donorId], references: [id], onDelete: Cascade)
+  center      BloodCenter          @relation(fields: [centerId], references: [id])
+  appointment Appointment?         @relation(fields: [appointmentId], references: [id])
+  homeRequest HomeDonationRequest? @relation("HomeDonation", fields: [homeRequestId], references: [id])
   certificate Certificate?
 
   @@map("donations")
@@ -478,4 +481,82 @@ model DonorBadge {
 
   @@unique([donorId, badgeId])
   @@map("donor_badges")
+}
+
+// ─── TASK 16: Home Blood Donation ─────────────────────────────────────────────
+
+enum HomeDonationStatus {
+  PENDING
+  REVIEW
+  CONFIRMED
+  IN_ROUTE
+  ARRIVED
+  COMPLETED
+  CANCELLED
+}
+
+model HomeDonationRequest {
+  id               String             @id @default(cuid())
+  bookingNumber    String             @unique
+  donorId          String
+  bloodType        BloodType
+  city             String
+  district         String
+  address          String
+  latitude         Float?
+  longitude        Float?
+  phone            String
+  scheduledDate    DateTime
+  timeSlot         String
+  status           HomeDonationStatus @default(PENDING)
+  medicalTeamId    String?
+  notes            String?
+  cancelReason     String?
+  isExamined       Boolean            @default(false)
+  examinationNotes String?
+  qrCode           String?
+  arrivedAt        DateTime?
+  completedAt      DateTime?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  donor       Donor        @relation(fields: [donorId], references: [id], onDelete: Cascade)
+  medicalTeam MedicalTeam? @relation(fields: [medicalTeamId], references: [id])
+  donation    Donation?    @relation("HomeDonation")
+
+  @@map("home_donation_requests")
+}
+
+model MedicalTeam {
+  id        String   @id @default(cuid())
+  name      String
+  leaderName String?
+  phone     String?
+  area      String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  homeRequests HomeDonationRequest[]
+  visits       TeamVisit[]
+
+  @@map("medical_teams")
+}
+
+model TeamVisit {
+  id            String    @id @default(cuid())
+  medicalTeamId String
+  requestId     String
+  visitDate     DateTime
+  sequence      Int       @default(1)
+  status        String    @default("PENDING")
+  estimatedTime String?
+  arrivedAt     DateTime?
+  completedAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  medicalTeam MedicalTeam @relation(fields: [medicalTeamId], references: [id], onDelete: Cascade)
+
+  @@map("team_visits")
 }

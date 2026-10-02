@@ -98,6 +98,30 @@ export default function DonorDashboard({ userId }: { userId: string }) {
         <SmartDonorCard />
       </div>
 
+      {/* Home Blood Donation Marketing Banner */}
+      <div className="bg-gradient-to-r from-red-600 via-rose-600 to-red-700 text-white rounded-2xl p-5 shadow-lg relative overflow-hidden">
+        <div className="absolute left-0 top-0 bottom-0 w-32 bg-white/10 skew-x-12 transform -translate-x-8 pointer-events-none" />
+        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <div className="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-md text-white text-[11px] font-black px-3 py-1 rounded-full mb-2">
+              <span>🏠 خدمة جديدة متطورة</span>
+            </div>
+            <h3 className="text-base font-black leading-snug">
+              خدمة التبرع المنزلي: راحتك وخصوصيتك تهمنا
+            </h3>
+            <p className="text-xs text-red-100 font-medium mt-1">
+              اطلب فريقاً طبيًا متخصصًا إلى باب منزلك في الوقت واليوم المناسب لك بكل أمان وخصوصية.
+            </p>
+          </div>
+          <Link href="/dashboard/home-donations/new" className="w-full md:w-auto">
+            <button className="w-full md:w-auto bg-white hover:bg-red-50 text-red-600 font-black text-xs md:text-sm px-5 py-3 rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-2 flex-shrink-0">
+              <span>اطلب فريقًا طبيًا إلى منزلك</span>
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+          </Link>
+        </div>
+      </div>
+
       {/* 2. 2x2 Grid Actions */}
       <div className="grid grid-cols-2 gap-3 px-1">
         {gridItems.map((item, idx) => (

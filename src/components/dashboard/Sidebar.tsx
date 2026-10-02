@@ -15,7 +15,8 @@ import {
   Bell,
   Building2,
   FileText,
-  QrCode
+  QrCode,
+  Truck
 } from "lucide-react";
 
 import { useState } from "react";
@@ -31,6 +32,7 @@ export default function DashboardSidebar({ role }: { role: string }) {
       items: [
         { label: "لوحة التحكم", href: "/dashboard", icon: <LayoutDashboard className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF", "DONOR"] },
         { label: "سجل التبرعات", href: "/dashboard/donations", icon: <Droplet className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"] },
+        { label: "التبرع المنزلي 🏠", href: "/dashboard/home-donations", icon: <Truck className="w-5 h-5 text-emerald-500" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"] },
         { label: "المواعيد", href: "/dashboard/appointments", icon: <CalendarDays className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF", "DONOR"] },
         { label: "المتبرعين", href: "/dashboard/donors", icon: <Users className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"] },
         { label: "مساعد الذكاء الاصطناعي", href: "/dashboard/ai", icon: <Activity className="w-5 h-5 text-purple-500" />, roles: ["SUPER_ADMIN", "ADMIN"] },
@@ -39,6 +41,7 @@ export default function DashboardSidebar({ role }: { role: string }) {
     {
       title: "الإدارة",
       items: [
+        { label: "التبرع المنزلي (إدارة)", href: "/dashboard/home-donations", icon: <Truck className="w-5 h-5 text-emerald-500" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"] },
         { label: "إدارة المتبرعين", href: "/dashboard/donors", icon: <Users className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"] },
         { label: "المواعيد", href: "/dashboard/appointments", icon: <CalendarDays className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"] },
         { label: "المخزون", href: "/dashboard/inventory", icon: <Droplet className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"] },
@@ -49,6 +52,8 @@ export default function DashboardSidebar({ role }: { role: string }) {
     {
       title: "قسم المتبرع",
       items: [
+        { label: "طلب تبرع منزلي 🏠", href: "/dashboard/home-donations/new", icon: <Truck className="w-5 h-5 text-emerald-500" />, roles: ["DONOR"] },
+        { label: "طلباتي المنزلية", href: "/dashboard/home-donations", icon: <FileText className="w-5 h-5 text-blue-500" />, roles: ["DONOR"] },
         { label: "سجل التبرعات", href: "/dashboard/donations", icon: <FileText className="w-5 h-5" />, roles: ["DONOR"] },
         { label: "البطاقة الذكية (QR)", href: "/dashboard/qr", icon: <QrCode className="w-5 h-5 text-red-500" />, roles: ["DONOR"] },
         { label: "سجلاتي الطبية", href: "/dashboard/profile", icon: <Activity className="w-5 h-5" />, roles: ["DONOR"] },
