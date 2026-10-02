@@ -7,32 +7,24 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { registerSchema, type RegisterFormData } from "@/lib/validations/auth";
 import {
-  Eye,
-  EyeOff,
-  Droplets,
-  Mail,
-  Lock,
-  User,
-  ArrowLeft,
-  ArrowRight,
-  AlertCircle,
-  CheckCircle,
+  Eye, EyeOff, Mail, Lock, User, ArrowRight, AlertCircle, CheckCircle, Heart, Activity,
 } from "lucide-react";
 
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const rawRoleParam = searchParams?.get("role");
-  
-  // Mapping query parameter to actual roles
+
   let initialRole: "DONOR" | "CENTER_STAFF" | "HOSPITAL_STAFF" | "ADMIN" | "SUPER_ADMIN" = "DONOR";
   if (rawRoleParam === "center") initialRole = "CENTER_STAFF";
   else if (rawRoleParam === "hospital") initialRole = "HOSPITAL_STAFF";
   else if (rawRoleParam === "admin") initialRole = "ADMIN";
-  
-  const isRoleLocked = !!rawRoleParam; // If they came with a specific role link, hide the selector
 
-  const portalType = (initialRole === "CENTER_STAFF" || initialRole === "HOSPITAL_STAFF" || initialRole === "ADMIN") ? "medical" : "donor";
+  const portalType =
+    initialRole === "CENTER_STAFF" || initialRole === "HOSPITAL_STAFF" || initialRole === "ADMIN"
+      ? "medical"
+      : "donor";
+  const isDonor = portalType === "donor";
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -47,9 +39,7 @@ function RegisterForm() {
     formState: { errors },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
-    defaultValues: {
-      role: initialRole,
-    },
+    defaultValues: { role: initialRole },
   });
 
   const password = watch("password", "");
@@ -62,7 +52,6 @@ function RegisterForm() {
     if (/[^A-Za-z0-9]/.test(pwd)) score++;
     return score;
   };
-
   const strength = passwordStrength(password);
   const strengthLabels = ["", "ضعيفة", "مقبولة", "جيدة", "قوية جداً"];
   const strengthColors = ["", "#ef4444", "#f59e0b", "#3b82f6", "#10b981"];
@@ -70,21 +59,14 @@ function RegisterForm() {
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true);
     setError(null);
-
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-
       const json = await res.json();
-
-      if (!res.ok) {
-        setError(json.error || "حدث خطأ أثناء التسجيل");
-        return;
-      }
-
+      if (!res.ok) { setError(json.error || "حدث خطأ أثناء التسجيل"); return; }
       setSuccess(true);
       setTimeout(() => router.push("/login"), 4000);
     } catch {
@@ -94,199 +76,209 @@ function RegisterForm() {
     }
   };
 
+  const pageBg = isDonor
+    ? "radial-gradient(ellipse at 30% 20%, rgba(220,38,38,0.12) 0%, transparent 55%), radial-gradient(ellipse at 70% 80%, rgba(153,27,27,0.08) 0%, transparent 55%), linear-gradient(160deg, #0f172a 0%, #1a0a0a 50%, #0f172a 100%)"
+    : "radial-gradient(ellipse at 30% 20%, rgba(59,130,246,0.12) 0%, transparent 55%), radial-gradient(ellipse at 70% 80%, rgba(29,78,216,0.08) 0%, transparent 55%), linear-gradient(160deg, #0f172a 0%, #060d1f 50%, #0f172a 100%)";
+
   if (success) {
     return (
-      <div className="bg-slate-50 min-h-screen flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg shadow-xl border border-slate-200 p-10 text-center max-w-md w-full animate-scale-in">
-          <div
-            className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-6"
-            style={{ background: "rgba(16,185,129,0.1)", border: "2px solid #10b981" }}
-          >
+      <div className="min-h-screen flex items-center justify-center p-4" style={{ background: pageBg }}>
+        <div
+          className="p-10 text-center max-w-md w-full animate-scale-in rounded-3xl"
+          style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", backdropFilter: "blur(20px)" }}
+        >
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-6"
+            style={{ background: "rgba(16,185,129,0.15)", border: "2px solid rgba(16,185,129,0.4)" }}>
             <CheckCircle className="w-10 h-10 text-emerald-400" />
           </div>
-          <h2 className="text-2xl font-bold text-slate-800 mb-3">تم التسجيل بنجاح! 🎉</h2>
-          <p className="text-slate-500 mb-4">
-            تم إرسال رابط التحقق إلى بريدك الإلكتروني. يرجى التحقق منه لتفعيل حسابك.
+          <h2 className="text-2xl font-black text-white mb-3">تم التسجيل بنجاح! 🎉</h2>
+          <p className="text-slate-400 mb-5 text-sm leading-relaxed">
+            أهلاً بك في مجتمع HayatLink! سيتم تحويلك إلى صفحة الدخول الآن.
           </p>
-          <div
-            className="py-3 px-4 rounded-lg text-sm text-emerald-300"
-            style={{ background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.2)" }}
-          >
-            سيتم تحويلك لصفحة الدخول تلقائياً...
+          <div className="py-3 px-4 rounded-xl text-sm text-emerald-300 font-medium"
+            style={{ background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.2)" }}>
+            ⏳ جاري التحويل...
           </div>
         </div>
       </div>
     );
   }
 
+  const inputStyle = (hasError: boolean) => ({
+    background: "rgba(255,255,255,0.07)",
+    border: `1.5px solid ${hasError ? "rgba(239,68,68,0.5)" : "rgba(255,255,255,0.1)"}`,
+    color: "white",
+    outline: "none",
+  });
+
   return (
-    <div className="bg-slate-50 min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div
-          className="absolute -top-40 -left-40 w-96 h-96 rounded-full opacity-10"
-          style={{ background: portalType === "donor" ? "radial-gradient(circle, #dc2626, transparent)" : "radial-gradient(circle, #3b82f6, transparent)" }}
-        />
-        <div
-          className="absolute -bottom-40 -right-40 w-80 h-80 rounded-full opacity-5"
-          style={{ background: portalType === "donor" ? "radial-gradient(circle, #8b5cf6, transparent)" : "radial-gradient(circle, #1d4ed8, transparent)" }}
-        />
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{ background: pageBg }}>
+      {/* Floating orbs */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="absolute rounded-full animate-float opacity-10"
+            style={{
+              width: `${100 + i * 40}px`, height: `${100 + i * 40}px`,
+              background: isDonor ? "radial-gradient(circle, #dc2626, transparent)" : "radial-gradient(circle, #3b82f6, transparent)",
+              right: `${5 + i * 25}%`, top: `${5 + i * 20}%`,
+              animationDelay: `${i * 0.6}s`,
+            }}
+          />
+        ))}
       </div>
 
-      <div className="w-full max-w-lg animate-fade-in-up">
+      <div className="w-full max-w-sm animate-fade-in-up relative z-10">
         {/* Logo */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-3 bg-black border border-slate-800 shadow-xl overflow-hidden hover:scale-105 transition-transform">
+          <div
+            className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-3 bg-black overflow-hidden hover:scale-105 transition-transform cursor-pointer"
+            style={{ boxShadow: isDonor ? "0 0 24px rgba(220,38,38,0.4)" : "0 0 24px rgba(59,130,246,0.4)" }}
+          >
             <img src="/logo.png" alt="HayatLink" className="w-full h-full object-cover" />
           </div>
-          <h1 className="text-2xl font-black tracking-tight">
-            <span className="text-[#059669]">Hayat</span>
-            <span className="text-[#dc2626]">Link</span>
+          <h1 className="text-2xl font-black">
+            <span className="text-emerald-400">Hayat</span>
+            <span className="text-red-500">Link</span>
           </h1>
-          <p className="text-slate-500 text-sm mt-1 font-medium">إنشاء حساب جديد — نصل العطاء بالحياة</p>
+          <p className="text-slate-400 text-xs mt-1 font-medium">إنشاء حساب جديد</p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-xl border border-slate-200 p-8 relative">
-          <Link href="/" className="absolute top-6 left-6 text-slate-400 hover:text-slate-600 transition-colors">
-            <ArrowRight className="w-5 h-5" />
+        {/* Card */}
+        <div className="rounded-2xl p-6 relative"
+          style={{
+            background: "rgba(255,255,255,0.05)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            boxShadow: "0 25px 50px rgba(0,0,0,0.4)",
+          }}
+        >
+          {/* Back */}
+          <Link href="/"
+            className="absolute top-5 left-5 w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-all">
+            <ArrowRight className="w-4 h-4" />
           </Link>
-          <h2 className="text-2xl font-bold text-slate-800 mb-2">
-            {initialRole === "DONOR" ? "سجل كمتبرع جديد" : 
-             initialRole === "CENTER_STAFF" ? "تسجيل مركز طبي / بنك دم" : 
-             initialRole === "HOSPITAL_STAFF" ? "تسجيل مستشفى" : "تسجيل إداري"}
-          </h2>
-          <p className="text-slate-500 text-sm mb-6">
-            لديك حساب بالفعل؟{" "}
-            <Link href={`/login?type=${portalType}`} className={`${portalType === "donor" ? "text-red-600 hover:text-red-700" : "text-blue-600 hover:text-blue-700"} font-semibold transition-colors`}>
-              تسجيل الدخول
-            </Link>
-          </p>
+
+          {/* Title row */}
+          <div className="flex items-center gap-2 mb-4">
+            <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${isDonor ? "bg-red-500/20" : "bg-blue-500/20"}`}>
+              {isDonor ? <Heart className="w-4 h-4 text-red-400" /> : <Activity className="w-4 h-4 text-blue-400" />}
+            </div>
+            <div>
+              <h2 className="text-white font-black text-base leading-none">
+                {initialRole === "DONOR" ? "سجل كمتبرع" :
+                 initialRole === "CENTER_STAFF" ? "تسجيل مركز طبي" :
+                 initialRole === "HOSPITAL_STAFF" ? "تسجيل مستشفى" : "تسجيل إداري"}
+              </h2>
+              <p className="text-slate-500 text-[11px] mt-0.5">
+                لديك حساب؟{" "}
+                <Link href={`/login?type=${portalType}`}
+                  className={`font-bold ${isDonor ? "text-red-400 hover:text-red-300" : "text-blue-400 hover:text-blue-300"}`}>
+                  سجّل دخولك
+                </Link>
+              </p>
+            </div>
+          </div>
 
           {error && (
-            <div className="error-toast flex items-center gap-3 mb-5">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
-              <span>{error}</span>
+            <div className="flex items-center gap-2 mb-4 px-3 py-2.5 rounded-xl text-sm font-medium"
+              style={{ background: "rgba(239,68,68,0.12)", border: "1px solid rgba(239,68,68,0.25)", color: "#fca5a5" }}>
+              <AlertCircle className="w-4 h-4 flex-shrink-0" /> {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-3.5">
             {/* Name */}
             <div>
-              <label className="block text-slate-700 text-sm font-medium mb-2">الاسم الكامل</label>
+              <label className="block text-slate-300 text-[11px] font-bold mb-1.5 tracking-wide">الاسم الكامل</label>
               <div className="relative">
-                <User className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input
-                  id="name"
-                  type="text"
-                  placeholder="محمد عبدالله"
-                  className={`w-full bg-white border ${errors.name ? "border-red-500" : "border-slate-300"} rounded-md px-4 py-3 pr-10 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                  {...register("name")}
-                />
+                <User className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                <input type="text" placeholder="محمد عبدالله"
+                  className="w-full rounded-xl px-4 py-2.5 pr-10 text-sm transition-all"
+                  style={inputStyle(!!errors.name)}
+                  {...register("name")} />
               </div>
-              {errors.name && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.name.message}</p>}
+              {errors.name && <p className="text-red-400 text-[11px] mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.name.message}</p>}
             </div>
 
             {/* Email */}
             <div>
-              <label className="block text-slate-700 text-sm font-medium mb-2">البريد الإلكتروني</label>
+              <label className="block text-slate-300 text-[11px] font-bold mb-1.5 tracking-wide">البريد الإلكتروني</label>
               <div className="relative">
-                <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input
-                  id="register-email"
-                  type="email"
-                  placeholder="example@email.com"
-                  className={`w-full bg-white border ${errors.email ? "border-red-500" : "border-slate-300"} rounded-md px-4 py-3 pr-10 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                  style={{ direction: "ltr", textAlign: "right" }}
-                  {...register("email")}
-                />
+                <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                <input type="email" placeholder="example@email.com"
+                  className="w-full rounded-xl px-4 py-2.5 pr-10 text-sm transition-all"
+                  style={{ ...inputStyle(!!errors.email), direction: "ltr", textAlign: "right" }}
+                  {...register("email")} />
               </div>
-              {errors.email && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.email.message}</p>}
+              {errors.email && <p className="text-red-400 text-[11px] mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.email.message}</p>}
             </div>
-
-
 
             {/* Password */}
             <div>
-              <label className="block text-slate-700 text-sm font-medium mb-2">كلمة المرور</label>
+              <label className="block text-slate-300 text-[11px] font-bold mb-1.5 tracking-wide">كلمة المرور</label>
               <div className="relative">
-                <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input
-                  id="register-password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  className={`w-full bg-white border ${errors.password ? "border-red-500" : "border-slate-300"} rounded-md px-4 py-3 pr-10 pl-10 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                  {...register("password")}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
-                >
+                <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                <input type={showPassword ? "text" : "password"} placeholder="••••••••"
+                  className="w-full rounded-xl px-4 py-2.5 pr-10 pl-10 text-sm transition-all"
+                  style={inputStyle(!!errors.password)}
+                  {...register("password")} />
+                <button type="button" onClick={() => setShowPassword(!showPassword)}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors">
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-              {/* Password strength */}
               {password && (
                 <div className="mt-2">
                   <div className="flex gap-1 mb-1">
-                    {[1, 2, 3, 4].map((level) => (
-                      <div
-                        key={level}
-                        className="h-1 flex-1 rounded-full transition-all duration-300"
-                        style={{
-                          background: level <= strength ? strengthColors[strength] : "#e2e8f0",
-                        }}
-                      />
+                    {[1,2,3,4].map(level => (
+                      <div key={level} className="h-1 flex-1 rounded-full transition-all duration-300"
+                        style={{ background: level <= strength ? strengthColors[strength] : "rgba(255,255,255,0.1)" }} />
                     ))}
                   </div>
-                  <span className="text-xs" style={{ color: strengthColors[strength] }}>
+                  <span className="text-[10px] font-bold" style={{ color: strengthColors[strength] }}>
                     قوة كلمة المرور: {strengthLabels[strength]}
                   </span>
                 </div>
               )}
-              {errors.password && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.password.message}</p>}
+              {errors.password && <p className="text-red-400 text-[11px] mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.password.message}</p>}
             </div>
 
             {/* Confirm Password */}
             <div>
-              <label className="block text-slate-700 text-sm font-medium mb-2">تأكيد كلمة المرور</label>
+              <label className="block text-slate-300 text-[11px] font-bold mb-1.5 tracking-wide">تأكيد كلمة المرور</label>
               <div className="relative">
-                <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input
-                  id="confirm-password"
-                  type={showConfirm ? "text" : "password"}
-                  placeholder="••••••••"
-                  className={`w-full bg-white border ${errors.confirmPassword ? "border-red-500" : "border-slate-300"} rounded-md px-4 py-3 pr-10 pl-10 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                  {...register("confirmPassword")}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirm(!showConfirm)}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
-                >
+                <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                <input type={showConfirm ? "text" : "password"} placeholder="••••••••"
+                  className="w-full rounded-xl px-4 py-2.5 pr-10 pl-10 text-sm transition-all"
+                  style={inputStyle(!!errors.confirmPassword)}
+                  {...register("confirmPassword")} />
+                <button type="button" onClick={() => setShowConfirm(!showConfirm)}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors">
                   {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-              {errors.confirmPassword && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.confirmPassword.message}</p>}
+              {errors.confirmPassword && <p className="text-red-400 text-[11px] mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.confirmPassword.message}</p>}
             </div>
 
-            <button
-              id="register-btn"
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-md font-bold text-sm flex items-center justify-center gap-2 mt-4 transition-colors"
+            {/* Submit */}
+            <button type="submit" disabled={isLoading}
+              className="w-full py-3 rounded-xl text-white font-black text-sm transition-all active:scale-95 flex items-center justify-center gap-2 mt-1"
+              style={{
+                background: isDonor ? "linear-gradient(135deg, #dc2626, #b91c1c)" : "linear-gradient(135deg, #2563eb, #1d4ed8)",
+                boxShadow: isDonor ? "0 8px 24px rgba(220,38,38,0.35)" : "0 8px 24px rgba(37,99,235,0.35)",
+                opacity: isLoading ? 0.7 : 1,
+              }}
             >
-              {isLoading ? (
-                <><span className="spinner" /><span>جاري التسجيل...</span></>
-              ) : (
-                <><span>إنشاء الحساب</span><ArrowLeft className="w-4 h-4" /></>
-              )}
+              {isLoading ? <><span className="spinner" /> جاري التسجيل...</> : <>إنشاء الحساب</>}
             </button>
           </form>
 
-          <p className="text-center text-slate-500 text-xs mt-6">
+          <p className="text-center text-slate-600 text-[10px] mt-4">
             بالتسجيل، أنت توافق على{" "}
-            <span className="text-blue-600 hover:underline cursor-pointer">شروط الاستخدام</span> و{" "}
-            <span className="text-blue-600 hover:underline cursor-pointer">سياسة الخصوصية</span>
+            <span className={`${isDonor ? "text-red-400" : "text-blue-400"} hover:underline cursor-pointer`}>شروط الاستخدام</span>
+            {" "}و{" "}
+            <span className={`${isDonor ? "text-red-400" : "text-blue-400"} hover:underline cursor-pointer`}>سياسة الخصوصية</span>
           </p>
         </div>
       </div>
@@ -296,7 +288,11 @@ function RegisterForm() {
 
 export default function RegisterPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen auth-bg flex items-center justify-center"><div className="spinner"></div></div>}>
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="spinner-red" />
+      </div>
+    }>
       <RegisterForm />
     </Suspense>
   );

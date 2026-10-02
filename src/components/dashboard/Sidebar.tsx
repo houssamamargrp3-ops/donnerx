@@ -94,38 +94,62 @@ export default function DashboardSidebar({ role }: { role: string }) {
       )}
 
       {/* Sidebar */}
-      <aside className={`labo-sidebar print:hidden transition-transform duration-300 z-50 ${isOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}`}>
-      <div className="py-6">
-        {menuGroups.map((group, idx) => {
-          const visibleItems = group.items.filter(item => item.roles.includes(role));
-          if (visibleItems.length === 0) return null;
-          
-          return (
-            <div key={idx} className="mb-6">
-              <h3 className="px-6 mb-2 text-[11px] font-bold text-slate-500 uppercase tracking-widest">
-                {group.title}
-              </h3>
-              <nav className="flex flex-col">
-                {visibleItems.map((item, i) => {
-                  const isActive = pathname === item.href;
-                  return (
-                    <Link
-                      key={i}
-                      href={item.href}
-                      onClick={() => setIsOpen(false)}
-                      className={`labo-sidebar-item ${isActive ? 'active' : ''}`}
-                    >
-                      {item.icon}
-                      <span>{item.label}</span>
-                    </Link>
-                  );
-                })}
-              </nav>
+      <aside className={`labo-sidebar print:hidden transition-transform duration-300 z-50 flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}`}>
+
+        {/* Sidebar Logo Header */}
+        <div className="px-5 py-4 flex items-center gap-2.5"
+          style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+          <div className="w-8 h-8 rounded-lg overflow-hidden bg-black flex-shrink-0"
+            style={{ boxShadow: "0 0 10px rgba(220,38,38,0.25)" }}>
+            <img src="/logo.png" alt="HayatLink" className="w-full h-full object-cover" />
+          </div>
+          <div>
+            <div className="font-black text-sm leading-none">
+              <span className="text-emerald-400">Hayat</span>
+              <span className="text-red-400">Link</span>
             </div>
-          );
-        })}
-      </div>
-    </aside>
+            <div className="text-[9px] text-slate-600 font-bold mt-0.5">منصة التبرع بالدم</div>
+          </div>
+        </div>
+
+        <div className="py-4 flex-1 overflow-y-auto">
+          {menuGroups.map((group, idx) => {
+            const visibleItems = group.items.filter(item => item.roles.includes(role));
+            if (visibleItems.length === 0) return null;
+            
+            return (
+              <div key={idx} className="mb-5">
+                <h3 className="px-4 mb-1.5 text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+                  {group.title}
+                </h3>
+                <nav className="flex flex-col gap-0.5 px-2">
+                  {visibleItems.map((item, i) => {
+                    const isActive = pathname === item.href;
+                    return (
+                      <Link
+                        key={i}
+                        href={item.href}
+                        onClick={() => setIsOpen(false)}
+                        className={`labo-sidebar-item ${isActive ? 'active' : ''}`}
+                      >
+                        {item.icon}
+                        <span>{item.label}</span>
+                      </Link>
+                    );
+                  })}
+                </nav>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Sidebar footer */}
+        <div className="px-5 py-3" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+          <div className="text-[10px] text-slate-600 font-bold text-center">
+            HayatLink v2.0 · نصل العطاء بالحياة 🩸
+          </div>
+        </div>
+      </aside>
     </>
   );
 }
