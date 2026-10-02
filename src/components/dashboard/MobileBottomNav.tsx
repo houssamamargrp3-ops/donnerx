@@ -2,10 +2,66 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, ClipboardList, Megaphone, Menu, Truck, QrCode } from "lucide-react";
+import { Home, ClipboardList, QrCode, ShieldAlert, Truck } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function MobileBottomNav({ role, onOpenMenu }: { role: string; onOpenMenu: () => void }) {
   const pathname = usePathname();
+  const [emergencyCount, setEmergencyCount] = useState(0);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  // Poll for active emergencies and unread notifications every 30 seconds
+  useEffect(() => {
+    const fetchCounts = async () => {
+      try {
+        // Fetch active emergencies
+        const eres = await fetch("/api/emergency?status=OPEN");
+        if (eres.ok) {
+          const data = await eres.json();
+          setEmergencyCount(Array.isArray(data) ? data.length : 0);
+        }
+      } catch (_) {}
+
+      try {
+        // Fetch unread notifications
+        const nres = await fetch("/api/notifications");
+        if (nres.ok) {
+          const data = await nres.json();
+          setUnreadCount(data.unreadCount || 0);
+
+          // If there are unread EMERGENCY notifications, show a native browser notification
+          const emergencyNotifs = (data.notifications || []).filter(
+            (n: any) => n.type === "EMERGENCY_REQUEST" && !n.isRead
+          );
+          if (emergencyNotifs.length > 0 && typeof window !== "undefined" && "Notification" in window) {
+            if (Notification.permission === "granted") {
+              for (const notif of emergencyNotifs.slice(0, 2)) {
+                try {
+                  const reg = await navigator.serviceWorker?.ready;
+                  if (reg?.showNotification) {
+                    reg.showNotification(notif.title || "🚨 نداء طوارئ!", {
+                      body: notif.message,
+                      icon: "/icon-192x192.png",
+                      badge: "/icon-192x192.png",
+                      vibrate: [300, 100, 300, 100, 500],
+                      tag: `emergency-${notif.id}`,
+                      renotify: false,
+                      requireInteraction: true,
+                      data: { url: "/dashboard/emergency" },
+                    } as any);
+                  }
+                } catch (_) {}
+              }
+            }
+          }
+        }
+      } catch (_) {}
+    };
+
+    fetchCounts();
+    const interval = setInterval(fetchCounts, 30000); // every 30 seconds
+    return () => clearInterval(interval);
+  }, []);
 
   if (role !== "DONOR") return null;
 
@@ -16,6 +72,15 @@ export default function MobileBottomNav({ role, onOpenMenu }: { role: string; on
       icon: Home,
       activeColor: "text-red-500",
       activeBg: "bg-red-50",
+    },
+    {
+      label: "طوارئ",
+      href: "/dashboard/emergency",
+      icon: ShieldAlert,
+      activeColor: "text-red-600",
+      activeBg: "bg-red-50",
+      badge: emergencyCount > 0 ? emergencyCount : undefined,
+      badgeColor: "bg-red-500",
     },
     {
       label: "تبرع منزلي",
@@ -42,11 +107,10 @@ export default function MobileBottomNav({ role, onOpenMenu }: { role: string; on
 
   return (
     <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 print:hidden">
-      {/* Glass backdrop */}
       <div
-        className="flex justify-around items-center h-[62px] px-1"
+        className="flex justify-around items-center h-[62px] px-0.5"
         style={{
-          background: "rgba(255,255,255,0.96)",
+          background: "rgba(255,255,255,0.97)",
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
           borderTop: "1px solid rgba(226,232,240,0.8)",
@@ -54,7 +118,8 @@ export default function MobileBottomNav({ role, onOpenMenu }: { role: string; on
         }}
       >
         {navItems.map((item) => {
-          const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+          const isActive =
+            pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href));
           const Icon = item.icon;
           return (
             <Link
@@ -62,17 +127,17 @@ export default function MobileBottomNav({ role, onOpenMenu }: { role: string; on
               href={item.href}
               className="relative flex flex-col items-center justify-center flex-1 h-full pt-1 pb-1"
             >
-              {/* Top active bar */}
+              {/* Top active indicator */}
               {isActive && (
                 <span
-                  className="absolute top-0 left-1/2 -translate-x-1/2 h-[3px] w-8 rounded-b-full"
+                  className="absolute top-0 left-1/2 -translate-x-1/2 h-[3px] w-7 rounded-b-full"
                   style={{ background: "linear-gradient(90deg, #dc2626, #ef4444)" }}
                 />
               )}
 
-              {/* Icon bubble */}
+              {/* Icon container */}
               <span
-                className={`flex items-center justify-center w-10 h-7 rounded-xl transition-all duration-200 ${
+                className={`relative flex items-center justify-center w-10 h-7 rounded-xl transition-all duration-200 ${
                   isActive ? `${item.activeBg} scale-105` : "scale-100"
                 }`}
               >
@@ -82,6 +147,14 @@ export default function MobileBottomNav({ role, onOpenMenu }: { role: string; on
                   }`}
                   strokeWidth={isActive ? 2.4 : 1.8}
                 />
+                {/* Badge (for emergency count) */}
+                {item.badge !== undefined && (
+                  <span
+                    className={`absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full text-white text-[9px] font-black flex items-center justify-center ${item.badgeColor}`}
+                  >
+                    {item.badge > 9 ? "9+" : item.badge}
+                  </span>
+                )}
               </span>
 
               <span
@@ -94,26 +167,10 @@ export default function MobileBottomNav({ role, onOpenMenu }: { role: string; on
             </Link>
           );
         })}
-
-        {/* More / Menu Button */}
-        <button
-          onClick={onOpenMenu}
-          className="relative flex flex-col items-center justify-center flex-1 h-full pt-1 pb-1 text-slate-400"
-        >
-          <span className="flex items-center justify-center w-10 h-7 rounded-xl">
-            <Menu className="w-5 h-5" strokeWidth={1.8} />
-          </span>
-          <span className="text-[9.5px] font-bold mt-0.5">المزيد</span>
-        </button>
       </div>
 
-      {/* Safe area spacer for iOS notch */}
-      <div
-        style={{
-          height: "env(safe-area-inset-bottom, 0px)",
-          background: "rgba(255,255,255,0.96)",
-        }}
-      />
+      {/* Safe area spacer */}
+      <div style={{ height: "env(safe-area-inset-bottom, 0px)", background: "rgba(255,255,255,0.97)" }} />
     </div>
   );
 }
