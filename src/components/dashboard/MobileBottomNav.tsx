@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, ClipboardList, Megaphone, Menu } from "lucide-react";
+import { Home, ClipboardList, Megaphone, Menu, Truck } from "lucide-react";
 
 export default function MobileBottomNav({ role, onOpenMenu }: { role: string; onOpenMenu: () => void }) {
   const pathname = usePathname();
@@ -11,6 +11,7 @@ export default function MobileBottomNav({ role, onOpenMenu }: { role: string; on
 
   const navItems = [
     { label: "الرئيسية", href: "/dashboard", icon: <Home className="w-6 h-6" /> },
+    { label: "تبرع منزلي", href: "/dashboard/home-donations/new", icon: <Truck className="w-6 h-6 text-emerald-500" /> },
     { label: "سجل", href: "/dashboard/donations", icon: <ClipboardList className="w-6 h-6" /> },
     { label: "حملات", href: "/dashboard/campaigns", icon: <Megaphone className="w-6 h-6" /> },
   ];

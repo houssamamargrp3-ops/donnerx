@@ -7,7 +7,8 @@ import {
   Award,
   QrCode,
   MapPin,
-  ChevronLeft
+  ChevronLeft,
+  Truck
 } from "lucide-react";
 import Link from "next/link";
 import SmartDonorCard from "./SmartDonorCard";
@@ -76,10 +77,10 @@ export default function DonorDashboard({ userId }: { userId: string }) {
   }
 
   const gridItems = [
+    { label: "طلب تبرع منزلي", icon: <Truck className="w-6 h-6 text-emerald-600" />, href: "/dashboard/home-donations/new", bg: "bg-emerald-50" },
     { label: "سجل التبرعات", icon: <ClipboardList className="w-6 h-6 text-blue-500" />, href: "/dashboard/donations", bg: "bg-blue-50" },
     { label: "النقاط والمكافآت", icon: <Award className="w-6 h-6 text-yellow-500" />, href: "/dashboard/gamification", bg: "bg-yellow-50" },
     { label: "بطاقتي الرقمية", icon: <QrCode className="w-6 h-6 text-red-500" />, href: "/dashboard/qr", bg: "bg-red-50" },
-    { label: "الإشعارات", icon: <Bell className="w-6 h-6 text-purple-500" />, href: "/dashboard/notifications", bg: "bg-purple-50" },
   ];
 
   const nextAppointment = donor.appointments?.[0];
