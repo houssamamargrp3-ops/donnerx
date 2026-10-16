@@ -54,8 +54,17 @@ export async function POST(
       },
     });
 
-    // Optional: create a notification for the hospital staff
-    // (non-blocking)
+    // Mark all pending EMERGENCY_REQUEST notifications for this user as read
+    await prisma.notification.updateMany({
+      where: {
+        userId: session.user.id,
+        type: "EMERGENCY_REQUEST",
+        isRead: false,
+      },
+      data: { isRead: true },
+    }).catch(() => {});
+
+    // Create a confirmation notification for the donor
     prisma.notification.createMany({
       data: [{
         userId: session.user.id,

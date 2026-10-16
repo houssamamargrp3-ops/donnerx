@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, Globe, User as UserIcon, Bell, Droplet } from "lucide-react";
+import { LogOut, Globe, User as UserIcon, Bell, Droplet, Menu } from "lucide-react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 
@@ -16,22 +16,34 @@ export default function DashboardHeader({ user }: { user: any }) {
         boxShadow: "0 1px 20px rgba(0,0,0,0.06)",
       }}
     >
-      {/* Brand */}
-      <Link href="/dashboard" className="flex items-center gap-2.5 group">
-        <div
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden flex items-center justify-center bg-black transition-transform group-hover:scale-105"
-          style={{ boxShadow: "0 0 12px rgba(220,38,38,0.25)" }}
+      {/* Brand & Menu Toggle */}
+      <div className="flex items-center gap-2 sm:gap-3">
+        <button
+          type="button"
+          onClick={() => window.dispatchEvent(new CustomEvent("toggle-sidebar"))}
+          className="p-2 -mr-1.5 rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-100 transition-colors flex items-center justify-center cursor-pointer"
+          title="القائمة الجانبية"
+          aria-label="القائمة الجانبية"
         >
-          <img src="/logo.png" alt="HayatLink" className="w-full h-full object-cover" />
-        </div>
-        <div className="flex flex-col">
-          <div className="flex items-center text-lg sm:text-xl font-black text-slate-900 leading-none tracking-tight">
-            <span className="text-emerald-600">Hayat</span>
-            <span className="text-red-600">Link</span>
+          <Menu className="w-5 h-5" />
+        </button>
+
+        <Link href="/dashboard" className="flex items-center gap-2.5 group">
+          <div
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden flex items-center justify-center bg-black transition-transform group-hover:scale-105"
+            style={{ boxShadow: "0 0 12px rgba(220,38,38,0.25)" }}
+          >
+            <img src="/logo.png" alt="HayatLink" className="w-full h-full object-cover" />
           </div>
-          <span className="text-[10px] text-slate-400 font-bold mt-0.5">نصل العطاء بالحياة</span>
-        </div>
-      </Link>
+          <div className="flex flex-col">
+            <div className="flex items-center text-lg sm:text-xl font-black text-slate-900 leading-none tracking-tight">
+              <span className="text-emerald-600">Hayat</span>
+              <span className="text-red-600">Link</span>
+            </div>
+            <span className="text-[10px] text-slate-400 font-bold mt-0.5">نصل العطاء بالحياة</span>
+          </div>
+        </Link>
+      </div>
 
       {/* Actions */}
       <div className="flex items-center gap-2">

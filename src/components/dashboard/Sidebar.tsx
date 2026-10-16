@@ -16,15 +16,27 @@ import {
   Building2,
   FileText,
   QrCode,
-  Truck
+  Truck,
+  X
 } from "lucide-react";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MobileBottomNav from "./MobileBottomNav";
 
 export default function DashboardSidebar({ role }: { role: string }) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    const handleToggle = () => setIsOpen((prev) => !prev);
+    const handleClose = () => setIsOpen(false);
+    window.addEventListener("toggle-sidebar", handleToggle);
+    window.addEventListener("close-sidebar", handleClose);
+    return () => {
+      window.removeEventListener("toggle-sidebar", handleToggle);
+      window.removeEventListener("close-sidebar", handleClose);
+    };
+  }, []);
 
   const menuGroups = [
     {
@@ -94,22 +106,34 @@ export default function DashboardSidebar({ role }: { role: string }) {
       )}
 
       {/* Sidebar */}
-      <aside className={`labo-sidebar print:hidden transition-transform duration-300 z-50 flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}`}>
+      <aside className={`labo-sidebar print:hidden transition-transform duration-300 z-50 flex flex-col fixed top-16 bottom-0 right-0 w-64 ${isOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}`}>
 
         {/* Sidebar Logo Header */}
-        <div className="px-5 py-4 flex items-center gap-2.5"
+        <div className="px-5 py-4 flex items-center justify-between"
           style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-          <div className="w-8 h-8 rounded-lg overflow-hidden bg-black flex-shrink-0"
-            style={{ boxShadow: "0 0 10px rgba(220,38,38,0.25)" }}>
-            <img src="/logo.png" alt="HayatLink" className="w-full h-full object-cover" />
-          </div>
-          <div>
-            <div className="font-black text-sm leading-none">
-              <span className="text-emerald-400">Hayat</span>
-              <span className="text-red-400">Link</span>
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg overflow-hidden bg-black flex-shrink-0"
+              style={{ boxShadow: "0 0 10px rgba(220,38,38,0.25)" }}>
+              <img src="/logo.png" alt="HayatLink" className="w-full h-full object-cover" />
             </div>
-            <div className="text-[9px] text-slate-600 font-bold mt-0.5">منصة التبرع بالدم</div>
+            <div>
+              <div className="font-black text-sm leading-none">
+                <span className="text-emerald-400">Hayat</span>
+                <span className="text-red-400">Link</span>
+              </div>
+              <div className="text-[9px] text-slate-500 font-bold mt-0.5">منصة التبرع بالدم</div>
+            </div>
           </div>
+          {/* Mobile close button */}
+          <button
+            type="button"
+            onClick={() => setIsOpen(false)}
+            className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+            title="إغلاق القائمة"
+            aria-label="إغلاق القائمة"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         <div className="py-4 flex-1 overflow-y-auto">

@@ -14,11 +14,16 @@ export default function MobileBottomNav({ role, onOpenMenu }: { role: string; on
   useEffect(() => {
     const fetchCounts = async () => {
       try {
-        // Fetch active emergencies
+        // Fetch active emergencies (only count unresponded ones for this donor)
         const eres = await fetch("/api/emergency?status=OPEN");
         if (eres.ok) {
           const data = await eres.json();
-          setEmergencyCount(Array.isArray(data) ? data.length : 0);
+          if (Array.isArray(data)) {
+            const unresponded = data.filter((item: any) => !item.hasResponded);
+            setEmergencyCount(unresponded.length);
+          } else {
+            setEmergencyCount(0);
+          }
         }
       } catch (_) {}
 

@@ -97,6 +97,7 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
   try {
+    const session = await auth();
     const { searchParams } = new URL(req.url);
     const city = searchParams.get("city");
     const status = searchParams.get("status");
@@ -109,13 +110,30 @@ export async function GET(req: Request) {
       whereClause.status = status;
     }
 
+    let donorId: string | null = null;
+    if (session?.user?.id) {
+      const donor = await prisma.donor.findUnique({
+        where: { userId: session.user.id },
+        select: { id: true },
+      });
+      donorId = donor?.id || null;
+    }
+
     const requests = await prisma.emergencyRequest.findMany({
       where: whereClause,
+      include: {
+        responses: donorId ? { where: { donorId } } : true,
+      },
       orderBy: { createdAt: 'desc' },
       take: 20
     });
 
-    return NextResponse.json(requests);
+    const requestsWithFlag = requests.map(r => ({
+      ...r,
+      hasResponded: donorId ? (r.responses && r.responses.length > 0) : false,
+    }));
+
+    return NextResponse.json(requestsWithFlag);
   } catch (error: any) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
