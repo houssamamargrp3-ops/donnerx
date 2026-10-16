@@ -2,15 +2,14 @@
 
 import { useEffect, useState } from "react";
 import {
-  ClipboardList,
   Award,
-  QrCode,
   MapPin,
   ChevronLeft,
   Truck,
   Sparkles,
   Heart,
-  Zap,
+  CalendarDays,
+  Megaphone,
 } from "lucide-react";
 import Link from "next/link";
 import SmartDonorCard from "./SmartDonorCard";
@@ -81,33 +80,33 @@ export default function DonorDashboard({ userId }: { userId: string }) {
 
   const gridItems = [
     {
-      label: "طلب تبرع منزلي",
-      icon: <Truck className="w-6 h-6" />,
-      href: "/dashboard/home-donations/new",
-      gradient: "linear-gradient(135deg, #059669, #047857)",
-      shadow: "rgba(5,150,105,0.3)",
-      badge: "جديد",
+      label: "حجز موعد",
+      icon: <CalendarDays className="w-6 h-6" />,
+      href: "/dashboard/appointments/new",
+      gradient: "linear-gradient(135deg, #dc2626, #b91c1c)",
+      shadow: "rgba(220,38,38,0.3)",
     },
     {
-      label: "سجل التبرعات",
-      icon: <ClipboardList className="w-6 h-6" />,
-      href: "/dashboard/donations",
-      gradient: "linear-gradient(135deg, #2563eb, #1d4ed8)",
-      shadow: "rgba(37,99,235,0.3)",
+      label: "الحملات",
+      icon: <Megaphone className="w-6 h-6" />,
+      href: "/dashboard/campaigns",
+      gradient: "linear-gradient(135deg, #7c3aed, #6d28d9)",
+      shadow: "rgba(124,58,237,0.3)",
     },
     {
-      label: "النقاط والمكافآت",
+      label: "المكافآت",
       icon: <Award className="w-6 h-6" />,
       href: "/dashboard/gamification",
       gradient: "linear-gradient(135deg, #d97706, #b45309)",
       shadow: "rgba(217,119,6,0.3)",
     },
     {
-      label: "بطاقتي الرقمية",
-      icon: <QrCode className="w-6 h-6" />,
-      href: "/dashboard/qr",
-      gradient: "linear-gradient(135deg, #dc2626, #b91c1c)",
-      shadow: "rgba(220,38,38,0.3)",
+      label: "تبرع منزلي",
+      icon: <Truck className="w-6 h-6" />,
+      href: "/dashboard/home-donations/new",
+      gradient: "linear-gradient(135deg, #059669, #047857)",
+      shadow: "rgba(5,150,105,0.3)",
+      badge: "جديد",
     },
   ];
 
