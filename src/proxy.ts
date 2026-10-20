@@ -2,13 +2,37 @@ import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const PUBLIC_ROUTES = ["/", "/login", "/register", "/forgot-password", "/reset-password", "/verify-email"];
+const PUBLIC_ROUTES = [
+  "/",
+  "/login",
+  "/register",
+  "/forgot-password",
+  "/reset-password",
+  "/verify-email",
+  "/hayatlink.apk",
+  "/donnerx.apk",
+  "/manifest.json",
+  "/manifest.webmanifest",
+  "/sw.js",
+];
 const AUTH_ROUTES = ["/login", "/register", "/forgot-password", "/reset-password", "/verify-email"];
 
 export default auth((req: any) => {
   const nextUrl = req.nextUrl;
   const session = req.auth;
   const isLoggedIn = !!session;
+
+  // Allow direct download of APKs and public assets without login
+  if (
+    nextUrl.pathname.endsWith(".apk") ||
+    nextUrl.pathname.endsWith(".png") ||
+    nextUrl.pathname.endsWith(".svg") ||
+    nextUrl.pathname.endsWith(".jpg") ||
+    nextUrl.pathname.endsWith(".ico")
+  ) {
+    return NextResponse.next();
+  }
+
   const isPublicRoute = PUBLIC_ROUTES.some((route) => nextUrl.pathname === route || nextUrl.pathname.startsWith(route + "/"));
   const isAuthRoute = AUTH_ROUTES.some((route) => nextUrl.pathname === route || nextUrl.pathname.startsWith(route + "/"));
   const isApiRoute = nextUrl.pathname.startsWith("/api/");
@@ -52,6 +76,6 @@ export default auth((req: any) => {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.apk|.*\\.png|.*\\.svg|.*\\.jpg|.*\\.ico|.*\\.json).*)",
   ],
 };
