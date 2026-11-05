@@ -48,14 +48,7 @@ export default function DashboardSidebar({ role }: { role: string }) {
         { label: "قياس الأثر والإحصائيات 📈", href: "/dashboard/impact", icon: <TrendingUp className="w-5 h-5 text-indigo-500" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF", "DONOR"], badge: FEATURE_FLAGS.SHOW_IMPACT_UNDER_DEVELOPMENT ? "قيد التطوير" : undefined },
         { label: "سجل التبرعات", href: "/dashboard/donations", icon: <Droplet className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"] },
         { label: "التبرع المنزلي 🏠", href: "/dashboard/home-donations", icon: <Truck className="w-5 h-5 text-emerald-500" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"] },
-        { label: "المواعيد", href: "/dashboard/appointments", icon: <CalendarDays className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF", "DONOR"] },
-        { label: "المتبرعين", href: "/dashboard/donors", icon: <Users className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"] },
-        {
-          label: "مساعد الذكاء الاصطناعي",
-          href: "/dashboard/ai",
-          icon: <Activity className="w-5 h-5 text-purple-500" />,
-          roles: ["SUPER_ADMIN", "ADMIN"],
-        },
+        { label: "المواعيد", href: "/dashboard/appointments", icon: <CalendarDays className="w-5 h-5" />, roles: ["DONOR"] },
       ]
     },
     {
@@ -72,6 +65,7 @@ export default function DashboardSidebar({ role }: { role: string }) {
         },
         { label: "إدارة الحملات", href: "/dashboard/campaigns", icon: <Megaphone className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"] },
         { label: "ماسح البطاقات (QR)", href: "/dashboard/qr", icon: <QrCode className="w-5 h-5 text-blue-500" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"] },
+        { label: "المراكز الطبية", href: "/dashboard/settings/centers", icon: <Building2 className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN"] },
       ]
     },
     {
@@ -90,13 +84,6 @@ export default function DashboardSidebar({ role }: { role: string }) {
           roles: ["DONOR"],
         },
         { label: "حملات التبرع", href: "/dashboard/campaigns", icon: <Megaphone className="w-5 h-5" />, roles: ["DONOR"] },
-      ]
-    },
-    {
-      title: "النظام",
-      items: [
-        { label: "المراكز الطبية", href: "/dashboard/settings/centers", icon: <Building2 className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN"] },
-        { label: "الإعدادات", href: "/dashboard/settings", icon: <Settings className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF", "DONOR"] },
       ]
     }
   ];
