@@ -129,6 +129,15 @@ export default async function MedicalDashboard() {
             <span>مسح بطاقة QR 📷</span>
           </Link>
         )}
+          <Link href="/dashboard/impact" className="labo-btn-outline flex items-center gap-1.5 text-xs font-bold bg-white px-3.5 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors shadow-sm">
+            <TrendingUp className="w-4 h-4 text-indigo-600" />
+            <span>قياس الأثر 📈</span>
+            {FEATURE_FLAGS.IMPACT_ANALYTICS_UNDER_DEVELOPMENT && (
+              <span className="text-[9px] bg-amber-100 text-amber-800 font-black px-1.5 py-0.5 rounded">
+                قيد التطوير
+              </span>
+            )}
+          </Link>
           <Link href="/dashboard/emergency">
             <button className="labo-btn-danger flex items-center gap-1.5 text-xs font-bold">
               <ShieldAlert className="w-4 h-4" />

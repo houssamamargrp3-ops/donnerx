@@ -22,4 +22,11 @@ export const FEATURE_FLAGS = {
    * لإرجاعها للظهور فوراً: اجعلها false
    */
   HIDE_QR_SCANNER: true,
+
+  /**
+   * لوحة قياس الأثر والإحصائيات الشاملة (Impact & Analytics)
+   * القيمة الحالية: true (تظهر في وضع "قيد التطوير" مع زر معاينة حية للجنة التحكيم)
+   * لإظهار اللوحة المنجزة بالكامل مباشرة بدون شاشة التطوير: اجعلها false
+   */
+  IMPACT_ANALYTICS_UNDER_DEVELOPMENT: true,
 };
