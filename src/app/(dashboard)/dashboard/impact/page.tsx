@@ -125,7 +125,6 @@ export default async function ImpactPage() {
   return (
     <ImpactAnalyticsClientView
       data={impactData}
-      isInitiallyUnderDevelopment={FEATURE_FLAGS.IMPACT_ANALYTICS_UNDER_DEVELOPMENT}
     />
   );
 }

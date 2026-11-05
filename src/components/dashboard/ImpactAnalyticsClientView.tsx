@@ -8,18 +8,9 @@ import {
   Droplet,
   ShieldAlert,
   Users,
-  Award,
-  Sparkles,
-  CheckCircle2,
-  Clock,
-  Hammer,
-  Code,
-  ArrowLeft,
-  ChevronLeft,
   Activity,
   Calendar,
   Building2,
-  FileSpreadsheet,
   Printer,
   ShieldCheck,
   AlertTriangle,
@@ -28,7 +19,8 @@ import {
   Compass,
   Zap,
   Globe,
-  Leaf
+  Leaf,
+  CheckCircle2
 } from "lucide-react";
 
 export interface ImpactData {
@@ -62,14 +54,12 @@ export interface ImpactData {
 
 interface Props {
   data: ImpactData;
-  isInitiallyUnderDevelopment: boolean;
+  isInitiallyUnderDevelopment?: boolean;
 }
 
 export default function ImpactAnalyticsClientView({
   data,
-  isInitiallyUnderDevelopment,
 }: Props) {
-  const [inDevelopmentView, setInDevelopmentView] = useState(isInitiallyUnderDevelopment);
   const [timeRange, setTimeRange] = useState<"ALL" | "MONTH" | "YEAR">("ALL");
 
   const totalVolumeLiters = (data.totalVolumeMl / 1000).toFixed(1);
@@ -93,166 +83,8 @@ export default function ImpactAnalyticsClientView({
 
   const totalBloodSampled = bloodTypesList.reduce((acc, curr) => acc + curr.count, 0) || 1;
 
-  // ─────────────────────────────────────────────────────────────
-  // 1. UNDER DEVELOPMENT MODE VIEW (في طور التطوير)
-  // ─────────────────────────────────────────────────────────────
-  if (inDevelopmentView) {
-    return (
-      <div className="max-w-4xl mx-auto space-y-6 animate-fade-in py-6">
-        {/* Main Under Development Showcase Card */}
-        <div className="bg-white rounded-3xl p-8 md:p-10 border border-slate-200 shadow-xl text-center space-y-7 relative overflow-hidden">
-          {/* Decorative ambient gradients */}
-          <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none -mr-24 -mt-24" />
-          <div className="absolute bottom-0 left-0 w-80 h-80 bg-red-500/10 rounded-full blur-3xl pointer-events-none -ml-24 -mb-24" />
-
-          {/* Top animated badge and icon */}
-          <div className="relative z-10 space-y-4">
-            <div className="w-24 h-24 rounded-3xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 text-white flex items-center justify-center mx-auto shadow-2xl shadow-indigo-500/30 text-4xl animate-bounce">
-              📈
-            </div>
-
-            <div className="inline-flex items-center gap-2 bg-amber-50 text-amber-900 border border-amber-300/80 px-4 py-1.5 rounded-full text-xs font-black shadow-sm">
-              <Hammer className="w-3.5 h-3.5 text-amber-600 animate-spin" />
-              <span>ميزة قياس الأثر والتحليلات — في طور التطوير (المرحلة القادمة من الهاكاثون) 🚀</span>
-            </div>
-          </div>
-
-          {/* Headline & Description */}
-          <div className="space-y-3 relative z-10">
-            <h1 className="text-2xl md:text-4xl font-black text-slate-900 leading-tight">
-              لوحة قياس الأثر الصحي والمجتمعي والذكاء البيومتري
-            </h1>
-            <p className="text-xs md:text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed">
-              وفق توجيهات لجنة الهاكاثون وخطة الإطلاق المرحلي للمنظومة، تم تصميم وبناء هذه اللوحة لقياس الأثر
-              المباشر لعمليات التبرع بالدم، حساب الأرواح المنقذة، وكفاءة الاستجابة للطوارئ لحظياً عبر خوارزميات ذكية.
-            </p>
-          </div>
-
-          {/* Committee Milestone Roadmap */}
-          <div className="bg-slate-50/90 border border-slate-200 rounded-3xl p-6 text-right space-y-5 relative z-10">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/60 pb-3">
-              <span className="text-xs font-black text-slate-800 flex items-center gap-2">
-                <Code className="w-4 h-4 text-indigo-600" />
-                <span>خارطة طريق تطوير ميزة قياس الأثر (Hackathon Milestones):</span>
-              </span>
-              <span className="text-xs font-mono font-black text-indigo-700 bg-indigo-100/70 border border-indigo-200 px-3 py-1 rounded-full w-fit">
-                نسبة الإنجاز: 85%
-              </span>
-            </div>
-
-            {/* Progress Bar */}
-            <div className="space-y-1.5">
-              <div className="w-full h-3 bg-slate-200 rounded-full overflow-hidden shadow-inner">
-                <div
-                  className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full transition-all duration-1000"
-                  style={{ width: "85%" }}
-                />
-              </div>
-              <div className="flex justify-between text-[11px] font-bold text-slate-400 px-1">
-                <span>المرحلة 1: بناء النماذج (مكتمل)</span>
-                <span>المرحلة 2: ربط البيانات الحية (مكتمل)</span>
-                <span>المرحلة 3: الاعتماد النهائي</span>
-              </div>
-            </div>
-
-            {/* 3 Phases Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 text-xs">
-              <div className="p-3.5 bg-white rounded-2xl border border-emerald-200 shadow-sm space-y-1 text-right">
-                <div className="flex items-center gap-1.5 font-bold text-emerald-700">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  <span>المرحلة 1: حساب الأثر الحيوي</span>
-                </div>
-                <p className="text-[11px] text-slate-500 leading-relaxed">
-                  خوارزمية حساب الأرواح المنقذة وحجم الدم المجمع وتوزيع الفصائل.
-                </p>
-                <span className="inline-block text-[9px] bg-emerald-50 text-emerald-700 font-black px-2 py-0.5 rounded">
-                  تم الإنجاز بالكامل ✔️
-                </span>
-              </div>
-
-              <div className="p-3.5 bg-white rounded-2xl border border-indigo-200 shadow-sm space-y-1 text-right">
-                <div className="flex items-center gap-1.5 font-bold text-indigo-700">
-                  <CheckCircle2 className="w-4 h-4 text-indigo-600" />
-                  <span>المرحلة 2: مؤشرات الطوارئ والقبول</span>
-                </div>
-                <p className="text-[11px] text-slate-500 leading-relaxed">
-                  ربط استجابات النداء العاجل وإحصائيات المقبولين والمرفوضين الميدانية.
-                </p>
-                <span className="inline-block text-[9px] bg-indigo-50 text-indigo-700 font-black px-2 py-0.5 rounded">
-                  تم الإنجاز بالكامل ✔️
-                </span>
-              </div>
-
-              <div className="p-3.5 bg-white rounded-2xl border border-amber-300 shadow-sm space-y-1 text-right">
-                <div className="flex items-center gap-1.5 font-bold text-amber-800">
-                  <Clock className="w-4 h-4 text-amber-600 animate-pulse" />
-                  <span>المرحلة 3: الاعتماد والتصدير</span>
-                </div>
-                <p className="text-[11px] text-slate-500 leading-relaxed">
-                  الربط النهائي مع تقارير التنمية المستدامة للأمم المتحدة (SDG 3).
-                </p>
-                <span className="inline-block text-[9px] bg-amber-100 text-amber-800 font-black px-2 py-0.5 rounded">
-                  المرحلة القادمة ⏳
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* 🌟 HERO INTERACTIVE TOGGLE BUTTON: Live Hackathon Preview 🌟 */}
-          <div className="pt-2 pb-1 relative z-10 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <button
-              onClick={() => setInDevelopmentView(false)}
-              className="w-full sm:w-auto bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 text-white font-black text-sm px-7 py-3.5 rounded-2xl shadow-xl shadow-indigo-500/25 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2.5 cursor-pointer"
-            >
-              <Sparkles className="w-4 h-4 text-amber-300 animate-spin" />
-              <span>معاينة اللوحة المنجزة بالكامل (وضع التحكيم الحي)</span>
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-
-            <Link
-              href="/dashboard"
-              className="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-5 py-3.5 rounded-2xl transition-colors flex items-center justify-center gap-2"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>العودة للوحة الرئيسية</span>
-            </Link>
-          </div>
-
-          <p className="text-[11px] text-slate-400 font-medium relative z-10">
-            💡 ملاحظة للجنة التحكيم: اللوحة البرمجية تم إنجازها وربطها بقاعدة البيانات بالكامل ويمكن معاينتها مباشرة بالضغط على الزر أعلاه.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  // ─────────────────────────────────────────────────────────────
-  // 2. FULL COMPLETE DASHBOARD VIEW (اللوحة المنجزة بالكامل)
-  // ─────────────────────────────────────────────────────────────
   return (
     <div className="space-y-6 pb-16 animate-fade-in">
-      {/* Hackathon Preview Mode Banner */}
-      {isInitiallyUnderDevelopment && (
-        <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white p-3.5 rounded-2xl shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-bold">
-          <div className="flex items-center gap-2">
-            <span className="bg-white/20 px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-wider">
-              وضع التحكيم الحي
-            </span>
-            <span>
-              يتم الآن استعراض لوحة قياس الأثر المكتملة بالكامل مع البيانات الحسابية المباشرة.
-            </span>
-          </div>
-
-          <button
-            onClick={() => setInDevelopmentView(true)}
-            className="bg-white text-amber-800 hover:bg-amber-50 font-black px-4 py-1.5 rounded-xl shadow-sm transition-all text-xs flex items-center justify-center gap-1.5 self-end sm:self-auto"
-          >
-            <Hammer className="w-3.5 h-3.5 text-amber-700" />
-            <span>العودة لوضع "قيد التطوير"</span>
-          </button>
-        </div>
-      )}
-
       {/* Page Title & Controls */}
       <div className="labo-page-title flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
@@ -267,7 +99,7 @@ export default function ImpactAnalyticsClientView({
               <h1 className="text-2xl font-black text-slate-800">
                 لوحة قياس الأثر المجتمعي والذكاء البيومتري
               </h1>
-              <span className="text-[10px] bg-emerald-100 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded-full font-black">
+              <span className="text-[10px] bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-0.5 rounded-full font-black">
                 بيانات حية وموثقة 🟢
               </span>
             </div>
