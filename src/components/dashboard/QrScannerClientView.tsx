@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import jsQR from "jsqr";
 import {
   QrCode,
   Camera,
@@ -21,7 +22,9 @@ import {
   Award,
   ArrowRight,
   Heart,
-  X
+  X,
+  Upload,
+  Image as ImageIcon
 } from "lucide-react";
 import Link from "next/link";
 
@@ -52,6 +55,7 @@ export default function QrScannerClientView() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const animFrameRef = useRef<number | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     return () => {
@@ -76,40 +80,114 @@ export default function QrScannerClientView() {
     setScannedResult(null);
     setDonorData(null);
     setActionSuccessMsg("");
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setErrorMsg("المتصفح لا يدعم الوصول المباشر للكاميرا في هذا النطاق (يتطلب تشغيل الموقع عبر HTTPS أو localhost). يمكنك رفع صورة رمز الـ QR أو كتابة الكود يدوياً.");
+      return;
+    }
+
     setIsCameraActive(true);
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" },
+        video: {
+          facingMode: { ideal: "environment" },
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
       });
       streamRef.current = stream;
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        videoRef.current.play();
+        videoRef.current.setAttribute("playsinline", "true");
+        await videoRef.current.play();
 
-        if ("BarcodeDetector" in window) {
-          const detector = new (window as any).BarcodeDetector({ formats: ["qr_code"] });
-          const scanLoop = async () => {
-            if (videoRef.current && videoRef.current.readyState === 4) {
-              try {
-                const barcodes = await detector.detect(videoRef.current);
-                if (barcodes && barcodes.length > 0) {
-                  const scannedVal = barcodes[0].rawValue;
-                  handleScanSuccess(scannedVal);
-                  return;
-                }
-              } catch (_) {}
-            }
+        // Canvas for processing video frames
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
+
+        const scanLoop = () => {
+          if (!videoRef.current || !ctx) {
             animFrameRef.current = requestAnimationFrame(scanLoop);
-          };
+            return;
+          }
+
+          if (videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA) {
+            const video = videoRef.current;
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            try {
+              const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+              // jsQR universal scanning engine (works on all browsers)
+              const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                inversionAttempts: "dontInvert",
+              });
+
+              if (code && code.data && code.data.trim()) {
+                handleScanSuccess(code.data.trim());
+                return;
+              }
+            } catch (scanErr) {
+              console.warn("Scan frame decode warning:", scanErr);
+            }
+          }
+
           animFrameRef.current = requestAnimationFrame(scanLoop);
-        }
+        };
+
+        animFrameRef.current = requestAnimationFrame(scanLoop);
       }
     } catch (err: any) {
-      console.warn("Camera error:", err);
-      setErrorMsg("تعذر فتح كاميرا الجهاز. يرجى إدخال كود الـ QR أو رقم المتبرع يدوياً.");
+      console.warn("Camera access error:", err);
+      setIsCameraActive(false);
+      if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
+        setErrorMsg("تم رفض إذن الوصول للكاميرا من المتصفح. يرجى تفعيل إذن الكاميرا أو رفع صورة الـ QR أو إدخال الكود يدوياً.");
+      } else {
+        setErrorMsg("تعذر فتح كاميرا الجهاز. يمكنك رفع صورة الـ QR أو إدخال كود المتبرع يدوياً بالأسفل.");
+      }
     }
+  };
+
+  // Image Upload Scanner Fallback
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setErrorMsg("");
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
+        if (!ctx) return;
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+
+        try {
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const code = jsQR(imageData.data, imageData.width, imageData.height, {
+            inversionAttempts: "attemptBoth",
+          });
+
+          if (code && code.data && code.data.trim()) {
+            handleScanSuccess(code.data.trim());
+          } else {
+            setErrorMsg("لم يتم العثور على رمز QR واضح داخل الصورة المحددة. يرجى التأكد من وضوح الصورة وإعادة المحاولة.");
+          }
+        } catch (_) {
+          setErrorMsg("حدث خطأ أثناء معالجة الصورة المرفوعة.");
+        }
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+    // Reset input value to allow selecting same file again
+    e.target.value = "";
   };
 
   const lookupDonor = async (payload: string) => {
@@ -122,14 +200,14 @@ export default function QrScannerClientView() {
       const data = await res.json();
 
       if (!res.ok) {
-        setErrorMsg(data.error || "لم يتم العثور على المتبرع");
+        setErrorMsg(data.error || "لم يتم العثور على متبرع مطابق لهذا الكود");
         setDonorData(null);
       } else {
         setDonorData(data.donor);
         setCenters(data.centers || []);
       }
     } catch (err) {
-      setErrorMsg("حدث خطأ أثناء البحث عن المتبرع عبر الشبكة");
+      setErrorMsg("حدث خطأ أثناء الاتصال بالخادم للتحقق من المتبرع");
     } finally {
       setLoadingDonor(false);
     }
@@ -138,9 +216,11 @@ export default function QrScannerClientView() {
   const handleScanSuccess = (payload: string) => {
     setScannedResult(payload);
     stopCamera();
-    if ("vibrate" in navigator) {
-      navigator.vibrate([100, 50, 100]);
-    }
+    try {
+      if ("vibrate" in navigator) {
+        navigator.vibrate([100, 50, 100]);
+      }
+    } catch (_) {}
     lookupDonor(payload);
   };
 
@@ -227,31 +307,50 @@ export default function QrScannerClientView() {
         </div>
         <div>
           <h1 className="text-xl md:text-2xl font-black text-slate-800">
-            ماسح بطاقات QR الميداني المعتمد 📷
+            ماسح بطاقات QR الميداني الشامل 📷
           </h1>
           <p className="text-xs md:text-sm text-slate-500 max-w-md mx-auto mt-1">
-            امسح رمز QR بطاقة المتبرع الصحية للتحقق المباشر من بياناته، أهليته الطبية، وتوثيق التبرع أو الرفض فورياً.
+            يعمل مباشرة عبر محرك فك التشفير البرمجي المدمج لجميع الهواتف والمتصفحات. يمكنك المسح المباشر بالكاميرا أو رفع صورة الـ QR.
           </p>
         </div>
 
-        {/* Camera Start / Stop Button */}
-        {!isCameraActive ? (
+        {/* Action Buttons: Camera + Image Upload */}
+        <div className="flex flex-col sm:flex-row items-center gap-2.5">
+          {!isCameraActive ? (
+            <button
+              onClick={startCamera}
+              className="w-full sm:flex-1 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-black py-3.5 rounded-2xl shadow-lg shadow-red-200 transition-all flex items-center justify-center gap-2 text-sm active:scale-95"
+            >
+              <Camera className="w-5 h-5" />
+              <span>تشغيل كاميرا الهاتف والمسح المباشر 📷</span>
+            </button>
+          ) : (
+            <button
+              onClick={stopCamera}
+              className="w-full sm:flex-1 bg-slate-800 hover:bg-slate-900 text-white font-bold py-3.5 rounded-2xl transition-all flex items-center justify-center gap-2 text-xs"
+            >
+              <StopCircle className="w-4 h-4" />
+              <span>إيقاف تشغيل الكاميرا</span>
+            </button>
+          )}
+
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileUpload}
+            accept="image/*"
+            className="hidden"
+          />
+
           <button
-            onClick={startCamera}
-            className="w-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-black py-3.5 rounded-2xl shadow-lg shadow-red-200 transition-all flex items-center justify-center gap-2 text-sm active:scale-95"
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3.5 px-5 rounded-2xl transition-all flex items-center justify-center gap-2 text-xs border border-slate-200 active:scale-95 flex-shrink-0"
           >
-            <Camera className="w-5 h-5" />
-            <span>تشغيل كاميرا الهاتف والمسح المباشر 📷</span>
+            <ImageIcon className="w-4 h-4 text-slate-600" />
+            <span>رفع صورة QR من الجهاز 🖼️</span>
           </button>
-        ) : (
-          <button
-            onClick={stopCamera}
-            className="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-2xl transition-all flex items-center justify-center gap-2 text-xs"
-          >
-            <StopCircle className="w-4 h-4" />
-            <span>إيقاف تشغيل الكاميرا</span>
-          </button>
-        )}
+        </div>
       </div>
 
       {/* ──────────────── Active Video Viewfinder ──────────────── */}
@@ -262,7 +361,7 @@ export default function QrScannerClientView() {
             <ScanLine className="w-12 h-12 text-red-500 animate-pulse" />
           </div>
           <div className="absolute bottom-3 inset-x-0 text-center text-xs bg-slate-900/80 text-white py-1.5 font-bold">
-            وجّه الكاميرا نحو رمز QR لبطاقة المتبرع الصحية
+            وجّه الكاميرا نحو رمز QR لبطاقة المتبرع الصحية للمسح التلقائي
           </div>
         </div>
       )}

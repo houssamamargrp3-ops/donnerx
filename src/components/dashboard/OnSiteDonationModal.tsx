@@ -1,5 +1,7 @@
 "use client";
 
+import jsQR from "jsqr";
+
 import { useState, useRef, useEffect } from "react";
 import {
   X,
@@ -82,24 +84,32 @@ export default function OnSiteDonationModal({
         videoRef.current.srcObject = stream;
         videoRef.current.play();
 
-        // Start scanning loop if BarcodeDetector is available
-        if ("BarcodeDetector" in window) {
-          const detector = new (window as any).BarcodeDetector({ formats: ["qr_code"] });
-          const scanLoop = async () => {
-            if (videoRef.current && videoRef.current.readyState === 4) {
-              try {
-                const barcodes = await detector.detect(videoRef.current);
-                if (barcodes && barcodes.length > 0) {
-                  const scannedVal = barcodes[0].rawValue;
-                  verifyQrPayload(scannedVal);
-                  return;
-                }
-              } catch (_) {}
-            }
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
+        const scanLoop = () => {
+          if (!videoRef.current || !ctx) {
             animFrameRef.current = requestAnimationFrame(scanLoop);
-          };
+            return;
+          }
+          if (videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA) {
+            const video = videoRef.current;
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            try {
+              const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+              const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                inversionAttempts: "dontInvert",
+              });
+              if (code && code.data && code.data.trim()) {
+                verifyQrPayload(code.data.trim());
+                return;
+              }
+            } catch (_) {}
+          }
           animFrameRef.current = requestAnimationFrame(scanLoop);
-        }
+        };
+        animFrameRef.current = requestAnimationFrame(scanLoop);
       }
     } catch (err: any) {
       console.warn("Camera access error:", err);
