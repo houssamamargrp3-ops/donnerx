@@ -4,8 +4,6 @@ import { prisma } from "@/lib/prisma";
 import { Package, Droplet, AlertTriangle, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import InventoryGrid from "@/components/dashboard/InventoryGrid";
-import { FEATURE_FLAGS } from "@/lib/feature-flags";
-import UnderDevelopmentView from "@/components/dashboard/UnderDevelopmentView";
 
 export const metadata = { title: "مخزون الدم | HayatLink" };
 
@@ -14,20 +12,6 @@ const BLOOD_TYPES = ["A_POSITIVE", "A_NEGATIVE", "B_POSITIVE", "B_NEGATIVE", "AB
 export default async function InventoryPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
-
-  // ─── HACKATHON FEATURE FLAG CHECK ───
-  // Set INVENTORY_ENABLED to true in src/lib/feature-flags.ts to restore instantly!
-  if (!FEATURE_FLAGS.INVENTORY_ENABLED) {
-    return (
-      <UnderDevelopmentView
-        title="نظام تتبع وإدارة مخزون أكياس الدم المركزي"
-        description="يجري العمل على بناء وتطوير ميزة إدارة المخزون الميداني وربطها بمستويات الاستهلاك الذكي والتنبؤ بالنقص تباعاً خلال فعاليات الهاكاثون وفق توجيهات اللجنة وخارطة الطريق المرحلية."
-        iconName="inventory"
-        progressPercentage={60}
-        phaseName="المرحلة القادمة من الهاكاثون"
-      />
-    );
-  }
 
   // In a real application, we would get the Center ID associated with this staff member.
   const center = await prisma.bloodCenter.findFirst();

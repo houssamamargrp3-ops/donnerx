@@ -4,7 +4,7 @@ import { ArrowLeft, Clock, Sparkles, CheckCircle2, Hammer, Code, Shield } from "
 interface UnderDevelopmentViewProps {
   title: string;
   description: string;
-  iconName?: "inventory" | "gamification" | "ai";
+  iconName?: "inventory" | "gamification" | "ai" | "impact";
   progressPercentage?: number;
   phaseName?: string;
 }
@@ -30,6 +30,7 @@ export default function UnderDevelopmentView({
             {iconName === "inventory" && "📦"}
             {iconName === "gamification" && "🏆"}
             {iconName === "ai" && "🤖"}
+            {iconName === "impact" && "📈"}
           </div>
 
           <div className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-800 border border-amber-200/80 px-3.5 py-1.5 rounded-full text-xs font-black mt-5">

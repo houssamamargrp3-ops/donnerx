@@ -1,24 +1,8 @@
 export const metadata = { title: 'نظام التحفيز والجوائز | HayatLink' };
 import { Trophy, Award, Gift, Sparkles, Heart, Star, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
-import { FEATURE_FLAGS } from '@/lib/feature-flags';
-import UnderDevelopmentView from '@/components/dashboard/UnderDevelopmentView';
 
 export default function GamificationPage() {
-  // ─── HACKATHON FEATURE FLAG CHECK ───
-  // Set GAMIFICATION_ENABLED to true in src/lib/feature-flags.ts to restore instantly!
-  if (!FEATURE_FLAGS.GAMIFICATION_ENABLED) {
-    return (
-      <UnderDevelopmentView
-        title="نظام التحفيز والجوائز والأوسمة الشرفية"
-        description="نظام المكافآت والأوسمة الرقمية وشارات الشرف للمتبرعين قيد البرمجة والربط تباعاً خلال مراحل تقييم الهاكاثون."
-        iconName="gamification"
-        progressPercentage={70}
-        phaseName="المرحلة القادمة من الهاكاثون"
-      />
-    );
-  }
-
   const tiers = [
     { name: "متبرع جديد", min: "0 تبرع", icon: "🌱", color: "from-slate-500 to-slate-700", perks: "بطاقة صحية رقمية + تسجيل فصيلة الدم" },
     { name: "المستوى البرونزي", min: "1 تبرع", icon: "🥉", color: "from-amber-700 to-amber-900", perks: "شهادة شكر رقمية + 100 نقطة تحفيزية" },

@@ -15,6 +15,7 @@ import {
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import ConfirmDonationButton from "./ConfirmDonationButton";
+import { FEATURE_FLAGS } from "@/lib/feature-flags";
 
 export default async function MedicalDashboard() {
   // ─── 1. Core Counts ───────────────────────────────────────────
@@ -123,9 +124,11 @@ export default async function MedicalDashboard() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {!FEATURE_FLAGS.HIDE_QR_SCANNER && (
           <Link href="/dashboard/qr" className="labo-btn-outline flex items-center gap-1.5 text-xs font-bold bg-white px-3.5 py-2 rounded-xl border border-slate-200">
             <span>مسح بطاقة QR 📷</span>
           </Link>
+        )}
           <Link href="/dashboard/emergency">
             <button className="labo-btn-danger flex items-center gap-1.5 text-xs font-bold">
               <ShieldAlert className="w-4 h-4" />

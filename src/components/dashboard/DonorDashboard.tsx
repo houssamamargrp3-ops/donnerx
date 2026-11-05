@@ -10,9 +10,11 @@ import {
   Heart,
   CalendarDays,
   Megaphone,
+  Droplet,
 } from "lucide-react";
 import Link from "next/link";
 import SmartDonorCard from "./SmartDonorCard";
+import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import DonationHealthGuide from "./DonationHealthGuide";
 import LiveGPSLocation from "./LiveGPSLocation";
 import PushNotificationPrompt from "./PushNotificationPrompt";
@@ -100,14 +102,22 @@ export default function DonorDashboard({ userId }: { userId: string }) {
       gradient: "linear-gradient(135deg, #d97706, #b45309)",
       shadow: "rgba(217,119,6,0.3)",
     },
-    {
-      label: "تبرع منزلي",
-      icon: <Truck className="w-6 h-6" />,
-      href: "/dashboard/home-donations/new",
-      gradient: "linear-gradient(135deg, #059669, #047857)",
-      shadow: "rgba(5,150,105,0.3)",
-      badge: "جديد",
-    },
+    ...(!FEATURE_FLAGS.HIDE_HOME_DONATIONS
+      ? [{
+          label: "تبرع منزلي",
+          icon: <Truck className="w-6 h-6" />,
+          href: "/dashboard/home-donations/new",
+          gradient: "linear-gradient(135deg, #059669, #047857)",
+          shadow: "rgba(5,150,105,0.3)",
+          badge: "جديد",
+        }]
+      : [{
+          label: "سجل التبرعات",
+          icon: <Droplet className="w-6 h-6" />,
+          href: "/dashboard/donations",
+          gradient: "linear-gradient(135deg, #059669, #047857)",
+          shadow: "rgba(5,150,105,0.3)",
+        }]),
   ];
 
   const nextAppointment = donor.appointments?.[0];
@@ -125,7 +135,8 @@ export default function DonorDashboard({ userId }: { userId: string }) {
       </div>
 
       {/* Home Donation Banner */}
-      <div
+      {!FEATURE_FLAGS.HIDE_HOME_DONATIONS && (
+        <div
         className="rounded-2xl p-5 relative overflow-hidden"
         style={{
           background: "linear-gradient(135deg, #059669 0%, #047857 40%, #065f46 100%)",
@@ -158,6 +169,7 @@ export default function DonorDashboard({ userId }: { userId: string }) {
           </Link>
         </div>
       </div>
+      )}
 
       {/* 2×2 Quick Actions Grid */}
       <div>

@@ -53,7 +53,6 @@ export default function DashboardSidebar({ role }: { role: string }) {
           href: "/dashboard/ai",
           icon: <Activity className="w-5 h-5 text-purple-500" />,
           roles: ["SUPER_ADMIN", "ADMIN"],
-          badge: !FEATURE_FLAGS.AI_ASSISTANT_ENABLED ? "قريباً" : undefined
         },
       ]
     },
@@ -68,7 +67,6 @@ export default function DashboardSidebar({ role }: { role: string }) {
           href: "/dashboard/inventory",
           icon: <Droplet className="w-5 h-5" />,
           roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"],
-          badge: !FEATURE_FLAGS.INVENTORY_ENABLED ? "قيد التطوير" : undefined
         },
         { label: "إدارة الحملات", href: "/dashboard/campaigns", icon: <Megaphone className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"] },
         { label: "ماسح البطاقات (QR)", href: "/dashboard/qr", icon: <QrCode className="w-5 h-5 text-blue-500" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"] },
@@ -88,7 +86,6 @@ export default function DashboardSidebar({ role }: { role: string }) {
           href: "/dashboard/gamification",
           icon: <Award className="w-5 h-5 text-amber-500" />,
           roles: ["DONOR"],
-          badge: !FEATURE_FLAGS.GAMIFICATION_ENABLED ? "قيد التطوير" : undefined
         },
         { label: "حملات التبرع", href: "/dashboard/campaigns", icon: <Megaphone className="w-5 h-5" />, roles: ["DONOR"] },
       ]
@@ -147,7 +144,12 @@ export default function DashboardSidebar({ role }: { role: string }) {
 
         <div className="py-4 flex-1 overflow-y-auto">
           {menuGroups.map((group, idx) => {
-            const visibleItems = group.items.filter(item => item.roles.includes(role));
+            const visibleItems = group.items.filter((item) => {
+              if (!item.roles.includes(role)) return false;
+              if (FEATURE_FLAGS.HIDE_HOME_DONATIONS && item.href.includes("home-donations")) return false;
+              if (FEATURE_FLAGS.HIDE_QR_SCANNER && item.href === "/dashboard/qr") return false;
+              return true;
+            });
             if (visibleItems.length === 0) return null;
             
             return (

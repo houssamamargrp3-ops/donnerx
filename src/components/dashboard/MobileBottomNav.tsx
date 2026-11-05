@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, ClipboardList, QrCode, ShieldAlert, Truck } from "lucide-react";
 import { useEffect, useState } from "react";
+import { FEATURE_FLAGS } from "@/lib/feature-flags";
 
 export default function MobileBottomNav({ role, onOpenMenu }: { role: string; onOpenMenu: () => void }) {
   const pathname = usePathname();
@@ -108,7 +109,11 @@ export default function MobileBottomNav({ role, onOpenMenu }: { role: string; on
       activeColor: "text-violet-600",
       activeBg: "bg-violet-50",
     },
-  ];
+  ].filter((item) => {
+    if (FEATURE_FLAGS.HIDE_HOME_DONATIONS && item.href.includes("home-donations")) return false;
+    if (FEATURE_FLAGS.HIDE_QR_SCANNER && item.href === "/dashboard/qr") return false;
+    return true;
+  });
 
   return (
     <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 print:hidden">
