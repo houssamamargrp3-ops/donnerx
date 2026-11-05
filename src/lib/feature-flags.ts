@@ -25,7 +25,8 @@ export const FEATURE_FLAGS = {
 
   /**
    * لوحة قياس الأثر والإحصائيات الشاملة (Impact & Analytics)
-   * القيمة الحالية: false (تعرض اللوحة المنجزة بالكامل مباشرة)
+   * القيمة الحالية: true (تُبقي اللوحة في الخلفية وتُظهر فقط شاشة "في طور التطوير" النظيفة للجنة التحكيم)
+   * لإظهار اللوحة المنجزة بالكامل للعيان: اجعلها false
    */
-  IMPACT_ANALYTICS_UNDER_DEVELOPMENT: false,
+  SHOW_IMPACT_UNDER_DEVELOPMENT: true,
 };

@@ -20,7 +20,8 @@ import {
   Zap,
   Globe,
   Leaf,
-  CheckCircle2
+  CheckCircle2,
+  Hammer
 } from "lucide-react";
 
 export interface ImpactData {
@@ -54,11 +55,12 @@ export interface ImpactData {
 
 interface Props {
   data: ImpactData;
-  isInitiallyUnderDevelopment?: boolean;
+  showUnderDevelopment?: boolean;
 }
 
 export default function ImpactAnalyticsClientView({
   data,
+  showUnderDevelopment = true,
 }: Props) {
   const [timeRange, setTimeRange] = useState<"ALL" | "MONTH" | "YEAR">("ALL");
 
@@ -83,6 +85,46 @@ export default function ImpactAnalyticsClientView({
 
   const totalBloodSampled = bloodTypesList.reduce((acc, curr) => acc + curr.count, 0) || 1;
 
+  // ─────────────────────────────────────────────────────────────
+  // 1. UNDER DEVELOPMENT CARD (تظهر فقط العنوان والوصف المطلوب)
+  // ─────────────────────────────────────────────────────────────
+  if (showUnderDevelopment) {
+    return (
+      <div className="max-w-2xl mx-auto space-y-6 animate-fade-in py-12">
+        <div className="bg-white rounded-3xl p-8 md:p-12 border border-slate-200 shadow-xl text-center space-y-6 relative overflow-hidden">
+          {/* Decorative ambient gradients */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-red-500/10 rounded-full blur-3xl pointer-events-none -ml-20 -mb-20" />
+
+          {/* Top animated badge and icon */}
+          <div className="relative z-10 space-y-4">
+            <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 text-white flex items-center justify-center mx-auto shadow-2xl shadow-indigo-500/30 text-4xl animate-bounce">
+              📈
+            </div>
+
+            <div className="inline-flex items-center gap-2 bg-amber-50 text-amber-900 border border-amber-300/80 px-4 py-1.5 rounded-full text-xs font-black shadow-sm">
+              <Hammer className="w-3.5 h-3.5 text-amber-600 animate-spin" />
+              <span>ميزة في طور التطوير والإطلاق المرحلي 🚀</span>
+            </div>
+          </div>
+
+          {/* Headline & Description */}
+          <div className="space-y-3 relative z-10">
+            <h1 className="text-2xl md:text-3xl font-black text-slate-900 leading-tight">
+              لوحة قياس الأثر الصحي والمجتمعي والذكاء البيومتري
+            </h1>
+            <p className="text-xs md:text-sm text-slate-600 max-w-xl mx-auto leading-relaxed">
+              وفق توجيهات لجنة الهاكاثون وخطة الإطلاق المرحلي للمنظومة، تم تصميم وبناء هذه اللوحة لقياس الأثر المباشر لعمليات التبرع بالدم، حساب الأرواح المنقذة، وكفاءة الاستجابة للطوارئ لحظياً عبر خوارزميات ذكية.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // 2. FULL COMPLETE DASHBOARD VIEW (محفوظة في الخلفية)
+  // ─────────────────────────────────────────────────────────────
   return (
     <div className="space-y-6 pb-16 animate-fade-in">
       {/* Page Title & Controls */}

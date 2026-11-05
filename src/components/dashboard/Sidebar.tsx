@@ -45,7 +45,7 @@ export default function DashboardSidebar({ role }: { role: string }) {
       title: "الرئيسية",
       items: [
         { label: "لوحة التحكم", href: "/dashboard", icon: <LayoutDashboard className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF", "DONOR"] },
-        { label: "قياس الأثر والإحصائيات 📈", href: "/dashboard/impact", icon: <TrendingUp className="w-5 h-5 text-indigo-500" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF", "DONOR"], badge: FEATURE_FLAGS.IMPACT_ANALYTICS_UNDER_DEVELOPMENT ? "قيد التطوير" : undefined },
+        { label: "قياس الأثر والإحصائيات 📈", href: "/dashboard/impact", icon: <TrendingUp className="w-5 h-5 text-indigo-500" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF", "DONOR"], badge: FEATURE_FLAGS.SHOW_IMPACT_UNDER_DEVELOPMENT ? "قيد التطوير" : undefined },
         { label: "سجل التبرعات", href: "/dashboard/donations", icon: <Droplet className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"] },
         { label: "التبرع المنزلي 🏠", href: "/dashboard/home-donations", icon: <Truck className="w-5 h-5 text-emerald-500" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"] },
         { label: "المواعيد", href: "/dashboard/appointments", icon: <CalendarDays className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF", "DONOR"] },
