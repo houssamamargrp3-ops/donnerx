@@ -22,6 +22,7 @@ import {
 
 import { useState, useEffect } from "react";
 import MobileBottomNav from "./MobileBottomNav";
+import { FEATURE_FLAGS } from "@/lib/feature-flags";
 
 export default function DashboardSidebar({ role }: { role: string }) {
   const pathname = usePathname();
@@ -47,7 +48,13 @@ export default function DashboardSidebar({ role }: { role: string }) {
         { label: "التبرع المنزلي 🏠", href: "/dashboard/home-donations", icon: <Truck className="w-5 h-5 text-emerald-500" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"] },
         { label: "المواعيد", href: "/dashboard/appointments", icon: <CalendarDays className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF", "DONOR"] },
         { label: "المتبرعين", href: "/dashboard/donors", icon: <Users className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"] },
-        { label: "مساعد الذكاء الاصطناعي", href: "/dashboard/ai", icon: <Activity className="w-5 h-5 text-purple-500" />, roles: ["SUPER_ADMIN", "ADMIN"] },
+        {
+          label: "مساعد الذكاء الاصطناعي",
+          href: "/dashboard/ai",
+          icon: <Activity className="w-5 h-5 text-purple-500" />,
+          roles: ["SUPER_ADMIN", "ADMIN"],
+          badge: !FEATURE_FLAGS.AI_ASSISTANT_ENABLED ? "قريباً" : undefined
+        },
       ]
     },
     {
@@ -56,7 +63,13 @@ export default function DashboardSidebar({ role }: { role: string }) {
         { label: "التبرع المنزلي (إدارة)", href: "/dashboard/home-donations", icon: <Truck className="w-5 h-5 text-emerald-500" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"] },
         { label: "إدارة المتبرعين", href: "/dashboard/donors", icon: <Users className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"] },
         { label: "المواعيد", href: "/dashboard/appointments", icon: <CalendarDays className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"] },
-        { label: "المخزون", href: "/dashboard/inventory", icon: <Droplet className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"] },
+        {
+          label: "المخزون",
+          href: "/dashboard/inventory",
+          icon: <Droplet className="w-5 h-5" />,
+          roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"],
+          badge: !FEATURE_FLAGS.INVENTORY_ENABLED ? "قيد التطوير" : undefined
+        },
         { label: "إدارة الحملات", href: "/dashboard/campaigns", icon: <Megaphone className="w-5 h-5" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"] },
         { label: "ماسح البطاقات (QR)", href: "/dashboard/qr", icon: <QrCode className="w-5 h-5 text-blue-500" />, roles: ["SUPER_ADMIN", "ADMIN", "CENTER_STAFF", "HOSPITAL_STAFF"] },
       ]
@@ -70,7 +83,13 @@ export default function DashboardSidebar({ role }: { role: string }) {
         { label: "البطاقة الذكية (QR)", href: "/dashboard/qr", icon: <QrCode className="w-5 h-5 text-red-500" />, roles: ["DONOR"] },
         { label: "سجلاتي الطبية", href: "/dashboard/profile", icon: <Activity className="w-5 h-5" />, roles: ["DONOR"] },
         { label: "شهاداتي", href: "/dashboard/profile/certificates", icon: <Award className="w-5 h-5" />, roles: ["DONOR"] },
-        { label: "المكافآت", href: "/dashboard/gamification", icon: <Award className="w-5 h-5 text-amber-500" />, roles: ["DONOR"] },
+        {
+          label: "المكافآت",
+          href: "/dashboard/gamification",
+          icon: <Award className="w-5 h-5 text-amber-500" />,
+          roles: ["DONOR"],
+          badge: !FEATURE_FLAGS.GAMIFICATION_ENABLED ? "قيد التطوير" : undefined
+        },
         { label: "حملات التبرع", href: "/dashboard/campaigns", icon: <Megaphone className="w-5 h-5" />, roles: ["DONOR"] },
       ]
     },
@@ -99,34 +118,24 @@ export default function DashboardSidebar({ role }: { role: string }) {
       ) : (
         <button 
           onClick={() => setIsOpen(!isOpen)}
-          className="lg:hidden fixed bottom-6 right-6 z-50 bg-red-600 text-white p-4 rounded-full shadow-2xl hover:bg-red-700 transition-transform active:scale-95 flex items-center justify-center print:hidden"
+          className="fixed bottom-5 left-5 z-40 bg-slate-900 text-white p-3 rounded-full shadow-lg lg:hidden"
         >
           <LayoutDashboard className="w-6 h-6" />
         </button>
       )}
 
-      {/* Sidebar */}
-      <aside className={`labo-sidebar print:hidden transition-transform duration-300 z-50 flex flex-col fixed top-16 bottom-0 right-0 w-64 ${isOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}`}>
-
-        {/* Sidebar Logo Header */}
-        <div className="px-5 py-4 flex items-center justify-between"
-          style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg overflow-hidden bg-black flex-shrink-0"
-              style={{ boxShadow: "0 0 10px rgba(220,38,38,0.25)" }}>
-              <img src="/logo.png" alt="HayatLink" className="w-full h-full object-cover" />
+      {/* Sidebar Desktop/Drawer */}
+      <aside className={`labo-sidebar ${isOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}`}>
+        
+        {/* Brand Header */}
+        <div className="h-16 flex items-center justify-between px-6 border-b border-slate-800">
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center">
+              <Droplet className="w-5 h-5 text-white fill-current" />
             </div>
-            <div>
-              <div className="font-black text-sm leading-none">
-                <span className="text-emerald-400">Hayat</span>
-                <span className="text-red-400">Link</span>
-              </div>
-              <div className="text-[9px] text-slate-500 font-bold mt-0.5">منصة التبرع بالدم</div>
-            </div>
-          </div>
-          {/* Mobile close button */}
-          <button
-            type="button"
+            <span className="font-bold text-lg text-white">HayatLink</span>
+          </Link>
+          <button 
             onClick={() => setIsOpen(false)}
             className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
             title="إغلاق القائمة"
@@ -154,10 +163,17 @@ export default function DashboardSidebar({ role }: { role: string }) {
                         key={i}
                         href={item.href}
                         onClick={() => setIsOpen(false)}
-                        className={`labo-sidebar-item ${isActive ? 'active' : ''}`}
+                        className={`labo-sidebar-item ${isActive ? 'active' : ''} flex items-center justify-between`}
                       >
-                        {item.icon}
-                        <span>{item.label}</span>
+                        <div className="flex items-center gap-3">
+                          {item.icon}
+                          <span>{item.label}</span>
+                        </div>
+                        {(item as any).badge && (
+                          <span className="text-[9px] bg-amber-500/15 text-amber-400 border border-amber-500/30 px-1.5 py-0.5 rounded font-black">
+                            {(item as any).badge}
+                          </span>
+                        )}
                       </Link>
                     );
                   })}

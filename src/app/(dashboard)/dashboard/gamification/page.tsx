@@ -1,8 +1,24 @@
-export const metadata = { title: 'نظام التحفيز والجوائز' };
+export const metadata = { title: 'نظام التحفيز والجوائز | HayatLink' };
 import { Trophy, Award, Gift, Sparkles, Heart, Star, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
+import { FEATURE_FLAGS } from '@/lib/feature-flags';
+import UnderDevelopmentView from '@/components/dashboard/UnderDevelopmentView';
 
 export default function GamificationPage() {
+  // ─── HACKATHON FEATURE FLAG CHECK ───
+  // Set GAMIFICATION_ENABLED to true in src/lib/feature-flags.ts to restore instantly!
+  if (!FEATURE_FLAGS.GAMIFICATION_ENABLED) {
+    return (
+      <UnderDevelopmentView
+        title="نظام التحفيز والجوائز والأوسمة الشرفية"
+        description="نظام المكافآت والأوسمة الرقمية وشارات الشرف للمتبرعين قيد البرمجة والربط تباعاً خلال مراحل تقييم الهاكاثون."
+        iconName="gamification"
+        progressPercentage={70}
+        phaseName="المرحلة القادمة من الهاكاثون"
+      />
+    );
+  }
+
   const tiers = [
     { name: "متبرع جديد", min: "0 تبرع", icon: "🌱", color: "from-slate-500 to-slate-700", perks: "بطاقة صحية رقمية + تسجيل فصيلة الدم" },
     { name: "المستوى البرونزي", min: "1 تبرع", icon: "🥉", color: "from-amber-700 to-amber-900", perks: "شهادة شكر رقمية + 100 نقطة تحفيزية" },
@@ -48,53 +64,42 @@ export default function GamificationPage() {
             <div className="text-xs font-black text-slate-950 uppercase tracking-wider">جوائز ذهبية</div>
             <Link
               href="/dashboard/appointments/new"
-              className="mt-3 block bg-slate-950 text-white hover:bg-slate-900 px-5 py-2.5 rounded-xl font-black text-xs shadow-lg transition-all"
+              className="inline-block mt-3 bg-slate-950 hover:bg-slate-900 text-white font-black text-xs px-5 py-2.5 rounded-xl shadow-lg transition-transform active:scale-95"
             >
-              احجز موعدك القادم
+              احجز موعدك الآن
             </Link>
           </div>
         </div>
       </div>
 
-      {/* Tiers List */}
-      <div className="space-y-4">
-        <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
-          <Award className="w-5 h-5 text-red-600" />
-          مستويات ورتب المتبرعين
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {tiers.map((t, idx) => (
-            <div
-              key={idx}
-              className={`bg-white rounded-2xl p-5 border transition-all ${
-                t.highlight
-                  ? "border-amber-400 shadow-md ring-2 ring-amber-400/20"
-                  : "border-slate-200 shadow-sm"
-              }`}
-            >
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <div className="text-3xl">{t.icon}</div>
-                  <div>
-                    <h4 className="font-bold text-slate-800 text-sm flex items-center gap-1.5">
-                      {t.name}
-                      {t.highlight && (
-                        <span className="text-[10px] bg-amber-100 text-amber-900 font-bold px-2 py-0.5 rounded-full">
-                          الهدف السنوي
-                        </span>
-                      )}
-                    </h4>
-                    <span className="text-xs text-slate-500 font-medium">{t.min}</span>
-                  </div>
+      {/* Tiers Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {tiers.map((t, idx) => (
+          <div
+            key={idx}
+            className={`bg-white rounded-2xl p-5 border transition-all ${
+              t.highlight ? "border-amber-400 shadow-md ring-2 ring-amber-300/40" : "border-slate-200"
+            }`}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <span className="text-3xl">{t.icon}</span>
+                <div>
+                  <h3 className="font-black text-slate-900 text-base">{t.name}</h3>
+                  <span className="text-xs text-slate-400 font-bold">{t.min}</span>
                 </div>
               </div>
-              <div className="flex items-start gap-2 text-xs text-slate-600 bg-slate-50 p-3 rounded-xl">
-                <Gift className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-                <span><strong>المميزات والجوائز:</strong> {t.perks}</span>
-              </div>
+              {t.highlight && (
+                <span className="bg-amber-100 text-amber-900 text-[10px] font-black px-2.5 py-1 rounded-full">
+                  المستوى المستهدف
+                </span>
+              )}
             </div>
-          ))}
-        </div>
+            <p className="text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100 font-medium">
+              🎁 المميزات: {t.perks}
+            </p>
+          </div>
+        ))}
       </div>
     </div>
   );

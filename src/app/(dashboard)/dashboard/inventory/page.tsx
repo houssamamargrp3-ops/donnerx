@@ -4,8 +4,10 @@ import { prisma } from "@/lib/prisma";
 import { Package, Droplet, AlertTriangle, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import InventoryGrid from "@/components/dashboard/InventoryGrid";
+import { FEATURE_FLAGS } from "@/lib/feature-flags";
+import UnderDevelopmentView from "@/components/dashboard/UnderDevelopmentView";
 
-export const metadata = { title: "مخزون الدم" };
+export const metadata = { title: "مخزون الدم | HayatLink" };
 
 const BLOOD_TYPES = ["A_POSITIVE", "A_NEGATIVE", "B_POSITIVE", "B_NEGATIVE", "AB_POSITIVE", "AB_NEGATIVE", "O_POSITIVE", "O_NEGATIVE"];
 
@@ -13,8 +15,21 @@ export default async function InventoryPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
 
+  // ─── HACKATHON FEATURE FLAG CHECK ───
+  // Set INVENTORY_ENABLED to true in src/lib/feature-flags.ts to restore instantly!
+  if (!FEATURE_FLAGS.INVENTORY_ENABLED) {
+    return (
+      <UnderDevelopmentView
+        title="نظام تتبع وإدارة مخزون أكياس الدم المركزي"
+        description="يجري العمل على بناء وتطوير ميزة إدارة المخزون الميداني وربطها بمستويات الاستهلاك الذكي والتنبؤ بالنقص تباعاً خلال فعاليات الهاكاثون وفق توجيهات اللجنة وخارطة الطريق المرحلية."
+        iconName="inventory"
+        progressPercentage={60}
+        phaseName="المرحلة القادمة من الهاكاثون"
+      />
+    );
+  }
+
   // In a real application, we would get the Center ID associated with this staff member.
-  // For now, we will fetch the first center (assuming the admin is attached to it).
   const center = await prisma.bloodCenter.findFirst();
   if (!center) {
     return <div>لم يتم العثور على المركز الطبي.</div>;
@@ -30,10 +45,6 @@ export default async function InventoryPage() {
   inventory.forEach(item => {
     stockMap[item.bloodType] = item.units;
   });
-
-  const formatBloodType = (type: string) => {
-    return type.replace("_POSITIVE", "+").replace("_NEGATIVE", "-");
-  };
 
   // Safe minimum stock level
   const MIN_STOCK = 5;
@@ -57,7 +68,6 @@ export default async function InventoryPage() {
 
   return (
     <div className="space-y-6">
-      
       {/* Page Title */}
       <div className="labo-page-title mb-8 flex justify-between items-center">
         <div className="flex items-center gap-3">
@@ -101,7 +111,6 @@ export default async function InventoryPage() {
 
       {/* Grid of Blood Types via Client Component for +/- actions */}
       <InventoryGrid stockData={stockData} centerId={center.id} />
-
     </div>
   );
 }
