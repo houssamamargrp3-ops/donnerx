@@ -7,10 +7,9 @@ import { auth } from "@/lib/auth";
 export async function registerForCampaign(campaignId: string) {
   try {
     const session = await auth();
-    if (!session?.user) return { error: "يرجى تسجيل الدخول أولاً." };
+    const userId = session?.user?.id;
+    if (!userId) return { error: "يرجى تسجيل الدخول أولاً." };
 
-    const userId = session.user.id;
-    
     // Find the donor
     const donor = await prisma.donor.findUnique({
       where: { userId }

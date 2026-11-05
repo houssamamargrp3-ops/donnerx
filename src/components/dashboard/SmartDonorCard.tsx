@@ -118,7 +118,7 @@ export default function SmartDonorCard() {
 
   // QR data
   const qrPayload = JSON.stringify({
-    id: donor.id?.slice(0, 8), name: donor.user?.name, bt,
+    donorId: donor.id, id: donor.id, bloodType: donor.bloodType, name: donor.user?.name, bt,
     status: donor.eligibilityStatus,
     ts: Math.floor(qrRefreshed / 300000),
   });

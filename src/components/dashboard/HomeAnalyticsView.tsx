@@ -130,7 +130,7 @@ export default function HomeAnalyticsView() {
           </div>
           <div className="text-2xl font-black text-emerald-600">{completedVisits}</div>
           <div className="text-[11px] text-rose-500 font-bold mt-1">
-            طلبات ملغاة: {cancelledRequests}
+            مرفوضة / ملغاة: {cancelledRequests}
           </div>
         </div>
       </div>

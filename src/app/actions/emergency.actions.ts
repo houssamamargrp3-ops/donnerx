@@ -104,7 +104,7 @@ export async function closeEmergencyRequest(id: string) {
 
     await prisma.emergencyRequest.update({
       where: { id },
-      data: { status: "COMPLETED" }
+      data: { status: "FULFILLED", fulfilledAt: new Date() }
     });
 
     revalidatePath("/dashboard/emergency");

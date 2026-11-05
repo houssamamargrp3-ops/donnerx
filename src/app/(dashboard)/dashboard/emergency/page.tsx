@@ -1,11 +1,26 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { ShieldAlert, Plus, MapPin, Droplet, Clock, CheckCircle, Phone } from "lucide-react";
+import {
+  ShieldAlert,
+  Plus,
+  MapPin,
+  Droplet,
+  Clock,
+  CheckCircle,
+  Phone,
+  Mail,
+  User,
+  Activity,
+  CheckCircle2,
+  XCircle,
+  AlertCircle
+} from "lucide-react";
 import Link from "next/link";
 import { closeEmergencyRequest } from "@/app/actions/emergency.actions";
 import RespondEmergencyButton from "@/components/dashboard/RespondEmergencyButton";
 import NotificationPermissionBanner from "@/components/dashboard/NotificationPermissionBanner";
+import EmergencyResponseActions from "@/components/dashboard/EmergencyResponseActions";
 
 export const metadata = { title: "نداءات الطوارئ | HayatLink" };
 
@@ -47,7 +62,6 @@ export default async function EmergencyPage() {
 
     return (
       <div className="space-y-5 mt-4 max-w-2xl mx-auto animate-fade-in-up">
-
         {/* Notification permission banner */}
         <NotificationPermissionBanner />
 
@@ -126,7 +140,9 @@ export default async function EmergencyPage() {
         ) : (
           <div className="space-y-4">
             {sortedRequests.map((req) => {
-              const hasResponded = (req as any).responses?.length > 0;
+              const myResponse = (req as any).responses?.[0];
+              const hasResponded = !!myResponse;
+              const respStatus = myResponse?.status || "PENDING";
               const diff = Date.now() - new Date(req.createdAt).getTime();
               const mins = Math.floor(diff / 60000);
               const timeAgo = mins < 60
@@ -148,7 +164,7 @@ export default async function EmergencyPage() {
                     className="h-1.5 w-full" 
                     style={{ 
                       background: hasResponded 
-                        ? "linear-gradient(90deg, #10b981, #059669)" 
+                        ? (respStatus === "CONFIRMED" ? "linear-gradient(90deg, #10b981, #059669)" : respStatus === "REJECTED" ? "linear-gradient(90deg, #ef4444, #b91c1c)" : "linear-gradient(90deg, #3b82f6, #1d4ed8)") 
                         : "linear-gradient(90deg, #dc2626, #ef4444, #f97316)" 
                     }} 
                   />
@@ -159,9 +175,23 @@ export default async function EmergencyPage() {
                       <div>
                         <div className="flex items-center gap-2 mb-1.5">
                           {hasResponded ? (
-                            <span className="text-[10px] font-black px-2 py-0.5 rounded-full text-white bg-emerald-600">
-                              ✅ تمت التلبية
-                            </span>
+                            respStatus === "CONFIRMED" ? (
+                              <span className="text-[10px] font-black px-2 py-0.5 rounded-full text-white bg-emerald-600">
+                                ✅ تم التبرع بنجاح
+                              </span>
+                            ) : respStatus === "ARRIVED" ? (
+                              <span className="text-[10px] font-black px-2 py-0.5 rounded-full text-white bg-blue-600">
+                                📍 تم تسجيل وصولك
+                              </span>
+                            ) : respStatus === "REJECTED" ? (
+                              <span className="text-[10px] font-black px-2 py-0.5 rounded-full text-white bg-rose-600">
+                                ⚠️ غير لائق طبياً
+                              </span>
+                            ) : (
+                              <span className="text-[10px] font-black px-2 py-0.5 rounded-full text-white bg-amber-600">
+                                🚗 في الطريق للمستشفى
+                              </span>
+                            )
                           ) : (
                             <span className="text-[10px] font-black px-2 py-0.5 rounded-full text-white"
                               style={{ background: "linear-gradient(135deg, #dc2626, #b91c1c)" }}>
@@ -220,15 +250,30 @@ export default async function EmergencyPage() {
                       </div>
                     </div>
 
-                    {/* Response button */}
+                    {/* Response button / Status message */}
                     {hasResponded ? (
                       <div className="space-y-2">
-                        <div
-                          className="w-full text-center py-3 rounded-xl font-bold text-sm"
-                          style={{ background: "rgba(16,185,129,0.1)", color: "#059669", border: "1px solid rgba(16,185,129,0.25)" }}
-                        >
-                          ✅ لقد قمت بتلبية هذا النداء بنجاح!
-                        </div>
+                        {respStatus === "CONFIRMED" ? (
+                          <div className="w-full text-center py-3 rounded-xl font-bold text-sm bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            🎉 تم تأكيد وتوثيق تبرعك العاجل بنجاح! تم إصدار الشهادة وصرف النقاط.
+                          </div>
+                        ) : respStatus === "ARRIVED" ? (
+                          <div className="w-full text-center py-3 rounded-xl font-bold text-sm bg-blue-50 text-blue-700 border border-blue-200">
+                            📍 تم تأكيد وصولك للمستشفى — جاري سحب العينة والفحص الطبي.
+                          </div>
+                        ) : respStatus === "REJECTED" ? (
+                          <div className="w-full text-center py-3 rounded-xl font-bold text-sm bg-rose-50 text-rose-700 border border-rose-200">
+                            ⚠️ تم فحص حالتك الطبية وتبين عدم ملائمتها للتبرع حالياً لحمايتك.
+                          </div>
+                        ) : (
+                          <div
+                            className="w-full text-center py-3 rounded-xl font-bold text-sm"
+                            style={{ background: "rgba(16,185,129,0.1)", color: "#059669", border: "1px solid rgba(16,185,129,0.25)" }}
+                          >
+                            ✅ لقد قمت بتلبية هذا النداء بنجاح وأنت مسجل كقادم للتبرع!
+                          </div>
+                        )}
+
                         {req.contactPhone && (
                           <a
                             href={`tel:${req.contactPhone}`}
@@ -257,12 +302,19 @@ export default async function EmergencyPage() {
     );
   }
 
-  // ─── ADMIN / CENTER VIEW ───────────────────────────────────────
+  // ─── ADMIN / CENTER / HOSPITAL STAFF VIEW ─────────────────────
   const centerRequests = await prisma.emergencyRequest.findMany({
     orderBy: { createdAt: "desc" },
     include: {
       responses: {
-        include: { donor: { include: { user: true } } },
+        include: {
+          donor: {
+            include: {
+              user: true,
+            },
+          },
+        },
+        orderBy: { respondedAt: "desc" },
       },
     },
   });
@@ -273,10 +325,10 @@ export default async function EmergencyPage() {
         <div>
           <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
             <ShieldAlert className="w-6 h-6 text-red-600" />
-            إدارة نداءات الطوارئ
+            إدارة ومتابعة نداءات الطوارئ
           </h1>
           <p className="text-slate-500 text-sm mt-1">
-            متابعة استجابات المتبرعين وإطلاق نداءات عاجلة.
+            متابعة استجابات المتبرعين كاملة، بيانات الاتصال، توثيق الوصول والتبرع أو الرفض الطبي.
           </p>
         </div>
         <Link href="/dashboard/emergency/new" className="labo-btn-danger flex items-center gap-2">
@@ -291,65 +343,169 @@ export default async function EmergencyPage() {
             <p>لا يوجد نداءات طوارئ حالياً.</p>
           </div>
         ) : (
-          centerRequests.map((req) => (
-            <div key={req.id} className="labo-card p-0 overflow-hidden border-t-4 border-t-red-500">
-              <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <div>
-                  <div className="flex items-center gap-3">
-                    <h3 className="text-lg font-bold text-slate-800">{req.hospitalName}</h3>
-                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${req.status === "OPEN" ? "bg-red-100 text-red-700" : "bg-emerald-100 text-emerald-700"}`}>
-                      {req.status === "OPEN" ? "نشط" : "مكتمل"}
-                    </span>
-                    {req.status === "OPEN" && (
-                      <form action={async () => {
-                        "use server";
-                        await closeEmergencyRequest(req.id);
-                      }}>
-                        <button type="submit" className="text-xs flex items-center gap-1 bg-white border border-gray-200 text-gray-600 px-2 py-1 rounded hover:bg-gray-50">
-                          <CheckCircle className="w-3 h-3" /> إغلاق النداء
-                        </button>
-                      </form>
+          centerRequests.map((req) => {
+            const confirmedCount = req.responses.filter((r: any) => r.status === "CONFIRMED").length;
+            const arrivedCount = req.responses.filter((r: any) => r.status === "ARRIVED").length;
+            const pendingCount = req.responses.filter((r: any) => r.status === "PENDING").length;
+            const rejectedCount = req.responses.filter((r: any) => r.status === "REJECTED").length;
+
+            return (
+              <div key={req.id} className="labo-card p-0 overflow-hidden border-t-4 border-t-red-500">
+                {/* Header summary of request */}
+                <div className="p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-50">
+                  <div>
+                    <div className="flex items-center gap-3">
+                      <h3 className="text-lg font-bold text-slate-800">{req.hospitalName}</h3>
+                      <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${req.status === "OPEN" ? "bg-red-100 text-red-700" : "bg-emerald-100 text-emerald-700"}`}>
+                        {req.status === "OPEN" ? "نشط" : "مكتمل"}
+                      </span>
+                      {req.status === "OPEN" && (
+                        <form action={async () => {
+                          "use server";
+                          await closeEmergencyRequest(req.id);
+                        }}>
+                          <button type="submit" className="text-xs flex items-center gap-1 bg-white border border-gray-200 text-gray-600 px-2.5 py-1 rounded-lg hover:bg-gray-100 transition-colors">
+                            <CheckCircle className="w-3 h-3" /> إغلاق النداء
+                          </button>
+                        </form>
+                      )}
+                    </div>
+                    <p className="text-slate-500 text-sm mt-1">
+                      المطلوب: <span className="font-bold text-slate-700">{req.unitsNeeded} أكياس</span> | الفصيلة: <span className="font-bold text-red-600">{formatBloodType(req.bloodType)}</span> | المدينة: {req.city}
+                    </p>
+                    {req.contactPhone && (
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        مسؤول التواصل: {req.contactName || "—"} ({req.contactPhone})
+                      </p>
                     )}
                   </div>
-                  <p className="text-slate-500 text-sm mt-1">
-                    {req.unitsNeeded} أكياس | {formatBloodType(req.bloodType)} | {req.city}
-                  </p>
+
+                  {/* Badges breakdown of responses */}
+                  <div className="flex flex-col items-start md:items-end gap-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-2xl font-black text-slate-800">{req.responses.length}</span>
+                      <span className="text-xs text-slate-500 font-bold uppercase">إجمالي المستجيبين</span>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                      <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200">
+                        🚗 {pendingCount} في الطريق
+                      </span>
+                      <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-blue-50 text-blue-800 border border-blue-200">
+                        📍 {arrivedCount} وصل
+                      </span>
+                      <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200">
+                        ✅ {confirmedCount} تم التبرع
+                      </span>
+                      <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-rose-50 text-rose-800 border border-rose-200">
+                        ❌ {rejectedCount} مرفوض
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div className="text-left">
-                  <p className="text-2xl font-black text-slate-800">{req.responses.length}</p>
-                  <p className="text-xs text-slate-500 font-bold uppercase">متبرع قادم</p>
-                </div>
-              </div>
-              <div>
-                {req.responses.length > 0 ? (
-                  <table className="labo-table w-full">
-                    <thead>
-                      <tr>
-                        <th>المتبرع</th>
-                        <th>الفصيلة</th>
-                        <th>وقت الاستجابة</th>
-                        <th>الحالة</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {req.responses.map((res) => (
-                        <tr key={res.id}>
-                          <td className="font-bold text-slate-800">{res.donor.user?.name}</td>
-                          <td><span className="text-red-600 font-bold bg-red-50 px-2 py-0.5 rounded text-xs">{formatBloodType(res.donor.bloodType)}</span></td>
-                          <td dir="ltr" className="text-right text-slate-600">
-                            {new Intl.DateTimeFormat("ar-SA", { hour: "2-digit", minute: "2-digit" }).format(res.respondedAt)}
-                          </td>
-                          <td><span className="text-yellow-600 bg-yellow-50 px-2 py-1 rounded text-xs font-bold">{res.status === "PENDING" ? "في الطريق" : res.status}</span></td>
+
+                {/* Responders Table */}
+                <div className="overflow-x-auto">
+                  {req.responses.length > 0 ? (
+                    <table className="labo-table w-full text-right text-xs">
+                      <thead>
+                        <tr className="bg-slate-100/70 text-slate-700">
+                          <th className="p-3">المتبرع</th>
+                          <th className="p-3">رقم الهاتف والتواصل</th>
+                          <th className="p-3">الفصيلة</th>
+                          <th className="p-3">المدينة</th>
+                          <th className="p-3">تبرعات سابقة</th>
+                          <th className="p-3">وقت الاستجابة</th>
+                          <th className="p-3 text-center">الحالة وتوثيق التبرع / الرفض</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <div className="p-6 text-center text-slate-500 text-sm">بانتظار استجابة المتبرعين...</div>
-                )}
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {req.responses.map((res: any) => (
+                          <tr key={res.id} className="hover:bg-slate-50/80 transition-colors">
+                            {/* Donor Name & Email */}
+                            <td className="p-3 font-bold text-slate-800">
+                              <div className="flex items-center gap-2">
+                                <div className="w-7 h-7 rounded-full bg-red-100 text-red-600 font-bold text-xs flex items-center justify-center">
+                                  {res.donor.user?.name?.slice(0, 1) || "م"}
+                                </div>
+                                <div>
+                                  <div className="text-slate-900 font-bold">{res.donor.user?.name || "متبرع كريم"}</div>
+                                  <div className="text-[10px] text-slate-400 font-mono">{res.donor.user?.email || "—"}</div>
+                                </div>
+                              </div>
+                            </td>
+
+                            {/* Phone & Direct Call */}
+                            <td className="p-3">
+                              {res.donor.phone ? (
+                                <a
+                                  href={`tel:${res.donor.phone}`}
+                                  className="text-blue-600 font-black hover:underline flex items-center gap-1 font-mono text-xs"
+                                  dir="ltr"
+                                  title="اتصل بالمتبرع"
+                                >
+                                  <Phone className="w-3.5 h-3.5 text-blue-500" />
+                                  <span>{res.donor.phone}</span>
+                                </a>
+                              ) : (
+                                <span className="text-slate-400 text-xs">غير مسجل</span>
+                              )}
+                            </td>
+
+                            {/* Blood Type */}
+                            <td className="p-3">
+                              <span className="text-red-700 font-black bg-red-50 border border-red-200 px-2 py-0.5 rounded-lg text-xs">
+                                {formatBloodType(res.donor.bloodType)}
+                              </span>
+                            </td>
+
+                            {/* City */}
+                            <td className="p-3 text-slate-600">
+                              <div className="flex items-center gap-1">
+                                <MapPin className="w-3 h-3 text-slate-400" />
+                                <span>{res.donor.city || "—"}</span>
+                              </div>
+                            </td>
+
+                            {/* Total Donations */}
+                            <td className="p-3 text-slate-700 font-bold">
+                              <span className="bg-slate-100 px-2 py-0.5 rounded-md font-mono">
+                                {res.donor.totalDonations || 0} تبرع
+                              </span>
+                            </td>
+
+                            {/* Time of response */}
+                            <td className="p-3 text-slate-500 text-[11px] font-mono" dir="ltr">
+                              {new Intl.DateTimeFormat("ar-SA", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                month: "numeric",
+                                day: "numeric",
+                              }).format(new Date(res.respondedAt))}
+                            </td>
+
+                            {/* Actions Component */}
+                            <td className="p-3 text-center">
+                              <EmergencyResponseActions
+                                requestId={req.id}
+                                responseId={res.id}
+                                currentStatus={res.status}
+                                donorName={res.donor.user?.name}
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className="p-8 text-center text-slate-500 text-sm">
+                      بانتظار استجابة المتبرعين... سيتم إشعارك فور نقر المتبرع على تلبية النداء.
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
     </div>
